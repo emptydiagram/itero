@@ -2,26 +2,27 @@
   export let tree: FlowyTree,
     flowyTreeNode: FlowyTreeNode,
     docCursorEntryId,
-    docCursorSelStart,
-    docCursorSelEnd,
-    handleSaveDocEntry,
-    handleSaveFullCursor,
-    handleGoUp,
-    handleGoDown,
-    handleCollapseEntry,
-    handleExpandEntry,
-    handleSplitEntry,
-    handleEntryBackspace,
-    handleIndent,
-    handleDedent,
+    docCursorSelStart: number,
+    docCursorSelEnd: number,
+    handleGoUp: () => void,
+    handleGoDown: () => void,
+    handleEntryBackspace: () => void,
+    handleCollapseEntry: (entryId: number) => void,
+    handleExpandEntry: (entryId: number) => void,
+    handleSplitEntry: () => void,
+    handleIndent: () => void,
+    handleDedent: () => void,
     handleMultilinePaste,
-    handleMoveCursorLeft,
-    handleMoveCursorRight,
-    handleSaveCursorPos,
+    handleMoveCursorLeft: () => void,
+    handleMoveCursorRight: (entryTextLength: number) => void,
+    handleSaveCursorPos: (pos: number) => void,
+    handleSaveDocEntry: (entryText: string, selStart: number, selEnd: number) => void,
+    handleSaveFullCursor: (entryId: number, selStart: number, selEnd: number) => void,
+    handleSwapWithAboveEntry: (entryId: number) => void,
+    handleSwapWithBelowEntry: (entryId: number) => void,
     handleUpdateEntryLinks,
-    handleSwapWithAboveEntry,
-    handleSwapWithBelowEntry,
     handleCycleEntryHeadingSize;
+
 
   import Icon from 'svelte-awesome';
   import { faCircle,faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -36,12 +37,12 @@
   import { EntryDisplayState } from "../data.ts";
 
 
-  function nodeIsCollapsed(node) {
+  function nodeIsCollapsed(node): boolean {
     return node.hasChildren()
       && tree.getEntryDisplayState(node.getId()) === EntryDisplayState.COLLAPSED;
   }
 
-  function handleToggle(entryId, isCollapsed) {
+  function handleToggle(entryId: number, isCollapsed: boolean) {
     if (isCollapsed) {
       handleExpandEntry(entryId);
     } else {
@@ -49,7 +50,7 @@
     }
   }
 
-  let currEntryId: number;
+  let currEntryId: number | null;
   $: currEntryId = flowyTreeNode.getId();
 
   let childItemArray: Array<LinkedListItem>;
@@ -151,7 +152,7 @@
 
 {#if currNodeHasChildren && !isCollapsed}
   <ul class="tree-node-list">
-    {#each childItemArray as child, i}
+    {#each childItemArray as child}
       <li>
         <Node
           {tree}

@@ -9,12 +9,15 @@ export interface Document {
   id: string,
   name: string,
   tree: FlowyTree,
-  lastUpdated: Date
+  lastUpdated: string
 }
 
 export interface DocumentsCollection {
   [id: string]: Document;
 }
+
+interface DocIdLookup { [name: string]: string }
+
 
 export const EntryDisplayState = Object.freeze({
     COLLAPSED: Symbol("Colors.COLLAPSED"),
@@ -25,7 +28,7 @@ export function getNowISO8601() {
   return new Date(Date.now()).toISOString();
 }
 
-export function createNewDocument(newDocName, initEntryText, docs) {
+export function createNewDocument(newDocName: string, initEntryText: string, docs: DocumentsCollection): Document {
   let existingIds = Object.keys(docs).map(id => parseInt(id));
   let newId = (Math.max(...existingIds) + 1).toString();
   let newTree = new FlowyTree(
@@ -86,12 +89,12 @@ export class DataManager {
     } else {
       let treeObjDocs = JSON.parse(val);
       let deserDocs = {};
-      Object.entries(treeObjDocs).forEach(([entryId, doc]) => {
-        let newDoc = {...(doc as any)};
-        if (!('lastUpdated' in (doc as any))) {
+      Object.entries(treeObjDocs).forEach(([entryId, doc]: [string, any]) => {
+        let newDoc = {...doc};
+        if (!('lastUpdated' in doc)) {
           newDoc.lastUpdated = getNowISO8601();
         }
-        newDoc.tree = new FlowyTree(deserializeEntries((doc as any).tree.entries), FlowyTreeNode.fromTreeObj((doc as any).tree.node));
+        newDoc.tree = new FlowyTree(deserializeEntries(doc.tree.entries), FlowyTreeNode.fromTreeObj(doc.tree.node));
         deserDocs[entryId] = newDoc;
       });
       docs = deserDocs;
@@ -112,12 +115,11 @@ export class DataManager {
   }
 }
 
-function makeDocIdLookup(docs) {
+function makeDocIdLookup(docs: DocumentsCollection): DocIdLookup  {
   // build up index: (doc name) -> (doc id)
-
   let docIdLookup = {};
-  Object.entries(docs).forEach(([docId, doc]) => {
-    docIdLookup[(doc as any).name] = docId;
+  Object.entries(docs).forEach(([docId, doc]: [string, Document]) => {
+    docIdLookup[doc.name] = docId;
   });
   return docIdLookup;
 }
@@ -125,11 +127,11 @@ function makeDocIdLookup(docs) {
 function makeLinkGraph(docs, docIdLookup) {
   let outAdjacency = {};
   let newDocs = { ...docs };
-  Object.entries(docs).forEach(([docId, doc]) => {
+  Object.entries(docs).forEach(([docId, doc]: [string, Document]) => {
     outAdjacency[docId] = {};
     let currDocEntries = outAdjacency[docId];
-    Object.entries((doc as any).tree.getEntries()).forEach(([entryId, entry]) => {
-      let parseResult = MarkupParser.Text.tryParse((entry as any).text);
+    Object.entries(doc.tree.getEntries()).forEach(([entryId, entry]: [string, { text: string }]) => {
+      let parseResult = MarkupParser.Text.tryParse(entry.text);
       parseResult.linkedPages.forEach(page => {
         if (!(entryId in currDocEntries)) {
            currDocEntries[entryId] = new Set();
@@ -149,7 +151,7 @@ function makeLinkGraph(docs, docIdLookup) {
 
 
 // Document: = {id: EntryId, name: String, tree: FlowyTree }
-export function makeInitContextFromDocuments(docs) {
+export function makeInitContextFromDocuments(docs: DocumentsCollection) {
   let docIdLookup = makeDocIdLookup(docs);
   let { linkGraph, documents } = makeLinkGraph(docs, docIdLookup);
   return {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let entryId,
+  export let entryId: number,
     entryText: string,
     entryHeadingSize: number,
     handleUpdateEntryLinks;

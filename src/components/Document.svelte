@@ -52,17 +52,19 @@
   $: docTitle = $docsStore.docName;
 
 
-  $: handleSaveName = () => docsStore.saveEditingDocName(docTitleText);
+  function handleSaveName() {
+    docsStore.saveEditingDocName(docTitleText);
+  }
 
-  $: handleEditingCancel = () => {
+  function handleEditingCancel() {
     docTitleText = docTitle;
     docsStore.cancelEditingDocName();
-  };
+  }
 
-  $: handleStartEditing = () => {
+  function handleStartEditing() {
     docTitleText = docTitle;
     docsStore.startEditingDocName();
-  };
+  }
 
   $: docIsEditingName = $docsStore.docIsEditingName;
 
