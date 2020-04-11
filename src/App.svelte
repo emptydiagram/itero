@@ -26,17 +26,6 @@
     states: {
       navigating: {
         on: {
-          /*
-          UP: {
-            actions: assign(ctxt => {
-              console.log('TODO, UP. context = ', ctxt);
-              return {
-                value: newValue,
-                history: [...ctxt.history, newValue],
-              };
-            })
-          },
-           */
           START_EDIT: {
             target: 'editing'
           }
@@ -111,7 +100,7 @@
   flowikiService.start();
 
 
-  console.log("+++machineState = ", machineState);
+  //console.log("+++machineState = ", machineState);
   $: isAtTop = machineState.value === 'top';
 
   function createNode() {
@@ -127,7 +116,6 @@
   }
 
   $: displayNodes = machineState.context.displayNodes.map(id => {
-    console.log("making displayNodes, nodes = ", machineState.context.nodes);
     return machineState.context.nodes[id].name;
   });
 
