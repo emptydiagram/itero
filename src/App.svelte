@@ -39,8 +39,21 @@
       id: 'flowiki',
       initial: 'top',
       context: {
-        nodes: {},
-        displayNodes: [],
+      nodes: {
+        '1': {
+          name: 'foo',
+          entries: ['a', 'b', 'c'],
+        },
+        '2': {
+          name: 'bar',
+          entries: ['4', '5' ],
+        },
+        '3': {
+          name: 'baz',
+          entries: ['alpha', 'beta', 'gamma', 'delta']
+        }
+      },
+      displayNodes: [1, 2, 3],
         displayNodeEntries: [],
       },
       states: {
@@ -76,6 +89,18 @@
   });
 
   flowikiService.start();
+
+  console.log("+++machineState = ", machineState);
+  $: isAtTop = machineState.value === 'top';
+
+  function createNode() {
+    flowikiService.send('CREATE_NODE');
+  }
+
+  function goBack() {
+    flowikiService.send('BACK');
+  }
+
 </script>
 
 <style>
@@ -85,3 +110,11 @@
 </style>
 
 <h1>Hello {name}!</h1>
+
+{#if isAtTop}
+  <p>TOP</p>
+  <button on:click={createNode}>create new node</button>
+{:else}
+  <p>node</p>
+  <button on:click={goBack}>go back</button>
+{/if}
