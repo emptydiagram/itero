@@ -18,13 +18,12 @@
 
   let machine = createMachine(viewNodeAction);
   let machineState = machine.initialState;
-  const flowikiService = interpret(machine);
 
+  const flowikiService = interpret(machine);
   flowikiService.onTransition(state => {
     console.log("transitioning to context = ", state.context, ", state = ", state.value);
     machineState = state;
   });
-
   flowikiService.start();
 
   //console.log("+++machineState = ", machineState);
