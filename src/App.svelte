@@ -16,6 +16,8 @@
     };
   });
 
+  /*** service and state ***/
+
   let machine = createMachine(viewNodeAction);
   let machineState = machine.initialState;
 
@@ -26,8 +28,7 @@
   });
   flowikiService.start();
 
-  //console.log("+++machineState = ", machineState);
-  $: isAtTop = machineState.value === 'top';
+  /*** event handlers & some reactive variables ***/
 
   function createNode() {
     flowikiService.send('CREATE_NODE');
@@ -36,10 +37,12 @@
     currentNodeId = id;
     flowikiService.send('VIEW_NODE');
   }
-
   function goBack() {
     flowikiService.send('BACK');
   }
+
+  //console.log("+++machineState = ", machineState);
+  $: isAtTop = machineState.value === 'top';
 
   $: displayNodes = machineState.context.displayNodes.map(id => {
     return machineState.context.nodes[id];
