@@ -49,6 +49,10 @@
       flowikiService.send('GO_HOME');
       return;
     }
+    if (newId === 'create') {
+      flowikiService.send('CREATE_NODE');
+      return;
+    }
 
     let parseResult = parseInt(newId);
     if (!isNaN(parseResult)) {
@@ -64,7 +68,7 @@
   /*** event handlers & some reactive variables ***/
 
   function createNode() {
-    flowikiService.send('CREATE_NODE');
+    history.push('/create');
   }
 
   console.log("+++machineState = ", machineState);
