@@ -2,7 +2,7 @@
   import { assign, interpret } from 'xstate';
   import Node from './Node.svelte';
   import Top from './Top.svelte';
-  import flowikiMachine from './machine.js';
+  import createMachine from './machine.js';
 
   let currentNodeId;
 
@@ -16,7 +16,7 @@
     };
   });
 
-  let machine = flowikiMachine(viewNodeAction);
+  let machine = createMachine(viewNodeAction);
   let machineState = machine.initialState;
   const flowikiService = interpret(machine);
 
@@ -43,7 +43,7 @@
   }
 
   $: displayNodes = machineState.context.displayNodes.map(id => {
-    return machineState.context.nodes[id].name;
+    return machineState.context.nodes[id];
   });
 
   $: displayNodeEntries = machineState.context.displayNodeEntries;

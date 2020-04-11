@@ -5,19 +5,22 @@ function generateTestContext() {
     currentNodeId: null,
     nodes: {
       '1': {
+        id: 1,
         name: 'foo',
         entries: ['a', 'b', 'c'],
       },
       '2': {
+        id: 2,
         name: 'bar',
         entries: ['4', '5' ],
       },
-      '3': {
+      '4': {
+        id: 4,
         name: 'baz',
         entries: ['alpha', 'beta', 'gamma', 'delta']
       }
     },
-    displayNodes: [1, 2, 3],
+    displayNodes: [1, 2, 4],
     displayNodeEntries: [],
   };
 }
