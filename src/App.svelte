@@ -1,5 +1,7 @@
 <script>
   import { Machine, interpret, assign } from 'xstate';
+  import Node from './Node.svelte';
+  import Top from './Top.svelte';
 
   let currentNodeId;
 
@@ -141,25 +143,7 @@
 <h1>treacle</h1>
 
 {#if isAtTop}
-  <p>TOP</p>
-  <button on:click={createNode}>create new node</button>
-
-  <ul>
-  {#each displayNodes as node, i}
-    <li>{node}</li>
-    <button on:click={() => viewNode(i+1)}>view node {i}</button>
-  {/each}
-  </ul>
-
+  <Top displayNodes={displayNodes} createNode={createNode} viewNode={viewNode} />
 {:else}
-  <p>node</p>
-
-  <ul>
-  {#each displayNodeEntries as nodeEntry}
-    <li>{nodeEntry}</li>
-  {/each}
-  </ul>
-
-
-  <button on:click={goBack}>go back</button>
+  <Node entries={displayNodeEntries} goBack={goBack} />
 {/if}
