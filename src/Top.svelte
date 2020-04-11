@@ -7,9 +7,9 @@
 <button on:click={createNode}>create new node</button>
 
 <ul>
-{#each displayNodes as node, i}
-  <li>{node}</li>
-  <button on:click={() => viewNode(i+1)}>view node {i}</button>
+{#each displayNodes as node}
+  <li><a href={"#/"+node.id}>{node.name}</a></li>
+  <button on:click={() => viewNode(node.id)}>view node {node.id}</button>
 {/each}
 </ul>
 
