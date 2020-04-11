@@ -134,9 +134,8 @@
 </script>
 
 <style>
-	h1 {
-		color: purple;
-	}
+  h1 {
+  }
 </style>
 
 <h1>treacle</h1>
