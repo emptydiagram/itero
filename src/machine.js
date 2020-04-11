@@ -25,7 +25,7 @@ function generateTestContext() {
   };
 }
 
-const flowikiStates = {
+const nodeStates = {
   initial: 'navigating',
   states: {
     navigating: {
@@ -76,7 +76,7 @@ export default (viewNodeAction) => {
             target: 'top',
           }
         },
-        ...flowikiStates
+        ...nodeStates
       }
     }
   });
