@@ -18,6 +18,7 @@
     "dev": "webpack-dev-server --content-base public"
   },
   "dependencies": {
+    "history": "^4.10.1",
     "xstate": "^4.8.0"
   }
 }

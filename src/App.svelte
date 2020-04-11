@@ -1,4 +1,5 @@
 <script>
+  import { createHashHistory } from 'history';
   import { assign, interpret } from 'xstate';
   import Node from './Node.svelte';
   import Top from './Top.svelte';
@@ -28,13 +29,42 @@
   });
   flowikiService.start();
 
+  /*** history ***/
+
+  const history = createHashHistory();
+
+  // Listen for changes to the current location.
+  const unlisten = history.listen((location, action) => {
+    // location is an object like window.location
+    console.log(action, location.pathname, location.state);
+
+    if (!location.pathname.startsWith('/')) {
+      return;
+    }
+
+    console.log("location change with pathname = ", location.pathname);
+    let newId = location.pathname.substring(1);
+
+    if (newId === '') {
+      flowikiService.send('GO_HOME');
+      return;
+    }
+
+    let parseResult = parseInt(newId);
+    if (!isNaN(parseResult)) {
+      currentHashId = parseResult;
+      flowikiService.send('NAVIGATE');
+    } else {
+      flowikiService.send('GO_HOME');
+    }
+
+  });
+
+
   /*** event handlers & some reactive variables ***/
 
   function createNode() {
     flowikiService.send('CREATE_NODE');
-  }
-  function goBack() {
-    flowikiService.send('BACK');
   }
 
   console.log("+++machineState = ", machineState);
@@ -61,5 +91,5 @@
     createNode={createNode}
   />
 {:else}
-  <Node entries={displayNodeEntries} goBack={goBack} />
+  <Node entries={displayNodeEntries} />
 {/if}
