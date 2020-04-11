@@ -52,18 +52,12 @@ let createNodeAction = assign(ctxt => {
   };
 });
 
-export default (viewNodeAction) => {
-  return Machine({
-    id: 'flowiki',
+export default (navigateToNodeAction) => {
+  const flowikiStates = {
     initial: 'top',
-    context: generateTestContext(),
     states: {
       top: {
         on: {
-          VIEW_NODE: {
-            target: 'node',
-            actions: viewNodeAction,
-          },
           CREATE_NODE: {
             target: 'node',
             actions: createNodeAction,
@@ -79,5 +73,26 @@ export default (viewNodeAction) => {
         ...nodeStates
       }
     }
+  };
+
+  return Machine({
+    id: 'flowiki',
+    initial: 'flowiki',
+    context: generateTestContext(),
+    states: {
+      flowiki: {
+        on: {
+          NAVIGATE: {
+            target: 'flowiki.node',
+            actions: navigateToNodeAction,
+          },
+          GO_HOME: {
+            target: 'flowiki.top',
+          }
+        },
+        ...flowikiStates
+      }
+    }
+
   });
 };

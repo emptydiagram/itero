@@ -4,12 +4,12 @@
   import Top from './Top.svelte';
   import createMachine from './machine.js';
 
-  let currentNodeId;
+  let currentHashId;
 
-  let viewNodeAction = assign(ctxt => {
-    let nodeId = currentNodeId;
+  let navigateToNodeAction = assign(ctxt => {
+    let nodeId = currentHashId;
     let entries = ctxt.nodes[nodeId].entries;
-    console.log('view node, entries = ', entries);
+    console.log('navigate to  node, entries = ', entries);
     return {
       currentNodeId: nodeId,
       displayNodeEntries: entries,
@@ -18,7 +18,7 @@
 
   /*** service and state ***/
 
-  let machine = createMachine(viewNodeAction);
+  let machine = createMachine(navigateToNodeAction);
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
@@ -33,16 +33,12 @@
   function createNode() {
     flowikiService.send('CREATE_NODE');
   }
-  function viewNode(id) {
-    currentNodeId = id;
-    flowikiService.send('VIEW_NODE');
-  }
   function goBack() {
     flowikiService.send('BACK');
   }
 
-  //console.log("+++machineState = ", machineState);
-  $: isAtTop = machineState.value === 'top';
+  console.log("+++machineState = ", machineState);
+  $: isAtTop = machineState.value.flowiki === 'top';
 
   $: displayNodes = machineState.context.displayNodes.map(id => {
     return machineState.context.nodes[id];
@@ -63,7 +59,6 @@
   <Top
     displayNodes={displayNodes}
     createNode={createNode}
-    viewNode={viewNode}
   />
 {:else}
   <Node entries={displayNodeEntries} goBack={goBack} />

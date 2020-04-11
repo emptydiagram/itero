@@ -1,5 +1,5 @@
 <script>
-  export let displayNodes, createNode, viewNode;
+  export let displayNodes, createNode;
 
 </script>
 
@@ -9,7 +9,6 @@
 <ul>
 {#each displayNodes as node}
   <li><a href={"#/"+node.id}>{node.name}</a></li>
-  <button on:click={() => viewNode(node.id)}>view node {node.id}</button>
 {/each}
 </ul>
 
