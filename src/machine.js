@@ -1,5 +1,26 @@
 import { Machine, assign } from 'xstate';
 
+function generateTestContext() {
+  return {
+    currentNodeId: null,
+    nodes: {
+      '1': {
+        name: 'foo',
+        entries: ['a', 'b', 'c'],
+      },
+      '2': {
+        name: 'bar',
+        entries: ['4', '5' ],
+      },
+      '3': {
+        name: 'baz',
+        entries: ['alpha', 'beta', 'gamma', 'delta']
+      }
+    },
+    displayNodes: [1, 2, 3],
+    displayNodeEntries: [],
+  };
+}
 
 const flowikiStates = {
   initial: 'navigating',
@@ -22,35 +43,17 @@ const flowikiStates = {
   }
 }
 
-export default (viewNodeAction) => {
-  let createNodeAction = assign(ctxt => {
-    return {
-      displayNodeEntries: [],
-    };
-  });
+let createNodeAction = assign(ctxt => {
+  return {
+    displayNodeEntries: [],
+  };
+});
 
+export default (viewNodeAction) => {
   return Machine({
     id: 'flowiki',
     initial: 'top',
-    context: {
-      currentNodeId: null,
-      nodes: {
-        '1': {
-          name: 'foo',
-          entries: ['a', 'b', 'c'],
-        },
-        '2': {
-          name: 'bar',
-          entries: ['4', '5' ],
-        },
-        '3': {
-          name: 'baz',
-          entries: ['alpha', 'beta', 'gamma', 'delta']
-        }
-      },
-      displayNodes: [1, 2, 3],
-      displayNodeEntries: [],
-    },
+    context: generateTestContext(),
     states: {
       top: {
         on: {

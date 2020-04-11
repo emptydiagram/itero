@@ -1,5 +1,5 @@
 <script>
-import { assign, interpret } from 'xstate';
+  import { assign, interpret } from 'xstate';
   import Node from './Node.svelte';
   import Top from './Top.svelte';
   import flowikiMachine from './machine.js';
