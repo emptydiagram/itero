@@ -1,5 +1,5 @@
 <script>
-  export let entries, goBack;
+  export let entries;
 
 </script>
 
@@ -12,4 +12,4 @@
 </ul>
 
 
-<button on:click={goBack}>go back</button>
+<a href="#/">go back</a>

@@ -65,11 +65,6 @@ export default (navigateToNodeAction) => {
         },
       },
       node: {
-        on: {
-          BACK: {
-            target: 'top',
-          }
-        },
         ...nodeStates
       }
     }
