@@ -14,12 +14,19 @@
     return {
       currentNodeId: nodeId,
       displayNodeEntries: entries,
+      nodeCursorId: entries.length - 1,
+    };
+  });
+
+  let goUpAction = assign(ctxt => {
+    return {
+      nodeCursorId: ctxt.nodeCursorId === 0 ? 0 : ctxt.nodeCursorId - 1
     };
   });
 
   /*** service and state ***/
 
-  let machine = createMachine(navigateToNodeAction);
+  let machine = createMachine(goUpAction, navigateToNodeAction);
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
@@ -73,6 +80,9 @@
   function createNode() {
     history.push('/create');
   }
+  function nodeGoUp() {
+    flowikiService.send('UP');
+  }
 
   // console.log("+++machineState = ", machineState);
   $: isAtTop = machineState.value.flowiki === 'top';
@@ -98,5 +108,9 @@
     createNode={createNode}
   />
 {:else}
-  <Node entries={displayNodeEntries} />
+  <Node
+    entries={displayNodeEntries}
+    nodeCursorId={machineState.context.nodeCursorId}
+    goUp={nodeGoUp}
+  />
 {/if}

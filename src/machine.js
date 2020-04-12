@@ -22,29 +22,11 @@ function generateTestContext() {
     },
     displayNodes: [1, 2, 4],
     displayNodeEntries: [],
+    nodeCursorId: 0,
   };
 }
 
-const nodeStates = {
-  initial: 'navigating',
-  states: {
-    navigating: {
-      on: {
-        START_EDIT: {
-          target: 'editing'
-        }
-      }
-    },
 
-    editing: {
-      on: {
-        SAVE: {
-          target: 'navigating',
-        }
-      }
-    }
-  }
-}
 
 let createNodeAction = assign(ctxt => {
   return {
@@ -52,7 +34,31 @@ let createNodeAction = assign(ctxt => {
   };
 });
 
-export default (navigateToNodeAction) => {
+export default (goUpAction, navigateToNodeAction) => {
+  const nodeStates = {
+    initial: 'navigating',
+    states: {
+      navigating: {
+        on: {
+          UP: {
+            actions: goUpAction
+          },
+          START_EDIT: {
+            target: 'editing'
+          }
+        }
+      },
+
+      editing: {
+        on: {
+          SAVE: {
+            target: 'navigating',
+          }
+        }
+      }
+    }
+  };
+
   const flowikiStates = {
     initial: 'top',
     states: {
