@@ -10,7 +10,6 @@
   let navigateToNodeAction = assign(ctxt => {
     let nodeId = currentHashId;
     let entries = ctxt.nodes[nodeId].entries;
-    console.log('navigate to  node, entries = ', entries);
     return {
       currentNodeId: nodeId,
       displayNodeEntries: entries,
@@ -75,7 +74,6 @@
       return;
     }
 
-    console.log("location change with pathname = ", location.pathname);
     route(location.pathname)
   });
 

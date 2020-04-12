@@ -2,7 +2,6 @@
   export let entries, nodeCursorId, goUp, goDown;
 
   $: highlightedEntries = entries.map((entry, i) => {
-    console.log("for i = ", i, ", entry = ", entry);
     return {
       entry: entry,
       highlighted: i === nodeCursorId
