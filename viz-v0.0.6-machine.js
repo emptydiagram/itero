@@ -1,4 +1,5 @@
 let currentHashId = 1;
+let currentNodeNameTextEntry = "some name";
 
 function generateTestContext() {
   return {
@@ -24,28 +25,41 @@ function generateTestContext() {
     displayNodes: [1, 2, 4],
     displayNodeEntries: [],
     nodeCursorId: 0,
-    nodeIsEditingName: false,
   };
 }
 
-
 let navigateToNodeAction = assign(ctxt => {
   let nodeId = currentHashId;
-  let entries = ctxt.nodes[nodeId].entries;
+  let node = ctxt.nodes[nodeId];
+  let entries = node.entries;
   return {
     currentNodeId: nodeId,
     displayNodeEntries: entries,
     nodeCursorId: entries.length - 1,
-    nodeIsEditingName: false,
+    nodeName: node.name,
   };
 });
 
+let saveNodeNameAction = assign(ctxt => {
+  let copyNodes = {...ctxt.nodes};
+  let i = ctxt.currentNodeId;
+  copyNodes[i] = {...ctxt.nodes[i]};
+  copyNodes[i].name = currentNodeNameTextEntry;
+
+  return {
+    nodes: copyNodes,
+    nodeName: currentNodeNameTextEntry,
+  };
+});
+
+
+// TODO: figure out a way to trigger a transition only in the nodeName substate
+// to the "nodeName.editing" subsubstate
 let createNodeAction = assign(ctxt => {
   return {
     displayNodeEntries: ['TODO'],
     currentNodeId: null,
     nodeName: '',
-    nodeIsEditingName: true,
   };
 });
 
@@ -67,24 +81,6 @@ let createEntryBelowAction = assign(ctxt => {
   return {
     nodeCursorId: nodeCursorId + 1,
     displayNewEntries: newNodeEntries,
-  };
-});
-
-let saveNameAction = assign(ctxt => {
-  return {
-    nodeIsEditingName: false,
-  };
-});
-
-let startEditingNameAction = assign(ctxt => {
-  return {
-    nodeIsEditingName: true,
-  };
-});
-
-let cancelEditingNameAction = assign(ctxt => {
-  return {
-    nodeIsEditingName: false,
   };
 });
 
@@ -118,6 +114,7 @@ const flowytreeStates = {
   }
 };
 
+
 const nodeStates = {
   states: {
     flowytree: {
@@ -125,18 +122,16 @@ const nodeStates = {
     },
     nodeName: {
       on: {
-        SAVE_NAME: {
+        SAVE_NODE_NAME: {
           target: 'nodeName.displaying',
-          actions: saveNameAction,
+          actions: saveNodeNameAction,
         },
         START_EDITING_NAME: {
           target: 'nodeName.editing',
-          actions: startEditingNameAction,
         },
         CANCEL_EDITING_NAME: {
           target: 'nodeName.displaying',
-          actions: cancelEditingNameAction,
-        }
+        },
       },
       initial: 'displaying',
       states: {
