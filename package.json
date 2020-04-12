@@ -1,6 +1,6 @@
 {
   "name": "svelte-app",
-  "version": "0.0.4",
+  "version": "0.0.5-dev",
   "devDependencies": {
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.1",
