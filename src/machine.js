@@ -24,6 +24,7 @@ function generateTestContext() {
     displayNodes: [1, 2, 4],
     displayNodeEntries: [],
     nodeCursorId: 0,
+    nodeIsEditingName: false,
   };
 }
 
@@ -33,6 +34,7 @@ let createNodeAction = assign(ctxt => {
     displayNodeEntries: ['TODO'],
     currentNodeId: null,
     nodeName: '',
+    nodeIsEditingName: true,
   };
 });
 
@@ -54,6 +56,13 @@ let createEntryBelowAction = assign(ctxt => {
   return {
     nodeCursorId: nodeCursorId + 1,
     displayNewEntries: newNodeEntries,
+  };
+});
+
+// TODO:
+let toggleNameEditingAction = assign(ctxt => {
+  return {
+    nodeIsEditingName: !ctxt.nodeIsEditingName
   };
 });
 
@@ -99,6 +108,11 @@ const flowikiStates = {
       },
     },
     node: {
+      on: {
+        TOGGLE_NAME_EDITING: {
+          actions: toggleNameEditingAction,
+        }
+      },
       ...nodeStates
     }
   }

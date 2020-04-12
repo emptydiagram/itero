@@ -19,8 +19,10 @@
       displayNodeEntries: entries,
       nodeCursorId: entries.length - 1,
       nodeName: node.name,
+      nodeIsEditingName: false,
     };
   });
+
 
   /*** service and state ***/
 
@@ -132,5 +134,6 @@
     entries={displayNodeEntries}
     nodeCursorId={machineState.context.nodeCursorId}
     nodeName={machineState.context.nodeName}
+    nodeIsEditingName={machineState.context.nodeIsEditingName}
   />
 {/if}

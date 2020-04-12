@@ -1,5 +1,7 @@
 <script>
-  export let entries, nodeName, nodeCursorId;
+  export let entries, nodeName, nodeCursorId, nodeIsEditingName;
+
+  let nodeText = nodeName;
 
   $: highlightedEntries = entries.map((entry, i) => {
     return {
@@ -27,7 +29,15 @@
   }
 </style>
 
-<h1 id="node-name">{nodeName}</h1>
+{#if nodeIsEditingName}
+  <div>
+    <input type="text" bind:value={nodeText} placeholder="Document name"/>
+    <button>Save</button>
+    <button>Cancel</button>
+  </div>
+{:else}
+  <h1 id="node-name">{nodeName}</h1>
+{/if}
 
 <ul id="entries">
 {#each highlightedEntries as hlEntry, i}
