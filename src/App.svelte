@@ -27,7 +27,7 @@
   });
   let goDownAction = assign(ctxt => {
     return {
-      nodeCursorId: ctxt.nodeCursorId >= displayNodeEntries.length - 1 ? ctxt.nodeCursorId : ctxt.nodeCursorId + 1
+      nodeCursorId: ctxt.nodeCursorId >= ctxt.displayNodeEntries.length - 1 ? ctxt.nodeCursorId : ctxt.nodeCursorId + 1
     };
   });
 
