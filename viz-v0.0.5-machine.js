@@ -1,3 +1,5 @@
+let currentHashId = 1;
+
 function generateTestContext() {
   return {
     currentNodeId: null,
@@ -25,10 +27,10 @@ function generateTestContext() {
 }
 
 
-
 let createNodeAction = assign(ctxt => {
   return {
     displayNodeEntries: ['TODO'],
+    currentNodeId: null,
   };
 });
 
@@ -50,18 +52,17 @@ let goUpAction = assign(ctxt => {
 
 let goDownAction = assign(ctxt => {
   return {
-    nodeCursorId: ctxt.nodeCursorId >= displayNodeEntries.length - 1 ? ctxt.nodeCursorId : ctxt.nodeCursorId + 1
+    nodeCursorId: ctxt.nodeCursorId >= ctxt.displayNodeEntries.length - 1 ? ctxt.nodeCursorId : ctxt.nodeCursorId + 1
   };
 });
 
 let createEntryBelowAction = assign(ctxt => {
-let nodeCursorId = ctxt.nodeCursorId;
-let newNodeEntries = ctxt.displayNodeEntries.splice(nodeCursorId+1, 0, 'TODO');
-console.log("createEntryBelowAction, new entries = ", newNodeEntries);
-return {
-  nodeCursorId: nodeCursorId + 1,
-  displayNewEntries: newNodeEntries,
-};
+  let nodeCursorId = ctxt.nodeCursorId;
+  let newNodeEntries = ctxt.displayNodeEntries.splice(nodeCursorId+1, 0, 'TODO');
+  return {
+    nodeCursorId: nodeCursorId + 1,
+    displayNewEntries: newNodeEntries,
+  };
 });
 
 const nodeStates = {

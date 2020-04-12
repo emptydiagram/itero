@@ -31,6 +31,7 @@ function generateTestContext() {
 let createNodeAction = assign(ctxt => {
   return {
     displayNodeEntries: ['TODO'],
+    currentNodeId: null,
   };
 });
 
