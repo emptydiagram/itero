@@ -112,23 +112,22 @@ states: {
 }
 };
 
-return Machine({
-id: 'flowiki',
-initial: 'flowiki',
-context: generateTestContext(),
-states: {
-  flowiki: {
-    on: {
-      NAVIGATE: {
-        target: 'flowiki.node',
-        actions: navigateToNodeAction,
+const flowikiMachine = Machine({
+  id: 'flowiki',
+  initial: 'flowiki',
+  context: generateTestContext(),
+  states: {
+    flowiki: {
+      on: {
+        NAVIGATE: {
+          target: 'flowiki.node',
+          actions: navigateToNodeAction,
+        },
+        GO_HOME: {
+          target: 'flowiki.top',
+        }
       },
-      GO_HOME: {
-        target: 'flowiki.top',
-      }
-    },
-    ...flowikiStates
+      ...flowikiStates
+    }
   }
-}
-
 });
