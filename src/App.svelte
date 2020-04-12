@@ -31,20 +31,8 @@
 
   /*** history ***/
 
-  const history = createHashHistory();
-
-  // Listen for changes to the current location.
-  const unlisten = history.listen((location, action) => {
-    // location is an object like window.location
-    console.log(action, location.pathname, location.state);
-
-    if (!location.pathname.startsWith('/')) {
-      return;
-    }
-
-    console.log("location change with pathname = ", location.pathname);
-    let newId = location.pathname.substring(1);
-
+  function route(pathname) {
+    let newId = pathname.substring(1);
     if (newId === '') {
       flowikiService.send('GO_HOME');
       return;
@@ -61,7 +49,22 @@
     } else {
       flowikiService.send('GO_HOME');
     }
+  }
 
+
+  const history = createHashHistory();
+
+  // Listen for changes to the current location.
+  const unlisten = history.listen((location, action) => {
+    // location is an object like window.location
+    console.log(action, location.pathname, location.state);
+
+    if (!location.pathname.startsWith('/')) {
+      return;
+    }
+
+    console.log("location change with pathname = ", location.pathname);
+    route(location.pathname)
   });
 
 
@@ -71,7 +74,7 @@
     history.push('/create');
   }
 
-  console.log("+++machineState = ", machineState);
+  // console.log("+++machineState = ", machineState);
   $: isAtTop = machineState.value.flowiki === 'top';
 
   $: displayNodes = machineState.context.displayNodes.map(id => {
