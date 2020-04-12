@@ -111,6 +111,11 @@
   $: atFirst = machineState.context.nodeCursorId === 0;
   $: atLast = machineState.context.nodeCursorId === displayNodeEntries.length - 1;
 
+  $: nodeIsEditingName = (() => {
+    console.log("nodeIsEditingName ~~~ machineState = ", machineState);
+    return machineState.context.nodeIsEditingName;
+  })();
+
 </script>
 
 <style>
@@ -134,6 +139,6 @@
     entries={displayNodeEntries}
     nodeCursorId={machineState.context.nodeCursorId}
     nodeName={machineState.context.nodeName}
-    nodeIsEditingName={machineState.context.nodeIsEditingName}
+    nodeIsEditingName={nodeIsEditingName}
   />
 {/if}
