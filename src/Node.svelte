@@ -1,7 +1,14 @@
 <script>
-  export let entries, nodeName, nodeCursorId, nodeIsEditingName;
+  export let entries, nodeName, nodeCursorId, nodeIsEditingName, handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
 
   let nodeText = nodeName;
+
+  $: handleSave = () => handleSaveNodeName(nodeText);
+
+  $: handleEditingCancel = () => {
+    nodeText = nodeName;
+    handleCancelEditingNodeName();
+  };
 
   $: highlightedEntries = entries.map((entry, i) => {
     return {
@@ -18,6 +25,17 @@
 <style>
   #node-name {
     font-size: 1.2em;
+    font-weight: bold;
+  }
+  #node-name-edit {
+    margin-left: 1em;
+    margin-top: 0.5em;
+    display: inline-block;
+    font-size: 0.75em;
+    cursor: default;
+  }
+  #node-name-edit:hover {
+    text-decoration: underline;
   }
   #entries {
     font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
@@ -32,11 +50,14 @@
 {#if nodeIsEditingName}
   <div>
     <input type="text" bind:value={nodeText} placeholder="Document name"/>
-    <button>Save</button>
-    <button>Cancel</button>
+    <button on:click={handleSave}>Save</button>
+    <button on:click={handleEditingCancel}>Cancel</button>
   </div>
 {:else}
-  <h1 id="node-name">{nodeName}</h1>
+  <div>
+    <span id="node-name">{nodeName}</span>
+    <span id="node-name-edit" on:click={handleStartEditingNodeName}>edit</span>
+  </div>
 {/if}
 
 <ul id="entries">
