@@ -12,11 +12,13 @@
 
   let navigateToNodeAction = assign(ctxt => {
     let nodeId = currentHashId;
-    let entries = ctxt.nodes[nodeId].entries;
+    let node = ctxt.nodes[nodeId];
+    let entries = node.entries;
     return {
       currentNodeId: nodeId,
       displayNodeEntries: entries,
       nodeCursorId: entries.length - 1,
+      nodeName: node.name,
     };
   });
 
@@ -132,6 +134,8 @@
 
 <style>
   h1 {
+    font-size: 0.9em;
+    font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
   }
 </style>
 
@@ -148,5 +152,6 @@
   <Node
     entries={displayNodeEntries}
     nodeCursorId={machineState.context.nodeCursorId}
+    nodeName={machineState.context.nodeName}
   />
 {/if}

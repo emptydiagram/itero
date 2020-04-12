@@ -3,6 +3,7 @@ let currentHashId = 1;
 function generateTestContext() {
   return {
     currentNodeId: null,
+    nodeName: '',
     nodes: {
       '1': {
         id: 1,
@@ -31,6 +32,7 @@ let createNodeAction = assign(ctxt => {
   return {
     displayNodeEntries: ['TODO'],
     currentNodeId: null,
+    nodeName: '',
   };
 });
 
