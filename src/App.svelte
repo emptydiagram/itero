@@ -23,10 +23,15 @@
       nodeCursorId: ctxt.nodeCursorId === 0 ? 0 : ctxt.nodeCursorId - 1
     };
   });
+  let goDownAction = assign(ctxt => {
+    return {
+      nodeCursorId: ctxt.nodeCursorId >= displayNodeEntries.length - 1 ? ctxt.nodeCursorId : ctxt.nodeCursorId + 1
+    };
+  });
 
   /*** service and state ***/
 
-  let machine = createMachine(goUpAction, navigateToNodeAction);
+  let machine = createMachine(goUpAction, goDownAction, navigateToNodeAction);
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
@@ -83,6 +88,9 @@
   function nodeGoUp() {
     flowikiService.send('UP');
   }
+  function nodeGoDown() {
+    flowikiService.send('DOWN');
+  }
 
   // console.log("+++machineState = ", machineState);
   $: isAtTop = machineState.value.flowiki === 'top';
@@ -112,5 +120,6 @@
     entries={displayNodeEntries}
     nodeCursorId={machineState.context.nodeCursorId}
     goUp={nodeGoUp}
+    goDown={nodeGoDown}
   />
 {/if}
