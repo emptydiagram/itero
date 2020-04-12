@@ -7,17 +7,17 @@ function generateTestContext() {
     nodes: {
       '1': {
         id: 1,
-        name: 'foo',
+        name: 'some letters',
         entries: ['a', 'b', 'c'],
       },
       '2': {
         id: 2,
-        name: 'bar',
+        name: 'some numbers',
         entries: ['4', '5' ],
       },
       '4': {
         id: 4,
-        name: 'baz',
+        name: 'some greek letters',
         entries: ['alpha', 'beta', 'gamma', 'delta']
       }
     },
