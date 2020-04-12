@@ -59,14 +59,25 @@ let createEntryBelowAction = assign(ctxt => {
   };
 });
 
-// TODO:
-let toggleNameEditingAction = assign(ctxt => {
+let saveNameAction = assign(ctxt => {
   return {
-    nodeIsEditingName: !ctxt.nodeIsEditingName
+    nodeIsEditingName: false,
   };
 });
 
-const nodeStates = {
+let startEditingNameAction = assign(ctxt => {
+  return {
+    nodeIsEditingName: true,
+  };
+});
+
+let cancelEditingNameAction = assign(ctxt => {
+  return {
+    nodeIsEditingName: false,
+  };
+});
+
+const flowytreeStates = {
   initial: 'navigating',
   states: {
     navigating: {
@@ -96,6 +107,37 @@ const nodeStates = {
   }
 };
 
+const nodeStates = {
+  states: {
+    flowytree: {
+      ...flowytreeStates
+    },
+    nodeName: {
+      on: {
+        SAVE_NAME: {
+          target: 'nodeName.displaying',
+          actions: saveNameAction,
+        },
+        START_EDITING_NAME: {
+          target: 'nodeName.editing',
+          actions: startEditingNameAction,
+        },
+        CANCEL_EDITING_NAME: {
+          target: 'nodeName.displaying',
+          actions: cancelEditingNameAction,
+        }
+      },
+      initial: 'displaying',
+      states: {
+        editing: {
+        },
+        displaying: {
+        }
+      }
+    }
+  },
+}
+
 const flowikiStates = {
   initial: 'top',
   states: {
@@ -108,11 +150,7 @@ const flowikiStates = {
       },
     },
     node: {
-      on: {
-        TOGGLE_NAME_EDITING: {
-          actions: toggleNameEditingAction,
-        }
-      },
+      type: 'parallel',
       ...nodeStates
     }
   }
