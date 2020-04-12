@@ -1,5 +1,5 @@
 <script>
-  export let entries, nodeCursorId, goUp;
+  export let entries, nodeCursorId, goUp, goDown;
 
   $: highlightedEntries = entries.map((entry, i) => {
     console.log("for i = ", i, ", entry = ", entry);
@@ -8,6 +8,9 @@
       highlighted: i === nodeCursorId
     };
   });
+
+  $: atFirst = nodeCursorId === 0;
+  $: atLast = nodeCursorId === entries.length - 1;
 
 </script>
 
@@ -18,13 +21,12 @@
   }
 
   .highlighted {
-    background-color: #f3ffff
+    background-color: #F0FCF4;
   }
 </style>
 
-<p>{nodeCursorId}</p>
-
-<button disabled={nodeCursorId == 0} on:click={goUp}>up</button>
+<button disabled={atFirst} on:click={goUp}>up</button>
+<button disabled={atLast} on:click={goDown}>down</button>
 
 <ul id="entries">
 {#each highlightedEntries as hlEntry, i}

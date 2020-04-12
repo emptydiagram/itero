@@ -30,11 +30,11 @@ function generateTestContext() {
 
 let createNodeAction = assign(ctxt => {
   return {
-    displayNodeEntries: [],
+    displayNodeEntries: ['TODO'],
   };
 });
 
-export default (goUpAction, navigateToNodeAction) => {
+export default (goUpAction, goDownAction, navigateToNodeAction) => {
   const nodeStates = {
     initial: 'navigating',
     states: {
@@ -42,6 +42,9 @@ export default (goUpAction, navigateToNodeAction) => {
         on: {
           UP: {
             actions: goUpAction
+          },
+          DOWN: {
+            actions: goDownAction
           },
           START_EDIT: {
             target: 'editing'
