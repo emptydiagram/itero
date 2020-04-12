@@ -1,5 +1,5 @@
 <script>
-  export let entries, nodeCursorId, goUp, goDown;
+  export let entries, nodeCursorId;
 
   $: highlightedEntries = entries.map((entry, i) => {
     return {
@@ -24,8 +24,6 @@
   }
 </style>
 
-<button disabled={atFirst} on:click={goUp}>up</button>
-<button disabled={atLast} on:click={goDown}>down</button>
 
 <ul id="entries">
 {#each highlightedEntries as hlEntry, i}

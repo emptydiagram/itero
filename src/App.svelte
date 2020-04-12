@@ -5,6 +5,9 @@
   import Top from './Top.svelte';
   import createMachine from './machine.js';
 
+  const ENTER_KEYCODE = 13;
+  const ARROW_UP_KEYCODE = 38;
+  const ARROW_DOWN_KEYCODE = 40;
   let currentHashId;
 
   let navigateToNodeAction = assign(ctxt => {
@@ -28,9 +31,19 @@
     };
   });
 
+  let createEntryBelowAction = assign(ctxt => {
+    let nodeCursorId = ctxt.nodeCursorId;
+    let newNodeEntries = ctxt.displayNodeEntries.splice(nodeCursorId+1, 0, 'TODO');
+    console.log("createEntryBelowAction, new entries = ", newNodeEntries);
+    return {
+      nodeCursorId: nodeCursorId + 1,
+      displayNewEntries: newNodeEntries,
+    };
+  });
+
   /*** service and state ***/
 
-  let machine = createMachine(goUpAction, goDownAction, navigateToNodeAction);
+  let machine = createMachine(goUpAction, goDownAction, createEntryBelowAction, navigateToNodeAction);
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
@@ -83,11 +96,24 @@
   function createNode() {
     history.push('/create');
   }
-  function nodeGoUp() {
-    flowikiService.send('UP');
-  }
-  function nodeGoDown() {
-    flowikiService.send('DOWN');
+
+  function handleKeyup(event) {
+    console.log("key up, event = ", event);
+    if (event.keyCode === ENTER_KEYCODE) {
+      const cursor = machineState.context.nodeCursorId;
+      // console.log("+++ machineState = ", machineState.context);
+      console.log("enter! cursor = "+cursor);
+
+      flowikiService.send('CREATE_ENTRY_BELOW');
+    } else if(event.keyCode === ARROW_UP_KEYCODE) {
+      if (!atFirst) {
+        flowikiService.send('UP');
+      }
+    } else if(event.keyCode === ARROW_DOWN_KEYCODE) {
+      if (!atLast) {
+        flowikiService.send('DOWN');
+      }
+    }
   }
 
   // console.log("+++machineState = ", machineState);
@@ -99,12 +125,17 @@
 
   $: displayNodeEntries = machineState.context.displayNodeEntries;
 
+  $: atFirst = machineState.context.nodeCursorId === 0;
+  $: atLast = machineState.context.nodeCursorId === displayNodeEntries.length - 1;
+
 </script>
 
 <style>
   h1 {
   }
 </style>
+
+<svelte:window on:keyup={handleKeyup} />
 
 <h1>treacle</h1>
 
@@ -117,7 +148,5 @@
   <Node
     entries={displayNodeEntries}
     nodeCursorId={machineState.context.nodeCursorId}
-    goUp={nodeGoUp}
-    goDown={nodeGoDown}
   />
 {/if}

@@ -34,7 +34,7 @@ let createNodeAction = assign(ctxt => {
   };
 });
 
-export default (goUpAction, goDownAction, navigateToNodeAction) => {
+export default (goUpAction, goDownAction, createEntryBelowAction, navigateToNodeAction) => {
   const nodeStates = {
     initial: 'navigating',
     states: {
@@ -48,6 +48,9 @@ export default (goUpAction, goDownAction, navigateToNodeAction) => {
           },
           START_EDIT: {
             target: 'editing'
+          },
+          CREATE_ENTRY_BELOW: {
+            actions: createEntryBelowAction,
           }
         }
       },
