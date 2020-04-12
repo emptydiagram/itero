@@ -28,14 +28,6 @@ function generateTestContext() {
 }
 
 
-let createNodeAction = assign(ctxt => {
-  return {
-    displayNodeEntries: ['TODO'],
-    currentNodeId: null,
-    nodeName: '',
-  };
-});
-
 let navigateToNodeAction = assign(ctxt => {
   let nodeId = currentHashId;
   let entries = ctxt.nodes[nodeId].entries;
@@ -43,6 +35,14 @@ let navigateToNodeAction = assign(ctxt => {
     currentNodeId: nodeId,
     displayNodeEntries: entries,
     nodeCursorId: entries.length - 1,
+  };
+});
+
+let createNodeAction = assign(ctxt => {
+  return {
+    displayNodeEntries: ['TODO'],
+    currentNodeId: null,
+    nodeName: '',
   };
 });
 
@@ -68,50 +68,50 @@ let createEntryBelowAction = assign(ctxt => {
 });
 
 const nodeStates = {
-initial: 'navigating',
-states: {
-  navigating: {
-    on: {
-      UP: {
-        actions: goUpAction
-      },
-      DOWN: {
-        actions: goDownAction
-      },
-      START_EDIT: {
-        target: 'editing'
-      },
-      CREATE_ENTRY_BELOW: {
-        actions: createEntryBelowAction,
+  initial: 'navigating',
+  states: {
+    navigating: {
+      on: {
+        UP: {
+          actions: goUpAction
+        },
+        DOWN: {
+          actions: goDownAction
+        },
+        START_EDIT: {
+          target: 'editing'
+        },
+        CREATE_ENTRY_BELOW: {
+          actions: createEntryBelowAction,
+        }
       }
-    }
-  },
+    },
 
-  editing: {
-    on: {
-      SAVE: {
-        target: 'navigating',
+    editing: {
+      on: {
+        SAVE: {
+          target: 'navigating',
+        }
       }
     }
   }
-}
 };
 
 const flowikiStates = {
-initial: 'top',
-states: {
-  top: {
-    on: {
-      CREATE_NODE: {
-        target: 'node',
-        actions: createNodeAction,
+  initial: 'top',
+  states: {
+    top: {
+      on: {
+        CREATE_NODE: {
+          target: 'node',
+          actions: createNodeAction,
+        },
       },
     },
-  },
-  node: {
-    ...nodeStates
+    node: {
+      ...nodeStates
+    }
   }
-}
 };
 
 const flowikiMachine = Machine({
