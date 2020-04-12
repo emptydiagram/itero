@@ -22,30 +22,9 @@
     };
   });
 
-  let goUpAction = assign(ctxt => {
-    return {
-      nodeCursorId: ctxt.nodeCursorId === 0 ? 0 : ctxt.nodeCursorId - 1
-    };
-  });
-  let goDownAction = assign(ctxt => {
-    return {
-      nodeCursorId: ctxt.nodeCursorId >= ctxt.displayNodeEntries.length - 1 ? ctxt.nodeCursorId : ctxt.nodeCursorId + 1
-    };
-  });
-
-  let createEntryBelowAction = assign(ctxt => {
-    let nodeCursorId = ctxt.nodeCursorId;
-    let newNodeEntries = ctxt.displayNodeEntries.splice(nodeCursorId+1, 0, 'TODO');
-    console.log("createEntryBelowAction, new entries = ", newNodeEntries);
-    return {
-      nodeCursorId: nodeCursorId + 1,
-      displayNewEntries: newNodeEntries,
-    };
-  });
-
   /*** service and state ***/
 
-  let machine = createMachine(goUpAction, goDownAction, createEntryBelowAction, navigateToNodeAction);
+  let machine = createMachine(navigateToNodeAction);
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);

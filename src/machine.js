@@ -28,7 +28,6 @@ function generateTestContext() {
 }
 
 
-
 let createNodeAction = assign(ctxt => {
   return {
     displayNodeEntries: ['TODO'],
@@ -37,54 +36,76 @@ let createNodeAction = assign(ctxt => {
   };
 });
 
-export default (goUpAction, goDownAction, createEntryBelowAction, navigateToNodeAction) => {
-  const nodeStates = {
-    initial: 'navigating',
-    states: {
-      navigating: {
-        on: {
-          UP: {
-            actions: goUpAction
-          },
-          DOWN: {
-            actions: goDownAction
-          },
-          START_EDIT: {
-            target: 'editing'
-          },
-          CREATE_ENTRY_BELOW: {
-            actions: createEntryBelowAction,
-          }
-        }
-      },
+let goUpAction = assign(ctxt => {
+  return {
+    nodeCursorId: ctxt.nodeCursorId === 0 ? 0 : ctxt.nodeCursorId - 1
+  };
+});
 
-      editing: {
-        on: {
-          SAVE: {
-            target: 'navigating',
-          }
+let goDownAction = assign(ctxt => {
+  return {
+    nodeCursorId: ctxt.nodeCursorId >= ctxt.displayNodeEntries.length - 1 ? ctxt.nodeCursorId : ctxt.nodeCursorId + 1
+  };
+});
+
+let createEntryBelowAction = assign(ctxt => {
+  let nodeCursorId = ctxt.nodeCursorId;
+  let newNodeEntries = ctxt.displayNodeEntries.splice(nodeCursorId+1, 0, 'TODO');
+  return {
+    nodeCursorId: nodeCursorId + 1,
+    displayNewEntries: newNodeEntries,
+  };
+});
+
+const nodeStates = {
+  initial: 'navigating',
+  states: {
+    navigating: {
+      on: {
+        UP: {
+          actions: goUpAction
+        },
+        DOWN: {
+          actions: goDownAction
+        },
+        START_EDIT: {
+          target: 'editing'
+        },
+        CREATE_ENTRY_BELOW: {
+          actions: createEntryBelowAction,
+        }
+      }
+    },
+
+    editing: {
+      on: {
+        SAVE: {
+          target: 'navigating',
         }
       }
     }
-  };
+  }
+};
 
-  const flowikiStates = {
-    initial: 'top',
-    states: {
-      top: {
-        on: {
-          CREATE_NODE: {
-            target: 'node',
-            actions: createNodeAction,
-          },
+const flowikiStates = {
+  initial: 'top',
+  states: {
+    top: {
+      on: {
+        CREATE_NODE: {
+          target: 'node',
+          actions: createNodeAction,
         },
       },
-      node: {
-        ...nodeStates
-      }
+    },
+    node: {
+      ...nodeStates
     }
-  };
+  }
+};
 
+
+export default (navigateToNodeAction) => {
   return Machine({
     id: 'flowiki',
     initial: 'flowiki',
