@@ -24,17 +24,17 @@ function generateTestContext() {
     displayNodes: [1, 2, 4],
     displayNodeEntries: [],
     nodeCursorId: 0,
-    nodeIsEditingName: false,
   };
 }
 
 
+// TODO: figure out a way to trigger a transition only in the nodeName substate
+// to the "nodeName.editing" subsubstate
 let createNodeAction = assign(ctxt => {
   return {
     displayNodeEntries: ['TODO'],
     currentNodeId: null,
     nodeName: '',
-    nodeIsEditingName: true,
   };
 });
 
@@ -56,24 +56,6 @@ let createEntryBelowAction = assign(ctxt => {
   return {
     nodeCursorId: nodeCursorId + 1,
     displayNewEntries: newNodeEntries,
-  };
-});
-
-let saveNameAction = assign(ctxt => {
-  return {
-    nodeIsEditingName: false,
-  };
-});
-
-let startEditingNameAction = assign(ctxt => {
-  return {
-    nodeIsEditingName: true,
-  };
-});
-
-let cancelEditingNameAction = assign(ctxt => {
-  return {
-    nodeIsEditingName: false,
   };
 });
 
@@ -107,57 +89,56 @@ const flowytreeStates = {
   }
 };
 
-const nodeStates = {
-  states: {
-    flowytree: {
-      ...flowytreeStates
-    },
-    nodeName: {
-      on: {
-        SAVE_NAME: {
-          target: 'nodeName.displaying',
-          actions: saveNameAction,
-        },
-        START_EDITING_NAME: {
-          target: 'nodeName.editing',
-          actions: startEditingNameAction,
-        },
-        CANCEL_EDITING_NAME: {
-          target: 'nodeName.displaying',
-          actions: cancelEditingNameAction,
-        }
+
+export default (navigateToNodeAction, saveNodeNameAction) => {
+
+  const nodeStates = {
+    states: {
+      flowytree: {
+        ...flowytreeStates
       },
-      initial: 'displaying',
-      states: {
-        editing: {
+      nodeName: {
+        on: {
+          SAVE_NODE_NAME: {
+            target: 'nodeName.displaying',
+            actions: saveNodeNameAction,
+          },
+          START_EDITING_NAME: {
+            target: 'nodeName.editing',
+          },
+          CANCEL_EDITING_NAME: {
+            target: 'nodeName.displaying',
+          },
         },
-        displaying: {
+        initial: 'displaying',
+        states: {
+          editing: {
+          },
+          displaying: {
+          }
         }
       }
-    }
-  },
-}
+    },
+  }
 
-const flowikiStates = {
-  initial: 'top',
-  states: {
-    top: {
-      on: {
-        CREATE_NODE: {
-          target: 'node',
-          actions: createNodeAction,
+  const flowikiStates = {
+    initial: 'top',
+    states: {
+      top: {
+        on: {
+          CREATE_NODE: {
+            target: 'node',
+            actions: createNodeAction,
+          },
         },
       },
-    },
-    node: {
-      type: 'parallel',
-      ...nodeStates
+      node: {
+        type: 'parallel',
+        ...nodeStates
+      }
     }
-  }
-};
+  };
 
-
-export default (navigateToNodeAction) => {
   return Machine({
     id: 'flowiki',
     initial: 'flowiki',

@@ -9,6 +9,11 @@
   const ARROW_UP_KEYCODE = 38;
   const ARROW_DOWN_KEYCODE = 40;
   let currentHashId;
+  let currentNodeNameTextEntry;
+
+  function isObject(obj) {
+    return obj === Object(obj);
+  }
 
   let navigateToNodeAction = assign(ctxt => {
     let nodeId = currentHashId;
@@ -19,14 +24,25 @@
       displayNodeEntries: entries,
       nodeCursorId: entries.length - 1,
       nodeName: node.name,
-      nodeIsEditingName: false,
+    };
+  });
+
+  let saveNodeNameAction = assign(ctxt => {
+    let copyNodes = {...ctxt.nodes};
+    let i = ctxt.currentNodeId;
+    copyNodes[i] = {...ctxt.nodes[i]};
+    copyNodes[i].name = currentNodeNameTextEntry;
+
+    return {
+      nodes: copyNodes,
+      nodeName: currentNodeNameTextEntry,
     };
   });
 
 
   /*** service and state ***/
 
-  let machine = createMachine(navigateToNodeAction);
+  let machine = createMachine(navigateToNodeAction, saveNodeNameAction);
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
@@ -80,6 +96,21 @@
     history.push('/create');
   }
 
+  function handleStartEditingNodeName() {
+    let currNode = machineState.context.nodes[machineState.context.currentNodeId];
+    currentNodeNameTextEntry = currNode.name;
+    flowikiService.send('START_EDITING_NAME');
+  }
+
+  function handleCancelEditingNodeName() {
+    flowikiService.send('CANCEL_EDITING_NAME');
+  }
+
+  function handleSaveNodeName(nodeNameText) {
+    currentNodeNameTextEntry = nodeNameText;
+    flowikiService.send('SAVE_NODE_NAME');
+  }
+
   function handleKeyup(event) {
     console.log("key up, event = ", event);
     if (event.keyCode === ENTER_KEYCODE) {
@@ -112,8 +143,11 @@
   $: atLast = machineState.context.nodeCursorId === displayNodeEntries.length - 1;
 
   $: nodeIsEditingName = (() => {
-    console.log("nodeIsEditingName ~~~ machineState = ", machineState);
-    return machineState.context.nodeIsEditingName;
+    let curr = machineState.value.flowiki;
+    if (!isObject(curr)) {
+      return nodeIsEditingName
+    }
+    return curr.node.nodeName === "editing";
   })();
 
 </script>
@@ -140,5 +174,8 @@
     nodeCursorId={machineState.context.nodeCursorId}
     nodeName={machineState.context.nodeName}
     nodeIsEditingName={nodeIsEditingName}
+    handleStartEditingNodeName={handleStartEditingNodeName}
+    handleCancelEditingNodeName={handleCancelEditingNodeName}
+    handleSaveNodeName={handleSaveNodeName}
   />
 {/if}
