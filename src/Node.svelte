@@ -1,5 +1,5 @@
 <script>
-  export let entries, nodeName, nodeCursorId, nodeIsEditingName, handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
+  export let entries, currentNodeId, nodeName, nodeCursorId, nodeIsEditingName, handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
 
   let nodeText = nodeName;
 
@@ -9,6 +9,12 @@
     nodeText = nodeName;
     handleCancelEditingNodeName();
   };
+
+  $: handleStartEditing = () => {
+    // nodeText = currentNodeId === null ? "New document" : nodeName;
+    nodeText = nodeName;
+    handleStartEditingNodeName();
+  }
 
   $: highlightedEntries = entries.map((entry, i) => {
     return {
@@ -56,7 +62,7 @@
 {:else}
   <div>
     <span id="node-name">{nodeName}</span>
-    <span id="node-name-edit" on:click={handleStartEditingNodeName}>edit</span>
+    <span id="node-name-edit" on:click={handleStartEditing}>edit</span>
   </div>
 {/if}
 

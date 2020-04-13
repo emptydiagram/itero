@@ -93,12 +93,13 @@
   /*** event handlers & some reactive variables ***/
 
   function createNode() {
+
+    // navigate to #/create
     history.push('/create');
+    flowikiService.send('START_EDITING_NAME');
   }
 
   function handleStartEditingNodeName() {
-    let currNode = machineState.context.nodes[machineState.context.currentNodeId];
-    currentNodeNameTextEntry = currNode.name;
     flowikiService.send('START_EDITING_NAME');
   }
 
@@ -112,7 +113,7 @@
   }
 
   function handleKeyup(event) {
-    console.log("key up, event = ", event);
+    // console.log("key up, event = ", event);
     if (event.keyCode === ENTER_KEYCODE) {
       const cursor = machineState.context.nodeCursorId;
       // console.log("+++ machineState = ", machineState.context);
@@ -171,6 +172,7 @@
 {:else}
   <Node
     entries={displayNodeEntries}
+    currentNodeId={machineState.context.currentNodeId}
     nodeCursorId={machineState.context.nodeCursorId}
     nodeName={machineState.context.nodeName}
     nodeIsEditingName={nodeIsEditingName}
