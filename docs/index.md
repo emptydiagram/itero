@@ -8,15 +8,25 @@ the following is the sequence of [statecharts](https://xstate.js.org/docs/#why),
 
 ### initial
 
+There are two top-level states, *top* and *node*.
+
+*node* is made up of a smaller system of states, *navigating* and *editing*.
+
 (direct link: <https://xstate.js.org/viz/?gist=e29518dd3b0efe88ddaa6dbc753e1603&embed=1>)
 <iframe style="width: 40em; height: 20em;" src="https://xstate.js.org/viz/?gist=e29518dd3b0efe88ddaa6dbc753e1603&embed=1"></iframe>
 
 ### v0.0.5
 
+We take *top* and *node* and put them into a larger state, *flowiki*. This is so we can add events `NAVIGATE` and `GO_HOME` at this new top level.
+
 (direct link: <https://xstate.js.org/viz/?gist=ea494e5af98690653566220e53ec8462&embed=1>)
 <iframe style="width: 40em; height: 37em;" src="https://xstate.js.org/viz/?gist=ea494e5af98690653566220e53ec8462&embed=1"></iframe>
 
 ### v0.0.6
+
+Inside *node*, we gather *navigating* and *editing* up as the subsystem of a new state node, *flowytree*.
+
+We also add a new state *nodeName* parallel to *flowytree*, for controlling the editing state of the document's name.
 
 (direct link: <https://xstate.js.org/viz/?gist=f920db08e3da7fa6086264f68bd08828&embed=1>)
 <iframe style="width: 42em; height: 55em;" src="https://xstate.js.org/viz/?gist=f920db08e3da7fa6086264f68bd08828&embed=1"></iframe>
