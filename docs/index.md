@@ -23,4 +23,10 @@ the following is the sequence of [statecharts](https://xstate.js.org/docs/#why),
 
 ## Notes
 
+```
+ statecharts = state-diagrams + depth
+             + orthogonality + broadcast-communication
+```
+ - [Statecharts: A Visual Formalism for Complex Systems](http://www.inf.ed.ac.uk/teaching/courses/seoc/2005_2006/resources/statecharts.pdf)
+
 See also: <https://statecharts.github.io/>
