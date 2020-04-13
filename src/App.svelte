@@ -154,6 +154,12 @@
 </script>
 
 <style>
+  header {
+    margin-top: 1.5em;
+    border-bottom: 2px solid #666;
+    margin-bottom: 0.5em;
+  }
+
   h1 {
     font-size: 0.9em;
     font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
@@ -162,7 +168,10 @@
 
 <svelte:window on:keyup={handleKeyup} />
 
-<h1>treacle</h1>
+
+<header>
+  <h1>treacle</h1>
+</header>
 
 {#if isAtTop}
   <Top
