@@ -34,6 +34,7 @@ let createNodeAction = assign(ctxt => {
   return {
     displayNodeEntries: ['TODO'],
     currentNodeId: null,
+    nodeCursorId: 0,
     nodeName: 'New document',
   };
 });
