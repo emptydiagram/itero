@@ -172,7 +172,6 @@
 {:else}
   <Node
     entries={displayNodeEntries}
-    currentNodeId={machineState.context.currentNodeId}
     nodeCursorId={machineState.context.nodeCursorId}
     nodeName={machineState.context.nodeName}
     nodeIsEditingName={nodeIsEditingName}
