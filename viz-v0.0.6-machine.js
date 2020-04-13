@@ -1,33 +1,6 @@
 let currentHashId = 1;
 let currentNodeNameTextEntry = "some name";
 
-function generateTestContext() {
-  return {
-    currentNodeId: null,
-    nodeName: '',
-    nodes: {
-      '1': {
-        id: 1,
-        name: 'foo',
-        entries: ['a', 'b', 'c'],
-      },
-      '2': {
-        id: 2,
-        name: 'bar',
-        entries: ['4', '5' ],
-      },
-      '4': {
-        id: 4,
-        name: 'baz',
-        entries: ['alpha', 'beta', 'gamma', 'delta']
-      }
-    },
-    displayNodes: [1, 2, 4],
-    displayNodeEntries: [],
-    nodeCursorId: 0,
-  };
-}
-
 let navigateToNodeAction = assign(ctxt => {
   let nodeId = currentHashId;
   let node = ctxt.nodes[nodeId];
@@ -53,13 +26,43 @@ let saveNodeNameAction = assign(ctxt => {
 });
 
 
+
+function generateTestContext() {
+  return {
+    currentNodeId: null,
+    nodeName: '',
+    nodes: {
+      '1': {
+        id: 1,
+        name: 'some letters',
+        entries: ['a', 'b', 'c'],
+      },
+      '2': {
+        id: 2,
+        name: 'some numbers',
+        entries: ['4', '5' ],
+      },
+      '4': {
+        id: 4,
+        name: 'some greek letters',
+        entries: ['alpha', 'beta', 'gamma', 'delta']
+      }
+    },
+    displayNodes: [1, 2, 4],
+    displayNodeEntries: [],
+    nodeCursorId: 0,
+  };
+}
+
+
 // TODO: figure out a way to trigger a transition only in the nodeName substate
 // to the "nodeName.editing" subsubstate
 let createNodeAction = assign(ctxt => {
   return {
     displayNodeEntries: ['TODO'],
     currentNodeId: null,
-    nodeName: '',
+    nodeCursorId: 0,
+    nodeName: 'New document',
   };
 });
 
