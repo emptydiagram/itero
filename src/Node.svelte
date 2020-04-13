@@ -1,5 +1,5 @@
 <script>
-  export let entries, currentNodeId, nodeName, nodeCursorId, nodeIsEditingName, handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
+  export let entries, nodeName, nodeCursorId, nodeIsEditingName, handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
 
   let nodeText = nodeName;
 
@@ -11,7 +11,6 @@
   };
 
   $: handleStartEditing = () => {
-    // nodeText = currentNodeId === null ? "New document" : nodeName;
     nodeText = nodeName;
     handleStartEditingNodeName();
   }
