@@ -61,7 +61,7 @@
       return;
     }
     if (newId === 'create') {
-      flowikiService.send('CREATE_NODE');
+      flowikiService.send('INIT_CREATE_NODE');
       return;
     }
 
