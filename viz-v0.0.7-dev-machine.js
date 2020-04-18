@@ -1,4 +1,31 @@
-import { Machine, assign } from 'xstate';
+let currentHashId = 1;
+let currentNodeNameTextEntry = "some name";
+
+let navigateToNodeAction = assign(ctxt => {
+  let nodeId = currentHashId;
+  let node = ctxt.nodes[nodeId];
+  let entries = node.entries;
+  return {
+    currentNodeId: nodeId,
+    displayNodeEntries: entries,
+    nodeCursorId: entries.length - 1,
+    nodeName: node.name,
+  };
+});
+
+let saveNodeNameAction = assign(ctxt => {
+  let copyNodes = {...ctxt.nodes};
+  let i = ctxt.currentNodeId;
+  copyNodes[i] = {...ctxt.nodes[i]};
+  copyNodes[i].name = currentNodeNameTextEntry;
+
+  return {
+    nodes: copyNodes,
+    nodeName: currentNodeNameTextEntry,
+  };
+});
+
+
 
 function generateTestContext() {
   return {
@@ -91,76 +118,73 @@ const flowytreeStates = {
 };
 
 
-export default (navigateToNodeAction, saveNodeNameAction) => {
-
-  const nodeStates = {
-    states: {
-      flowytree: {
-        ...flowytreeStates
-      },
-      nodeName: {
-        on: {},
-        initial: 'displaying',
-        states: {
-          editing: {
-            on: {
-              SAVE_NODE_NAME: {
-                target: 'displaying',
-                actions: saveNodeNameAction,
-              },
-              CANCEL_EDITING_NAME: {
-                target: 'displaying',
-              },
+const nodeStates = {
+  states: {
+    flowytree: {
+      ...flowytreeStates
+    },
+    nodeName: {
+      on: {},
+      initial: 'displaying',
+      states: {
+        editing: {
+          on: {
+            SAVE_NODE_NAME: {
+              target: 'displaying',
+              actions: saveNodeNameAction,
             },
-          },
-          displaying: {
-            on: {
-              START_EDITING_NAME: {
-                target: 'editing',
-              },
-            }
+
+            CANCEL_EDITING_NAME: {
+              target: 'displaying',
+            },
           }
+        },
+        displaying: {
+          on: {
+            START_EDITING_NAME: {
+              target: 'editing',
+            }
+          },
         }
       }
-    },
-  }
+    }
+  },
+}
 
-  const flowikiStates = {
-    initial: 'top',
-    states: {
-      top: {
-        on: {
-          INIT_CREATE_NODE: {
-            target: 'node',
-            actions: createNodeAction,
-          },
+const flowikiStates = {
+  initial: 'top',
+  states: {
+    top: {
+      on: {
+        INIT_CREATE_NODE: {
+          target: 'node',
+          actions: createNodeAction,
         },
       },
-      node: {
-        type: 'parallel',
-        ...nodeStates
-      }
+    },
+    node: {
+      type: 'parallel',
+      ...nodeStates
     }
-  };
-
-  return Machine({
-    id: 'flowiki',
-    initial: 'flowiki',
-    context: generateTestContext(),
-    states: {
-      flowiki: {
-        on: {
-          NAVIGATE: {
-            target: 'flowiki.node',
-            actions: navigateToNodeAction,
-          },
-          GO_HOME: {
-            target: 'flowiki.top',
-          }
-        },
-        ...flowikiStates
-      }
-    }
-
-  });
+  }
 };
+
+const flowikiMachine = Machine({
+  id: 'flowiki',
+  initial: 'flowiki',
+  context: generateTestContext(),
+  states: {
+    flowiki: {
+      on: {
+        NAVIGATE: {
+          target: 'flowiki.node',
+          actions: navigateToNodeAction,
+        },
+        GO_HOME: {
+          target: 'flowiki.top',
+        }
+      },
+      ...flowikiStates
+    }
+  }
+});
