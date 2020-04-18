@@ -21,7 +21,6 @@
     let entries = node.entries;
     return {
       currentNodeId: nodeId,
-      displayNodeEntries: entries,
       nodeCursorId: entries.length - 1,
       nodeName: node.name,
     };
@@ -66,7 +65,6 @@
         nodeName: currentNodeNameTextEntry,
         currentNodeId: newId,
         displayNodes: newDisplayNodes,
-        displayNodeEntries: newNodeEntries,
       };
     }
 
@@ -171,7 +169,16 @@
     return machineState.context.nodes[id];
   });
 
-  $: displayNodeEntries = machineState.context.displayNodeEntries;
+  // TODO:
+  // if currentNodeId is not null {
+  //   get ctxt.nodes[ctxt.currentNodeId].entries
+  // } else {
+  //   []
+  // }
+  // $: displayNodeEntries = machineState.context.displayNodeEntries;
+  $: displayNodeEntries = (machineState.context.currentNodeId !== null
+    ? machineState.context.nodes[machineState.context.currentNodeId].entries
+    : ["TODO"]);
 
   $: atFirst = machineState.context.nodeCursorId === 0;
   $: atLast = machineState.context.nodeCursorId === displayNodeEntries.length - 1;
