@@ -7,7 +7,6 @@ let navigateToNodeAction = assign(ctxt => {
   let entries = node.entries;
   return {
     currentNodeId: nodeId,
-    displayNodeEntries: entries,
     nodeCursorId: entries.length - 1,
     nodeName: node.name,
   };
@@ -52,7 +51,6 @@ let saveNodeNameAction = assign(ctxt => {
       nodeName: currentNodeNameTextEntry,
       currentNodeId: newId,
       displayNodes: newDisplayNodes,
-      displayNodeEntries: newNodeEntries,
     };
   }
 
@@ -82,7 +80,6 @@ function generateTestContext() {
       }
     },
     displayNodes: [1, 2, 4],
-    displayNodeEntries: [],
     nodeCursorId: 0,
   };
 }
@@ -92,7 +89,6 @@ function generateTestContext() {
 // to the "nodeName.editing" subsubstate
 let createNodeAction = assign(ctxt => {
   return {
-    displayNodeEntries: ['TODO'],
     currentNodeId: null,
     nodeCursorId: 0,
     nodeName: 'New document',
@@ -106,15 +102,17 @@ let goUpAction = assign(ctxt => {
 });
 
 let goDownAction = assign(ctxt => {
-  return {
-    nodeCursorId: ctxt.nodeCursorId >= ctxt.displayNodeEntries.length - 1 ? ctxt.nodeCursorId : ctxt.nodeCursorId + 1
-  };
+  if (ctxt.currentNodeId !== null) {
+    const numEntries = ctxt.nodes[ctxt.currentNodeId].entries.length;
+    return {
+      nodeCursorId: ctxt.nodeCursorId >= numEntries - 1 ? numEntries - 1 : ctxt.nodeCursorId + 1
+    };
+  }
+  return {};
 });
 
 let createEntryBelowAction = assign(ctxt => {
   let nodeCursorId = ctxt.nodeCursorId;
-  let newNodeEntries = [...ctxt.displayNodeEntries];
-  newNodeEntries.splice(nodeCursorId+1, 0, 'TODO');
 
   // only update nodes if there's a nodeId
   let newNodes;
@@ -131,7 +129,6 @@ let createEntryBelowAction = assign(ctxt => {
 
   return {
     nodeCursorId: nodeCursorId + 1,
-    displayNodeEntries: newNodeEntries,
     nodes: newNodes,
   };
 });
