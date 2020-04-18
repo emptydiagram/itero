@@ -15,14 +15,47 @@ let navigateToNodeAction = assign(ctxt => {
 
 let saveNodeNameAction = assign(ctxt => {
   let copyNodes = {...ctxt.nodes};
-  let i = ctxt.currentNodeId;
-  copyNodes[i] = {...ctxt.nodes[i]};
-  copyNodes[i].name = currentNodeNameTextEntry;
+  if (ctxt.currentNodeId !== null) {
+    let i = ctxt.currentNodeId;
+    copyNodes[i] = {...ctxt.nodes[i]};
+    copyNodes[i].name = currentNodeNameTextEntry;
 
-  return {
-    nodes: copyNodes,
-    nodeName: currentNodeNameTextEntry,
-  };
+    // TODO: why set nodeName here?
+    return {
+      nodes: copyNodes,
+      nodeName: currentNodeNameTextEntry,
+    };
+  } else {
+    let existingIds = Object.keys(copyNodes).map(id => parseInt(id));
+    let maxId = Math.max(...existingIds);
+
+    let newId = maxId + 1
+
+    let newNodeEntries = ['TODO'];
+
+    // TODO: move node creation code to another event's action? the event should be a self loop on navigate that finally saves a new node
+    // if this is a node creation, also save a new document?
+    copyNodes[newId] = {
+      id: newId,
+      name: currentNodeNameTextEntry,
+      entries: newNodeEntries,
+    };
+
+    console.log(" ++ new node = ", copyNodes[newId]);
+
+    let newDisplayNodes = [...ctxt.displayNodes];
+    newDisplayNodes.push(newId);
+
+    // TODO: why set nodeName here?
+    return {
+      nodes: copyNodes,
+      nodeName: currentNodeNameTextEntry,
+      currentNodeId: newId,
+      displayNodes: newDisplayNodes,
+      displayNodeEntries: newNodeEntries,
+    };
+  }
+
 });
 
 
@@ -80,10 +113,26 @@ let goDownAction = assign(ctxt => {
 
 let createEntryBelowAction = assign(ctxt => {
   let nodeCursorId = ctxt.nodeCursorId;
-  let newNodeEntries = ctxt.displayNodeEntries.splice(nodeCursorId+1, 0, 'TODO');
+  let newNodeEntries = [...ctxt.displayNodeEntries];
+  newNodeEntries.splice(nodeCursorId+1, 0, 'TODO');
+
+  // only update nodes if there's a nodeId
+  let newNodes;
+  if (ctxt.currentNodeId !== null) {
+    newNodes = {...ctxt.nodes};
+    let id = ctxt.currentNodeId
+    newNodes[id].entries = [...newNodes[id].entries];
+    newNodes[id].entries.splice(nodeCursorId+1, 0, 'TODO');
+  } else {
+    newNodes = ctxt.nodes;
+  }
+
+  console.log("about to create entry below, newNodes = ", newNodes);
+
   return {
     nodeCursorId: nodeCursorId + 1,
-    displayNewEntries: newNodeEntries,
+    displayNodeEntries: newNodeEntries,
+    nodes: newNodes,
   };
 });
 
@@ -133,18 +182,17 @@ const nodeStates = {
               target: 'displaying',
               actions: saveNodeNameAction,
             },
-
             CANCEL_EDITING_NAME: {
               target: 'displaying',
             },
-          }
+          },
         },
         displaying: {
           on: {
             START_EDITING_NAME: {
               target: 'editing',
-            }
-          },
+            },
+          }
         }
       }
     }
