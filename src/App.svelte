@@ -127,7 +127,6 @@
 
     // navigate to #/create
     history.push('/create');
-    flowikiService.send('START_EDITING_NAME');
   }
 
   function handleStartEditingNodeName() {

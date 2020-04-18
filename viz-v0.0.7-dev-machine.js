@@ -202,7 +202,7 @@ const flowikiStates = {
     top: {
       on: {
         INIT_CREATE_NODE: {
-          target: 'node',
+          target: ['node.nodeName.editing', 'node.flowytree.navigating'],
           actions: createNodeAction,
         },
       },
