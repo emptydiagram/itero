@@ -53,10 +53,26 @@ let goDownAction = assign(ctxt => {
 
 let createEntryBelowAction = assign(ctxt => {
   let nodeCursorId = ctxt.nodeCursorId;
-  let newNodeEntries = ctxt.displayNodeEntries.splice(nodeCursorId+1, 0, 'TODO');
+  let newNodeEntries = [...ctxt.displayNodeEntries];
+  newNodeEntries.splice(nodeCursorId+1, 0, 'TODO');
+
+  // only update nodes if there's a nodeId
+  let newNodes;
+  if (ctxt.currentNodeId !== null) {
+    newNodes = {...ctxt.nodes};
+    let id = ctxt.currentNodeId
+    newNodes[id].entries = [...newNodes[id].entries];
+    newNodes[id].entries.splice(nodeCursorId+1, 0, 'TODO');
+  } else {
+    newNodes = ctxt.nodes;
+  }
+
+  console.log("about to create entry below, newNodes = ", newNodes);
+
   return {
     nodeCursorId: nodeCursorId + 1,
-    displayNewEntries: newNodeEntries,
+    displayNodeEntries: newNodeEntries,
+    nodes: newNodes,
   };
 });
 
