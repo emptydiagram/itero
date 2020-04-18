@@ -99,23 +99,26 @@ export default (navigateToNodeAction, saveNodeNameAction) => {
         ...flowytreeStates
       },
       nodeName: {
-        on: {
-          SAVE_NODE_NAME: {
-            target: 'nodeName.displaying',
-            actions: saveNodeNameAction,
-          },
-          START_EDITING_NAME: {
-            target: 'nodeName.editing',
-          },
-          CANCEL_EDITING_NAME: {
-            target: 'nodeName.displaying',
-          },
-        },
+        on: {},
         initial: 'displaying',
         states: {
           editing: {
+            on: {
+              SAVE_NODE_NAME: {
+                target: 'displaying',
+                actions: saveNodeNameAction,
+              },
+              CANCEL_EDITING_NAME: {
+                target: 'displaying',
+              },
+            },
           },
           displaying: {
+            on: {
+              START_EDITING_NAME: {
+                target: 'editing',
+              },
+            }
           }
         }
       }
@@ -127,7 +130,7 @@ export default (navigateToNodeAction, saveNodeNameAction) => {
     states: {
       top: {
         on: {
-          CREATE_NODE: {
+          INIT_CREATE_NODE: {
             target: 'node',
             actions: createNodeAction,
           },
