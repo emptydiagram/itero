@@ -29,14 +29,47 @@
 
   let saveNodeNameAction = assign(ctxt => {
     let copyNodes = {...ctxt.nodes};
-    let i = ctxt.currentNodeId;
-    copyNodes[i] = {...ctxt.nodes[i]};
-    copyNodes[i].name = currentNodeNameTextEntry;
+    if (ctxt.currentNodeId !== null) {
+      let i = ctxt.currentNodeId;
+      copyNodes[i] = {...ctxt.nodes[i]};
+      copyNodes[i].name = currentNodeNameTextEntry;
 
-    return {
-      nodes: copyNodes,
-      nodeName: currentNodeNameTextEntry,
-    };
+      // TODO: why set nodeName here?
+      return {
+        nodes: copyNodes,
+        nodeName: currentNodeNameTextEntry,
+      };
+    } else {
+      let existingIds = Object.keys(copyNodes).map(id => parseInt(id));
+      let maxId = Math.max(...existingIds);
+
+      let newId = maxId + 1
+
+      let newNodeEntries = ['TODO'];
+
+      // TODO: move node creation code to another event's action? the event should be a self loop on navigate that finally saves a new node
+      // if this is a node creation, also save a new document?
+      copyNodes[newId] = {
+        id: newId,
+        name: currentNodeNameTextEntry,
+        entries: newNodeEntries,
+      };
+
+      console.log(" ++ new node = ", copyNodes[newId]);
+
+      let newDisplayNodes = [...ctxt.displayNodes];
+      newDisplayNodes.push(newId);
+
+      // TODO: why set nodeName here?
+      return {
+        nodes: copyNodes,
+        nodeName: currentNodeNameTextEntry,
+        currentNodeId: newId,
+        displayNodes: newDisplayNodes,
+        displayNodeEntries: newNodeEntries,
+      };
+    }
+
   });
 
 
