@@ -51,14 +51,14 @@
   }
 
   .highlighted {
-    background-color: #F3FCF6;
+    background-color: #e6fcf1;
   }
 
   #text-input {
     margin: 0;
     padding: 0;
     border: 0;
-    background-color: #F3FCF6;
+    background-color: #e6fcf1;
   }
 </style>
 
@@ -86,6 +86,3 @@
   </li>
 {/each}
 </ul>
-
-
-<a href="#/">go back</a>
