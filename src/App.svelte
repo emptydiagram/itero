@@ -26,6 +26,7 @@
     };
   });
 
+
   let saveNodeNameAction = assign(ctxt => {
     let copyNodes = {...ctxt.nodes};
 
@@ -168,7 +169,7 @@
     font-weight: bold;
     margin-top: 1.5em;
     border-bottom: 2px solid #666;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.3em;
     font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
   }
 
