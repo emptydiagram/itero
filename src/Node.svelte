@@ -1,8 +1,17 @@
 <script>
   export let entries, nodeName, nodeCursorId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
+  import { afterUpdate } from 'svelte';
 
   let nodeText = nodeName;
+
+  afterUpdate(() => {
+    let el = document.getElementById("text-input");
+    if (document.activeElement !== el) {
+      el.focus();
+      el.setSelectionRange(0, 0);
+    }
+  });
 
   $: handleSave = () => handleSaveNodeName(nodeText);
 
@@ -42,7 +51,14 @@
   }
 
   .highlighted {
-    background-color: #F0FCF4;
+    background-color: #F3FCF6;
+  }
+
+  #text-input {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background-color: #F3FCF6;
   }
 </style>
 
@@ -61,7 +77,13 @@
 
 <ul id="entries">
 {#each entries as entry, i}
-    <li class={i === nodeCursorId ? "highlighted" : ""}>{entry}</li>
+  <li class={i === nodeCursorId ? "highlighted" : ""}>
+    {#if i === nodeCursorId}
+      <input type="text" id="text-input" value={entry} />
+    {:else}
+      <span>{entry}</span>
+    {/if}
+  </li>
 {/each}
 </ul>
 
