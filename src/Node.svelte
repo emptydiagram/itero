@@ -1,5 +1,6 @@
 <script>
-  export let entries, nodeName, nodeCursorId, nodeIsEditingName, handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
+  export let entries, nodeName, nodeCursorId, nodeIsEditingName;
+  export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
 
   let nodeText = nodeName;
 
@@ -14,13 +15,6 @@
     nodeText = nodeName;
     handleStartEditingNodeName();
   }
-
-  $: highlightedEntries = entries.map((entry, i) => {
-    return {
-      entry: entry,
-      highlighted: i === nodeCursorId
-    };
-  });
 
   $: atFirst = nodeCursorId === 0;
   $: atLast = nodeCursorId === entries.length - 1;
@@ -66,12 +60,8 @@
 {/if}
 
 <ul id="entries">
-{#each highlightedEntries as hlEntry, i}
-    {#if hlEntry.highlighted}
-      <li class="highlighted">{hlEntry.entry}</li>
-    {:else}
-      <li>{hlEntry.entry}</li>
-    {/if}
+{#each entries as entry, i}
+    <li class={i === nodeCursorId ? "highlighted" : ""}>{entry}</li>
 {/each}
 </ul>
 
