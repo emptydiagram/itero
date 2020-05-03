@@ -75,44 +75,11 @@ let createEntryBelowAction = assign(ctxt => {
   };
 });
 
-const flowytreeStates = {
-  initial: 'navigating',
-  states: {
-    navigating: {
-      on: {
-        UP: {
-          actions: goUpAction
-        },
-        DOWN: {
-          actions: goDownAction
-        },
-        START_EDIT: {
-          target: 'editing'
-        },
-        CREATE_ENTRY_BELOW: {
-          actions: createEntryBelowAction,
-        }
-      }
-    },
-
-    editing: {
-      on: {
-        SAVE: {
-          target: 'navigating',
-        }
-      }
-    }
-  }
-};
-
 
 export default (navigateToNodeAction, saveNodeNameAction) => {
 
   const nodeStates = {
     states: {
-      flowytree: {
-        ...flowytreeStates
-      },
       nodeName: {
         on: {},
         initial: 'displaying',
@@ -146,12 +113,23 @@ export default (navigateToNodeAction, saveNodeNameAction) => {
       top: {
         on: {
           INIT_CREATE_NODE: {
-            target: ['node.nodeName.editing', 'node.flowytree.navigating'],
+            target: ['node.nodeName.editing'],
             actions: createNodeAction,
           },
         },
       },
       node: {
+        on: {
+          UP: {
+            actions: goUpAction
+          },
+          DOWN: {
+            actions: goDownAction
+          },
+          CREATE_ENTRY_BELOW: {
+            actions: createEntryBelowAction,
+          }
+        },
         type: 'parallel',
         ...nodeStates
       }
