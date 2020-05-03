@@ -27,21 +27,19 @@ function generateTestContext() {
 }
 
 
-// TODO: figure out a way to trigger a transition only in the nodeName substate
-// to the "nodeName.editing" subsubstate
 let createNodeAction = assign(ctxt => {
-
   let copyNodes = {...ctxt.nodes};
   let existingIds = Object.keys(copyNodes).map(id => parseInt(id));
   let maxId = Math.max(...existingIds);
   let newId = maxId + 1
   let newNodeEntries = ['TODO'];
+  let newNodeName = 'New document'
 
   // TODO: move node creation code to another event's action? the event should be a self loop on navigate that finally saves a new node
   // if this is a node creation, also save a new document?
   copyNodes[newId] = {
     id: newId,
-    name: currentNodeNameTextEntry,
+    name: newNodeName,
     entries: newNodeEntries,
   };
 
@@ -59,6 +57,7 @@ let createNodeAction = assign(ctxt => {
     displayNodes: newDisplayNodes,
   };
 });
+
 
 let goUpAction = assign(ctxt => {
   return {
