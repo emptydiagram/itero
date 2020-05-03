@@ -12,47 +12,18 @@ let navigateToNodeAction = assign(ctxt => {
   };
 });
 
+
 let saveNodeNameAction = assign(ctxt => {
   let copyNodes = {...ctxt.nodes};
-  if (ctxt.currentNodeId !== null) {
-    let i = ctxt.currentNodeId;
-    copyNodes[i] = {...ctxt.nodes[i]};
-    copyNodes[i].name = currentNodeNameTextEntry;
 
-    // TODO: why set nodeName here?
-    return {
-      nodes: copyNodes,
-      nodeName: currentNodeNameTextEntry,
-    };
-  } else {
-    let existingIds = Object.keys(copyNodes).map(id => parseInt(id));
-    let maxId = Math.max(...existingIds);
+  let i = ctxt.currentNodeId;
+  copyNodes[i] = {...ctxt.nodes[i]};
+  copyNodes[i].name = currentNodeNameTextEntry;
 
-    let newId = maxId + 1
-
-    let newNodeEntries = ['TODO'];
-
-    // TODO: move node creation code to another event's action? the event should be a self loop on navigate that finally saves a new node
-    // if this is a node creation, also save a new document?
-    copyNodes[newId] = {
-      id: newId,
-      name: currentNodeNameTextEntry,
-      entries: newNodeEntries,
-    };
-
-    console.log(" ++ new node = ", copyNodes[newId]);
-
-    let newDisplayNodes = [...ctxt.displayNodes];
-    newDisplayNodes.push(newId);
-
-    // TODO: why set nodeName here?
-    return {
-      nodes: copyNodes,
-      nodeName: currentNodeNameTextEntry,
-      currentNodeId: newId,
-      displayNodes: newDisplayNodes,
-    };
-  }
+  return {
+    nodes: copyNodes,
+    nodeName: currentNodeNameTextEntry,
+  };
 
 });
 
@@ -88,10 +59,33 @@ function generateTestContext() {
 // TODO: figure out a way to trigger a transition only in the nodeName substate
 // to the "nodeName.editing" subsubstate
 let createNodeAction = assign(ctxt => {
+
+  let copyNodes = {...ctxt.nodes};
+  let existingIds = Object.keys(copyNodes).map(id => parseInt(id));
+  let maxId = Math.max(...existingIds);
+  let newId = maxId + 1
+  let newNodeEntries = ['TODO'];
+
+  // TODO: move node creation code to another event's action? the event should be a self loop on navigate that finally saves a new node
+  // if this is a node creation, also save a new document?
+  copyNodes[newId] = {
+    id: newId,
+    name: currentNodeNameTextEntry,
+    entries: newNodeEntries,
+  };
+
+  console.log(" ++ new node = ", copyNodes[newId]);
+
+  let newDisplayNodes = [...ctxt.displayNodes];
+  newDisplayNodes.push(newId);
+
+
   return {
-    currentNodeId: null,
+    currentNodeId: newId,
     nodeCursorId: 0,
     nodeName: 'New document',
+    nodes: copyNodes,
+    displayNodes: newDisplayNodes,
   };
 });
 
@@ -102,13 +96,10 @@ let goUpAction = assign(ctxt => {
 });
 
 let goDownAction = assign(ctxt => {
-  if (ctxt.currentNodeId !== null) {
-    const numEntries = ctxt.nodes[ctxt.currentNodeId].entries.length;
-    return {
-      nodeCursorId: ctxt.nodeCursorId >= numEntries - 1 ? numEntries - 1 : ctxt.nodeCursorId + 1
-    };
-  }
-  return {};
+  const numEntries = ctxt.nodes[ctxt.currentNodeId].entries.length;
+  return {
+    nodeCursorId: ctxt.nodeCursorId >= numEntries - 1 ? numEntries - 1 : ctxt.nodeCursorId + 1
+  };
 });
 
 let createEntryBelowAction = assign(ctxt => {
@@ -116,14 +107,10 @@ let createEntryBelowAction = assign(ctxt => {
 
   // only update nodes if there's a nodeId
   let newNodes;
-  if (ctxt.currentNodeId !== null) {
-    newNodes = {...ctxt.nodes};
-    let id = ctxt.currentNodeId
-    newNodes[id].entries = [...newNodes[id].entries];
-    newNodes[id].entries.splice(nodeCursorId+1, 0, 'TODO');
-  } else {
-    newNodes = ctxt.nodes;
-  }
+  newNodes = {...ctxt.nodes};
+  let id = ctxt.currentNodeId
+  newNodes[id].entries = [...newNodes[id].entries];
+  newNodes[id].entries.splice(nodeCursorId+1, 0, 'TODO');
 
   console.log("about to create entry below, newNodes = ", newNodes);
 
