@@ -7,7 +7,8 @@
 
   afterUpdate(() => {
     let el = document.getElementById("text-input");
-    if (document.activeElement !== el) {
+    let nni = document.getElementById("node-name-input");
+    if (document.activeElement !== el && document.activeElement !== nni) {
       el.focus();
       el.setSelectionRange(0, 0);
     }
@@ -57,7 +58,7 @@
     text-decoration: underline;
   }
 
-  #doc-name-input {
+  #node-name-input {
     margin: 0;
     padding: 0.2em 0;
     border: 0;
@@ -86,7 +87,7 @@
 
 {#if nodeIsEditingName}
   <div>
-    <input type="text" id="doc-name-input" bind:value={nodeText} placeholder="Document name"/>
+    <input type="text" id="node-name-input" bind:value={nodeText} placeholder="Document name"/>
     <span class="node-name-edit-action" on:click={handleSave}>save</span>
     <span class="node-name-edit-action" on:click={handleEditingCancel}>cancel</span>
   </div>
