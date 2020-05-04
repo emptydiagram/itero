@@ -6,7 +6,7 @@
 
   let nodeNameText = nodeName;
   let nodeEntryText = entries[nodeCursorRowId];
-  let currCursorId = nodeCursorRowId;
+  let currCursorRowId = nodeCursorRowId;
 
   afterUpdate(() => {
     let el = document.getElementById("text-input");
@@ -19,11 +19,14 @@
 
   $: handleSaveName = () => handleSaveNodeName(nodeNameText);
 
-  $: if (currCursorId !== nodeCursorRowId) {
+  // user moved to another row
+  $: if (currCursorRowId !== nodeCursorRowId) {
     nodeEntryText = entries[nodeCursorRowId];
-    currCursorId = nodeCursorRowId;
+    currCursorRowId = nodeCursorRowId;
   }
 
+  // if nodeEntryText, which tracks the value in the <input>, no longer matches
+  // the entry, then update the entry
   $: if (entries[nodeCursorRowId] !== nodeEntryText) {
     handleSaveNodeEntry(nodeEntryText);
   }
