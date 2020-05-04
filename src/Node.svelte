@@ -1,30 +1,30 @@
 <script>
-  export let entries, nodeName, nodeCursorId, nodeIsEditingName;
+  export let entries, nodeName, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
   export let handleSaveNodeEntry;
   import { afterUpdate } from 'svelte';
 
   let nodeNameText = nodeName;
-  let nodeEntryText = entries[nodeCursorId];
-  let currCursorId = nodeCursorId;
+  let nodeEntryText = entries[nodeCursorRowId];
+  let currCursorId = nodeCursorRowId;
 
   afterUpdate(() => {
     let el = document.getElementById("text-input");
     let nni = document.getElementById("node-name-input");
     if (document.activeElement !== el && document.activeElement !== nni) {
       el.focus();
-      el.setSelectionRange(0, 0);
+      el.setSelectionRange(nodeCursorColId, nodeCursorColId);
     }
   });
 
   $: handleSaveName = () => handleSaveNodeName(nodeNameText);
 
-  $: if (currCursorId !== nodeCursorId) {
-    nodeEntryText = entries[nodeCursorId];
-    currCursorId = nodeCursorId;
+  $: if (currCursorId !== nodeCursorRowId) {
+    nodeEntryText = entries[nodeCursorRowId];
+    currCursorId = nodeCursorRowId;
   }
 
-  $: if (entries[nodeCursorId] !== nodeEntryText) {
+  $: if (entries[nodeCursorRowId] !== nodeEntryText) {
     handleSaveNodeEntry(nodeEntryText);
   }
 
@@ -38,8 +38,8 @@
     handleStartEditingNodeName();
   }
 
-  $: atFirst = nodeCursorId === 0;
-  $: atLast = nodeCursorId === entries.length - 1;
+  $: atFirst = nodeCursorRowId === 0;
+  $: atLast = nodeCursorRowId === entries.length - 1;
 
 </script>
 
@@ -113,8 +113,8 @@
 
 <ul id="entries">
 {#each entries as entry, i}
-  <li class={i === nodeCursorId ? "highlighted" : ""}>
-    {#if i === nodeCursorId}
+  <li class={i === nodeCursorRowId ? "highlighted" : ""}>
+    {#if i === nodeCursorRowId}
       <input type="text" id="text-input" bind:value={nodeEntryText} />
     {:else}
       <span>{entry}</span>
