@@ -202,7 +202,7 @@
 
 {#if isAtTop}
   <header>
-    <span>treacle</span>
+    <span>notes</span>
   </header>
   <Top
     displayNodes={displayNodes}
