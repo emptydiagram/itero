@@ -22,7 +22,7 @@
     let entries = node.entries;
     return {
       currentNodeId: nodeId,
-      nodeCursorId: entries.length - 1,
+      nodeCursorRowId: entries.length - 1,
       nodeName: node.name,
     };
   });
@@ -45,7 +45,7 @@
   let saveNodeEntryAction = assign(ctxt => {
     let copyNodes = {...ctxt.nodes};
     let i = ctxt.currentNodeId;
-    let j = ctxt.nodeCursorId;
+    let j = ctxt.nodeCursorRowId;
     copyNodes[i] = {...ctxt.nodes[i]};
     copyNodes[i].entries = [...copyNodes[i].entries];
     copyNodes[i].entries[j] = currentNodeEntryText;
@@ -134,7 +134,7 @@
   function handleKeyup(event) {
     // console.log("key up, event = ", event);
     if (event.keyCode === ENTER_KEYCODE) {
-      const cursor = machineState.context.nodeCursorId;
+      const cursor = machineState.context.nodeCursorRowId;
       // console.log("+++ machineState = ", machineState.context);
       console.log("enter! cursor = "+cursor);
 
@@ -168,8 +168,8 @@
     ? machineState.context.nodes[machineState.context.currentNodeId].entries
     : ["DOES THIS EVEN DO ANYTHING ANYMORE?"]);
 
-  $: atFirst = machineState.context.nodeCursorId === 0;
-  $: atLast = machineState.context.nodeCursorId === displayNodeEntries.length - 1;
+  $: atFirst = machineState.context.nodeCursorRowId === 0;
+  $: atLast = machineState.context.nodeCursorRowId === displayNodeEntries.length - 1;
 
   $: nodeIsEditingName = (() => {
     let curr = machineState.value.flowiki;
@@ -214,7 +214,8 @@
   </header>
   <Node
     entries={displayNodeEntries}
-    nodeCursorId={machineState.context.nodeCursorId}
+    nodeCursorRowId={machineState.context.nodeCursorRowId}
+    nodeCursorColId={machineState.context.nodeCursorColId}
     nodeName={machineState.context.nodeName}
     nodeIsEditingName={nodeIsEditingName}
     handleStartEditingNodeName={handleStartEditingNodeName}

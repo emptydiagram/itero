@@ -22,7 +22,8 @@ function generateTestContext() {
       }
     },
     displayNodes: [1, 2, 4],
-    nodeCursorId: 0,
+    nodeCursorRowId: 0,
+    nodeCursorColId: 0,
   };
 }
 
@@ -51,7 +52,7 @@ let createNodeAction = assign(ctxt => {
 
   return {
     currentNodeId: newId,
-    nodeCursorId: 0,
+    nodeCursorRowId: 0,
     nodeName: 'New document',
     nodes: copyNodes,
     displayNodes: newDisplayNodes,
@@ -61,31 +62,31 @@ let createNodeAction = assign(ctxt => {
 
 let goUpAction = assign(ctxt => {
   return {
-    nodeCursorId: ctxt.nodeCursorId === 0 ? 0 : ctxt.nodeCursorId - 1
+    nodeCursorRowId: ctxt.nodeCursorRowId === 0 ? 0 : ctxt.nodeCursorRowId - 1
   };
 });
 
 let goDownAction = assign(ctxt => {
   const numEntries = ctxt.nodes[ctxt.currentNodeId].entries.length;
   return {
-    nodeCursorId: ctxt.nodeCursorId >= numEntries - 1 ? numEntries - 1 : ctxt.nodeCursorId + 1
+    nodeCursorRowId: ctxt.nodeCursorRowId >= numEntries - 1 ? numEntries - 1 : ctxt.nodeCursorRowId + 1
   };
 });
 
 let createEntryBelowAction = assign(ctxt => {
-  let nodeCursorId = ctxt.nodeCursorId;
+  let nodeCursorRowId = ctxt.nodeCursorRowId;
 
   // only update nodes if there's a nodeId
   let newNodes;
   newNodes = {...ctxt.nodes};
   let id = ctxt.currentNodeId
   newNodes[id].entries = [...newNodes[id].entries];
-  newNodes[id].entries.splice(nodeCursorId+1, 0, 'TODO');
+  newNodes[id].entries.splice(nodeCursorRowId+1, 0, 'TODO');
 
   console.log("about to create entry below, newNodes = ", newNodes);
 
   return {
-    nodeCursorId: nodeCursorId + 1,
+    nodeCursorRowId: nodeCursorRowId + 1,
     nodes: newNodes,
   };
 });
