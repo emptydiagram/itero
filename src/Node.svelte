@@ -1,11 +1,11 @@
 <script>
-  export let entries, nodeName, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
+  export let entries, nodeName, nodeEntry, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
   export let handleSaveNodeEntry;
   import { afterUpdate } from 'svelte';
 
   let nodeNameText = nodeName;
-  let nodeEntryText = entries[nodeCursorRowId];
+  let nodeEntryText = nodeEntry;
   let currCursorRowId = nodeCursorRowId;
 
   afterUpdate(() => {
@@ -17,11 +17,11 @@
     }
   });
 
-  $: handleSaveName = () => handleSaveNodeName(nodeNameText);
-
   // user moved to another row
+  // TODO: this should be done in an action, because context has to be updated
+  // this is a hack. I need to figure out
   $: if (currCursorRowId !== nodeCursorRowId) {
-    nodeEntryText = entries[nodeCursorRowId];
+    nodeEntryText = nodeEntry;
     currCursorRowId = nodeCursorRowId;
   }
 
@@ -30,6 +30,8 @@
   $: if (entries[nodeCursorRowId] !== nodeEntryText) {
     handleSaveNodeEntry(nodeEntryText);
   }
+
+  $: handleSaveName = () => handleSaveNodeName(nodeNameText);
 
   $: handleEditingCancel = () => {
     nodeNameText = nodeName;
