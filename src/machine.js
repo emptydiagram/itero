@@ -91,7 +91,7 @@ let createEntryBelowAction = assign(ctxt => {
 });
 
 
-export default (navigateToNodeAction, saveNodeNameAction) => {
+export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction) => {
 
   const nodeStates = {
     states: {
@@ -143,6 +143,9 @@ export default (navigateToNodeAction, saveNodeNameAction) => {
           },
           CREATE_ENTRY_BELOW: {
             actions: createEntryBelowAction,
+          },
+          SAVE_NODE_ENTRY: {
+            actions: saveNodeEntryAction,
           }
         },
         type: 'parallel',

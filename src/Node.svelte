@@ -1,9 +1,12 @@
 <script>
   export let entries, nodeName, nodeCursorId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
+  export let handleSaveNodeEntry;
   import { afterUpdate } from 'svelte';
 
-  let nodeText = nodeName;
+  let nodeNameText = nodeName;
+  let nodeEntryText = entries[nodeCursorId];
+  let currCursorId = nodeCursorId;
 
   afterUpdate(() => {
     let el = document.getElementById("text-input");
@@ -14,15 +17,24 @@
     }
   });
 
-  $: handleSave = () => handleSaveNodeName(nodeText);
+  $: handleSaveName = () => handleSaveNodeName(nodeNameText);
+
+  $: if (currCursorId !== nodeCursorId) {
+    nodeEntryText = entries[nodeCursorId];
+    currCursorId = nodeCursorId;
+  }
+
+  $: if (entries[nodeCursorId] !== nodeEntryText) {
+    handleSaveNodeEntry(nodeEntryText);
+  }
 
   $: handleEditingCancel = () => {
-    nodeText = nodeName;
+    nodeNameText = nodeName;
     handleCancelEditingNodeName();
   };
 
   $: handleStartEditing = () => {
-    nodeText = nodeName;
+    nodeNameText = nodeName;
     handleStartEditingNodeName();
   }
 
@@ -82,13 +94,14 @@
     padding: 0;
     border: 0;
     background-color: #e6fcf1;
+    width: 100%;
   }
 </style>
 
 {#if nodeIsEditingName}
   <div>
-    <input type="text" id="node-name-input" bind:value={nodeText} placeholder="Document name"/>
-    <span class="node-name-edit-action" on:click={handleSave}>save</span>
+    <input type="text" id="node-name-input" bind:value={nodeNameText} placeholder="Document name"/>
+    <span class="node-name-edit-action" on:click={handleSaveName}>save</span>
     <span class="node-name-edit-action" on:click={handleEditingCancel}>cancel</span>
   </div>
 {:else}
@@ -102,7 +115,7 @@
 {#each entries as entry, i}
   <li class={i === nodeCursorId ? "highlighted" : ""}>
     {#if i === nodeCursorId}
-      <input type="text" id="text-input" value={entry} />
+      <input type="text" id="text-input" bind:value={nodeEntryText} />
     {:else}
       <span>{entry}</span>
     {/if}
