@@ -10,6 +10,7 @@
   const ARROW_DOWN_KEYCODE = 40;
   let currentHashId;
   let currentNodeNameTextEntry;
+  let currentNodeEntryText;
 
   function isObject(obj) {
     return obj === Object(obj);
@@ -41,10 +42,22 @@
 
   });
 
+  let saveNodeEntryAction = assign(ctxt => {
+    let copyNodes = {...ctxt.nodes};
+    let i = ctxt.currentNodeId;
+    let j = ctxt.nodeCursorId;
+    copyNodes[i] = {...ctxt.nodes[i]};
+    copyNodes[i].entries = [...copyNodes[i].entries];
+    copyNodes[i].entries[j] = currentNodeEntryText;
+    return {
+      nodes: copyNodes
+    };
+  });
+
 
   /*** service and state ***/
 
-  let machine = createMachine(navigateToNodeAction, saveNodeNameAction);
+  let machine = createMachine(navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction);
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
@@ -111,6 +124,11 @@
   function handleSaveNodeName(nodeNameText) {
     currentNodeNameTextEntry = nodeNameText;
     flowikiService.send('SAVE_NODE_NAME');
+  }
+
+  function handleSaveNodeEntry(entryText) {
+    currentNodeEntryText = entryText;
+    flowikiService.send('SAVE_NODE_ENTRY');
   }
 
   function handleKeyup(event) {
@@ -202,5 +220,6 @@
     handleStartEditingNodeName={handleStartEditingNodeName}
     handleCancelEditingNodeName={handleCancelEditingNodeName}
     handleSaveNodeName={handleSaveNodeName}
+    handleSaveNodeEntry={handleSaveNodeEntry}
   />
 {/if}
