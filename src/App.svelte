@@ -20,10 +20,12 @@
     let nodeId = currentHashId;
     let node = ctxt.nodes[nodeId];
     let entries = node.entries;
+    let initRowId = entries.length - 1;
     return {
       currentNodeId: nodeId,
-      nodeCursorRowId: entries.length - 1,
+      nodeCursorRowId: initRowId,
       nodeName: node.name,
+      nodeEntry: entries[initRowId]
     };
   });
 
@@ -217,6 +219,7 @@
     nodeCursorRowId={machineState.context.nodeCursorRowId}
     nodeCursorColId={machineState.context.nodeCursorColId}
     nodeName={machineState.context.nodeName}
+    nodeEntry={machineState.context.nodeEntry}
     nodeIsEditingName={nodeIsEditingName}
     handleStartEditingNodeName={handleStartEditingNodeName}
     handleCancelEditingNodeName={handleCancelEditingNodeName}
