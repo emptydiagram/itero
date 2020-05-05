@@ -2,9 +2,31 @@
 
 [demo](demo/)
 
+## what
+
+
+There are two views, a *top-level* view, and the view of an individual document. This app allows you to explore a hyperlinked graph (wiki) where an individual page in the wiki is structured according to a list/flowytree.
+
+This is a [statechart](https://xstate.js.org/docs/#why) to help organize:
+
+definition: <https://github.com/ohalmanacs/treacle/blob/master/viz-v0.0.8-dev-machine.js>
+
+(direct link to visualizer: <https://xstate.js.org/viz/?gist=0cad99f701f00ddd4d4adc1546d78278>)
+<iframe style="width: 47em; height: 35em;" src="https://xstate.js.org/viz/?gist=0cad99f701f00ddd4d4adc1546d78278&embed=1"></iframe>
+
+On the document view, there are navigation and editing actions:
+
+ - `UP`
+ - `DOWN`
+ - `CREATE_ENTRY_BELOW`
+ - `SAVE_NODE_ENTRY`
+
+There's also a child state-machine that runs the editing of document titles.
+
+
 ## chronology
 
-the following is the sequence of [statecharts](https://xstate.js.org/docs/#why), presented in order chronologically.
+the following is the sequence of statecharts presented in order chronologically.
 
 ### initial
 
