@@ -1,4 +1,48 @@
-import { Machine, assign } from 'xstate';
+let currentHashId = 1;
+let currentNodeNameTextEntry = "some name";
+let currentNodeEntryText = "abcde";
+
+let navigateToNodeAction = assign(ctxt => {
+  let nodeId = currentHashId;
+  let node = ctxt.nodes[nodeId];
+  let entries = node.entries;
+  let initRowId = entries.length - 1;
+  return {
+    currentNodeId: nodeId,
+    nodeCursorRowId: initRowId,
+    nodeName: node.name,
+    nodeEntry: entries[initRowId]
+  };
+});
+
+
+let saveNodeNameAction = assign(ctxt => {
+  let copyNodes = {...ctxt.nodes};
+
+  let i = ctxt.currentNodeId;
+  copyNodes[i] = {...ctxt.nodes[i]};
+  copyNodes[i].name = currentNodeNameTextEntry;
+
+  return {
+    nodes: copyNodes,
+    nodeName: currentNodeNameTextEntry,
+  };
+
+});
+
+let saveNodeEntryAction = assign(ctxt => {
+  let copyNodes = {...ctxt.nodes};
+  let i = ctxt.currentNodeId;
+  let j = ctxt.nodeCursorRowId;
+  copyNodes[i] = {...ctxt.nodes[i]};
+  copyNodes[i].entries = [...copyNodes[i].entries];
+  copyNodes[i].entries[j] = currentNodeEntryText;
+  return {
+    nodes: copyNodes
+  };
+});
+
+
 
 function generateTestContext() {
   return {
@@ -102,87 +146,83 @@ let createEntryBelowAction = assign(ctxt => {
 });
 
 
-export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction) => {
-
-  const nodeStates = {
-    states: {
-      nodeTitle: {
-        on: {},
-        initial: 'displaying',
-        states: {
-          editing: {
-            on: {
-              SAVE_NODE_NAME: {
-                target: 'displaying',
-                actions: saveNodeNameAction,
-              },
-              CANCEL_EDITING_NAME: {
-                target: 'displaying',
-              },
+const nodeStates = {
+  states: {
+    nodeTitle: {
+      on: {},
+      initial: 'displaying',
+      states: {
+        editing: {
+          on: {
+            SAVE_NODE_NAME: {
+              target: 'displaying',
+              actions: saveNodeNameAction,
+            },
+            CANCEL_EDITING_NAME: {
+              target: 'displaying',
             },
           },
-          displaying: {
-            on: {
-              START_EDITING_NAME: {
-                target: 'editing',
-              },
-            }
+        },
+        displaying: {
+          on: {
+            START_EDITING_NAME: {
+              target: 'editing',
+            },
           }
         }
       }
-    },
-  }
+    }
+  },
+}
 
-  const flowikiStates = {
-    initial: 'top',
-    states: {
-      top: {
-        on: {
-          INIT_CREATE_NODE: {
-            target: ['node.nodeTitle.editing'],
-            actions: createNodeAction,
-          },
+const flowikiStates = {
+  initial: 'top',
+  states: {
+    top: {
+      on: {
+        INIT_CREATE_NODE: {
+          target: ['node.nodeTitle.editing'],
+          actions: createNodeAction,
         },
       },
-      node: {
-        on: {
-          UP: {
-            actions: goUpAction
-          },
-          DOWN: {
-            actions: goDownAction
-          },
-          CREATE_ENTRY_BELOW: {
-            actions: createEntryBelowAction,
-          },
-          SAVE_NODE_ENTRY: {
-            actions: saveNodeEntryAction,
-          }
+    },
+    node: {
+      on: {
+        UP: {
+          actions: goUpAction
         },
-        type: 'parallel',
-        ...nodeStates
-      }
-    }
-  };
-
-  return Machine({
-    id: 'flowiki',
-    initial: 'flowiki',
-    context: generateTestContext(),
-    states: {
-      flowiki: {
-        on: {
-          NAVIGATE: {
-            target: 'flowiki.node',
-            actions: navigateToNodeAction,
-          },
-          GO_HOME: {
-            target: 'flowiki.top',
-          }
+        DOWN: {
+          actions: goDownAction
         },
-        ...flowikiStates
-      }
+        CREATE_ENTRY_BELOW: {
+          actions: createEntryBelowAction,
+        },
+        SAVE_NODE_ENTRY: {
+          actions: saveNodeEntryAction,
+        }
+      },
+      type: 'parallel',
+      ...nodeStates
     }
-
-  });
+  }
 };
+
+const flowikiMachine = Machine({
+  id: 'flowiki',
+  initial: 'flowiki',
+  context: generateTestContext(),
+  states: {
+    flowiki: {
+      on: {
+        NAVIGATE: {
+          target: 'flowiki.node',
+          actions: navigateToNodeAction,
+        },
+        GO_HOME: {
+          target: 'flowiki.top',
+        }
+      },
+      ...flowikiStates
+    }
+  }
+});
