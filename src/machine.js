@@ -37,8 +37,6 @@ let createNodeAction = assign(ctxt => {
   let newNodeEntries = ['TODO'];
   let newNodeName = 'New document'
 
-  // TODO: move node creation code to another event's action? the event should be a self loop on navigate that finally saves a new node
-  // if this is a node creation, also save a new document?
   copyNodes[newId] = {
     id: newId,
     name: newNodeName,
