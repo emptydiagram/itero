@@ -85,7 +85,7 @@ let createEntryBelowAction = assign(ctxt => {
   let newNodes;
   newNodes = {...ctxt.nodes};
   let id = ctxt.currentNodeId
-  let initialText = 'TODO';
+  let initialText = '';
   newNodes[id].entries = [...newNodes[id].entries];
   newNodes[id].entries.splice(nodeCursorRowId+1, 0, initialText);
 
