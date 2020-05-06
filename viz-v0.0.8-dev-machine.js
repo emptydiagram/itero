@@ -43,6 +43,14 @@ let saveNodeEntryAction = assign(ctxt => {
   };
 });
 
+let saveFullCursorAction = assign(ctxt => {
+  return {
+    nodeCursorRowId: currentCursorRowId,
+    nodeCursorColId: currentCursorColId,
+    nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[currentCursorRowId]
+  };
+});
+
 let saveCursorColIdAction = assign(ctxt => {
   return {
     nodeCursorColId: currentCursorColId
@@ -136,7 +144,7 @@ let createEntryBelowAction = assign(ctxt => {
   let newNodes;
   newNodes = {...ctxt.nodes};
   let id = ctxt.currentNodeId
-  let initialText = 'TODO';
+  let initialText = '';
   newNodes[id].entries = [...newNodes[id].entries];
   newNodes[id].entries.splice(nodeCursorRowId+1, 0, initialText);
 
@@ -201,6 +209,9 @@ const flowikiStates = {
         },
         SAVE_NODE_ENTRY: {
           actions: saveNodeEntryAction,
+        },
+        SAVE_FULL_CURSOR: {
+          actions: saveFullCursorAction,
         },
         SAVE_CURSOR_COL_ID: {
           actions: saveCursorColIdAction,

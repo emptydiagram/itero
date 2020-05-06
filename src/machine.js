@@ -97,7 +97,7 @@ let createEntryBelowAction = assign(ctxt => {
 });
 
 
-export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveCursorColIdAction) => {
+export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction) => {
 
   const nodeStates = {
     states: {
@@ -152,6 +152,9 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
           },
           SAVE_NODE_ENTRY: {
             actions: saveNodeEntryAction,
+          },
+          SAVE_FULL_CURSOR: {
+            actions: saveFullCursorAction,
           },
           SAVE_CURSOR_COL_ID: {
             actions: saveCursorColIdAction,
