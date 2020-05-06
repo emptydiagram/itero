@@ -159,16 +159,9 @@
     return machineState.context.nodes[id];
   });
 
-  // TODO:
-  // if currentNodeId is not null {
-  //   get ctxt.nodes[ctxt.currentNodeId].entries
-  // } else {
-  //   []
-  // }
-  // $: displayNodeEntries = machineState.context.displayNodeEntries;
   $: displayNodeEntries = (machineState.context.currentNodeId !== null
     ? machineState.context.nodes[machineState.context.currentNodeId].entries
-    : ["DOES THIS EVEN DO ANYTHING ANYMORE?"]);
+    : [""]);
 
   $: atFirst = machineState.context.nodeCursorRowId === 0;
   $: atLast = machineState.context.nodeCursorRowId === displayNodeEntries.length - 1;
