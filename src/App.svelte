@@ -63,7 +63,6 @@
   });
 
   let saveCursorColIdAction = assign(ctxt => {
-    console.log("now col id = ", currentCursorColId);
     return {
       nodeCursorColId: currentCursorColId
     };
@@ -155,10 +154,6 @@
   function handleKeyup(event) {
     // console.log("key up, event = ", event);
     if (event.keyCode === ENTER_KEYCODE) {
-      const cursor = machineState.context.nodeCursorRowId;
-      // console.log("+++ machineState = ", machineState.context);
-      console.log("enter! cursor = "+cursor);
-
       flowikiService.send('CREATE_ENTRY_BELOW');
     } else if(event.keyCode === ARROW_UP_KEYCODE) {
       if (!atFirst) {
@@ -172,7 +167,6 @@
       // TODO: check whether i'm in node/top instead
       let el = document.getElementById("text-input");
       if (el) {
-        console.log("TODO: trigger event to update, pos = ", el.selectionStart);
         handleSaveCursorColId(el.selectionStart);
       }
     }
