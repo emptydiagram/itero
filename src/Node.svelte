@@ -1,7 +1,7 @@
 <script>
   export let entries, nodeTitle, nodeEntry, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
-  export let handleSaveNodeEntry, handleSaveCursorColId;
+  export let handleSaveNodeEntry, handleSaveFullCursor, handleSaveCursorColId;
   import { afterUpdate } from 'svelte';
 
   let nodeTitleText = nodeTitle;
@@ -43,7 +43,8 @@
     handleStartEditingNodeName();
   }
 
-  $: handleMoveClick = (index) => {
+  $: handleMoveClick = (index, event) => {
+    handleSaveFullCursor(index, event.target.selectionStart);
   }
 
   $: handleInput = (ev) => {
@@ -105,10 +106,13 @@
   }
 
   #text-input {
+    background-color: #e6fcf1;
+  }
+
+  .entry-input {
     margin: 0;
     padding: 0;
     border: 0;
-    background-color: #e6fcf1;
     width: 100%;
   }
 </style>
@@ -130,9 +134,9 @@
 {#each entries as entry, i}
   <li class={i === nodeCursorRowId ? "highlighted" : ""}>
     {#if i === nodeCursorRowId}
-      <input type="text" id="text-input" on:input={handleInput} bind:value={nodeEntryText} />
+      <input type="text" id="text-input" class="entry-input" on:input={handleInput} bind:value={nodeEntryText} />
     {:else}
-      <span>{entry}</span>
+      <input type="text" class="entry-input" value={entry} on:click={(e) => handleMoveClick(i, e)} />
     {/if}
   </li>
 {/each}

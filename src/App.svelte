@@ -16,6 +16,7 @@
   let currentHashId;
   let currentNodeNameTextEntry;
   let currentNodeEntryText;
+  let currentCursorRowId;
   let currentCursorColId;
 
   function isObject(obj) {
@@ -62,6 +63,14 @@
     };
   });
 
+  let saveFullCursorAction = assign(ctxt => {
+    return {
+      nodeCursorRowId: currentCursorRowId,
+      nodeCursorColId: currentCursorColId,
+      nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[currentCursorRowId]
+    };
+  });
+
   let saveCursorColIdAction = assign(ctxt => {
     return {
       nodeCursorColId: currentCursorColId
@@ -72,7 +81,7 @@
 
   /*** service and state ***/
 
-  let machine = createMachine(navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveCursorColIdAction);
+  let machine = createMachine(navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction);
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
@@ -144,6 +153,12 @@
   function handleSaveNodeEntry(entryText) {
     currentNodeEntryText = entryText;
     flowikiService.send('SAVE_NODE_ENTRY');
+  }
+
+  function handleSaveFullCursor(rowId, colId) {
+    currentCursorRowId = rowId;
+    currentCursorColId = colId;
+    flowikiService.send('SAVE_FULL_CURSOR');
   }
 
   function handleSaveCursorColId(colId) {
@@ -238,6 +253,7 @@
     handleCancelEditingNodeName={handleCancelEditingNodeName}
     handleSaveNodeName={handleSaveNodeName}
     handleSaveNodeEntry={handleSaveNodeEntry}
+    handleSaveFullCursor={handleSaveFullCursor}
     handleSaveCursorColId={handleSaveCursorColId}
   />
 {/if}
