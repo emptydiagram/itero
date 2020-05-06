@@ -1,10 +1,10 @@
 <script>
-  export let entries, nodeName, nodeEntry, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
+  export let entries, nodeTitle, nodeEntry, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
   export let handleSaveNodeEntry;
   import { afterUpdate } from 'svelte';
 
-  let nodeNameText = nodeName;
+  let nodeTitleText = nodeTitle;
   let nodeEntryText = nodeEntry;
   let currCursorRowId = nodeCursorRowId;
 
@@ -31,15 +31,15 @@
     handleSaveNodeEntry(nodeEntryText);
   }
 
-  $: handleSaveName = () => handleSaveNodeName(nodeNameText);
+  $: handleSaveName = () => handleSaveNodeName(nodeTitleText);
 
   $: handleEditingCancel = () => {
-    nodeNameText = nodeName;
+    nodeTitleText = nodeTitle;
     handleCancelEditingNodeName();
   };
 
   $: handleStartEditing = () => {
-    nodeNameText = nodeName;
+    nodeTitleText = nodeTitle;
     handleStartEditingNodeName();
   }
 
@@ -105,13 +105,13 @@
 
 {#if nodeIsEditingName}
   <div>
-    <input type="text" id="node-name-input" bind:value={nodeNameText} placeholder="Document name"/>
+    <input type="text" id="node-name-input" bind:value={nodeTitleText} placeholder="Document name"/>
     <span class="node-name-edit-action" on:click={handleSaveName}>save</span>
     <span class="node-name-edit-action" on:click={handleEditingCancel}>cancel</span>
   </div>
 {:else}
   <div id="node-name">
-    <span id="node-name-display">{nodeName}</span>
+    <span id="node-name-display">{nodeTitle}</span>
     <span id="node-name-edit" on:click={handleStartEditing}>edit</span>
   </div>
 {/if}

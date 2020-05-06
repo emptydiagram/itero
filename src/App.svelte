@@ -24,7 +24,7 @@
     return {
       currentNodeId: nodeId,
       nodeCursorRowId: initRowId,
-      nodeName: node.name,
+      nodeTitle: node.name,
       nodeEntry: entries[initRowId]
     };
   });
@@ -39,7 +39,7 @@
 
     return {
       nodes: copyNodes,
-      nodeName: currentNodeNameTextEntry,
+      nodeTitle: currentNodeNameTextEntry,
     };
 
   });
@@ -178,7 +178,7 @@
     if (!isObject(curr)) {
       return nodeIsEditingName
     }
-    return curr.node.nodeName === "editing";
+    return curr.node.nodeTitle === "editing";
   })();
 
 </script>
@@ -218,7 +218,7 @@
     entries={displayNodeEntries}
     nodeCursorRowId={machineState.context.nodeCursorRowId}
     nodeCursorColId={machineState.context.nodeCursorColId}
-    nodeName={machineState.context.nodeName}
+    nodeTitle={machineState.context.nodeTitle}
     nodeEntry={machineState.context.nodeEntry}
     nodeIsEditingName={nodeIsEditingName}
     handleStartEditingNodeName={handleStartEditingNodeName}
