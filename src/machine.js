@@ -63,7 +63,6 @@ let createNodeAction = assign(ctxt => {
 
 let goUpAction = assign(ctxt => {
   let newRowId = ctxt.nodeCursorRowId === 0 ? 0 : ctxt.nodeCursorRowId - 1;
-  console.log("(currentNodeId, newRowId) = ", ctxt.currentNodeId, newRowId);
   return {
     nodeCursorRowId: newRowId,
     nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[newRowId],
@@ -89,8 +88,6 @@ let createEntryBelowAction = assign(ctxt => {
   let initialText = 'TODO';
   newNodes[id].entries = [...newNodes[id].entries];
   newNodes[id].entries.splice(nodeCursorRowId+1, 0, initialText);
-
-  console.log("about to create entry below, newNodes = ", newNodes);
 
   return {
     nodeCursorRowId: nodeCursorRowId + 1,
