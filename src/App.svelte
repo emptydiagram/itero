@@ -6,11 +6,17 @@
   import createMachine from './machine.js';
 
   const ENTER_KEYCODE = 13;
+  const ARROW_LEFT_KEYCODE = 37;
   const ARROW_UP_KEYCODE = 38;
+  const ARROW_RIGHT_KEYCODE = 39;
   const ARROW_DOWN_KEYCODE = 40;
+  const HOME_KEYCODE = 36;
+  const END_KEYCODE = 35;
+  const CURSOR_POS_CHANGE_KEYCODES = [ARROW_LEFT_KEYCODE, ARROW_RIGHT_KEYCODE, HOME_KEYCODE, END_KEYCODE]
   let currentHashId;
   let currentNodeNameTextEntry;
   let currentNodeEntryText;
+  let currentCursorColId;
 
   function isObject(obj) {
     return obj === Object(obj);
@@ -56,10 +62,18 @@
     };
   });
 
+  let saveCursorColIdAction = assign(ctxt => {
+    console.log("now col id = ", currentCursorColId);
+    return {
+      nodeCursorColId: currentCursorColId
+    };
+  });
+
+
 
   /*** service and state ***/
 
-  let machine = createMachine(navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction);
+  let machine = createMachine(navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveCursorColIdAction);
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
@@ -133,6 +147,11 @@
     flowikiService.send('SAVE_NODE_ENTRY');
   }
 
+  function handleSaveCursorColId(colId) {
+    currentCursorColId = colId;
+    flowikiService.send('SAVE_CURSOR_COL_ID');
+  }
+
   function handleKeyup(event) {
     // console.log("key up, event = ", event);
     if (event.keyCode === ENTER_KEYCODE) {
@@ -148,6 +167,13 @@
     } else if(event.keyCode === ARROW_DOWN_KEYCODE) {
       if (!atLast) {
         flowikiService.send('DOWN');
+      }
+    } else if (CURSOR_POS_CHANGE_KEYCODES.indexOf(event.keyCode) > -1) {
+      // TODO: check whether i'm in node/top instead
+      let el = document.getElementById("text-input");
+      if (el) {
+        console.log("TODO: trigger event to update, pos = ", el.selectionStart);
+        handleSaveCursorColId(el.selectionStart);
       }
     }
   }
@@ -218,5 +244,6 @@
     handleCancelEditingNodeName={handleCancelEditingNodeName}
     handleSaveNodeName={handleSaveNodeName}
     handleSaveNodeEntry={handleSaveNodeEntry}
+    handleSaveCursorColId={handleSaveCursorColId}
   />
 {/if}
