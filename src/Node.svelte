@@ -1,7 +1,7 @@
 <script>
   export let entries, nodeTitle, nodeEntry, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
-  export let handleSaveNodeEntry;
+  export let handleSaveNodeEntry, handleSaveCursorColId;
   import { afterUpdate } from 'svelte';
 
   let nodeTitleText = nodeTitle;
@@ -41,6 +41,16 @@
   $: handleStartEditing = () => {
     nodeTitleText = nodeTitle;
     handleStartEditingNodeName();
+  }
+
+  $: handleMoveClick = (index) => {
+  }
+
+  $: handleInput = (ev) => {
+    let colId = ev.target.selectionStart;
+    if (colId !== nodeCursorColId) {
+      handleSaveCursorColId(colId);
+    }
   }
 
   $: atFirst = nodeCursorRowId === 0;
@@ -120,7 +130,7 @@
 {#each entries as entry, i}
   <li class={i === nodeCursorRowId ? "highlighted" : ""}>
     {#if i === nodeCursorRowId}
-      <input type="text" id="text-input" bind:value={nodeEntryText} />
+      <input type="text" id="text-input" on:input={handleInput} bind:value={nodeEntryText} />
     {:else}
       <span>{entry}</span>
     {/if}

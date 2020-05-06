@@ -1,6 +1,7 @@
 let currentHashId = 1;
 let currentNodeNameTextEntry = "some name";
 let currentNodeEntryText = "abcde";
+let currentCursorColId = 0;
 
 let navigateToNodeAction = assign(ctxt => {
   let nodeId = currentHashId;
@@ -39,6 +40,13 @@ let saveNodeEntryAction = assign(ctxt => {
   copyNodes[i].entries[j] = currentNodeEntryText;
   return {
     nodes: copyNodes
+  };
+});
+
+let saveCursorColIdAction = assign(ctxt => {
+  console.log("now col id = ", currentCursorColId);
+  return {
+    nodeCursorColId: currentCursorColId
   };
 });
 
@@ -197,6 +205,9 @@ const flowikiStates = {
         },
         SAVE_NODE_ENTRY: {
           actions: saveNodeEntryAction,
+        },
+        SAVE_CURSOR_COL_ID: {
+          actions: saveCursorColIdAction,
         }
       },
       type: 'parallel',
