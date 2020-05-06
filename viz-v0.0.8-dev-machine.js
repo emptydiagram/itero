@@ -10,7 +10,7 @@ let navigateToNodeAction = assign(ctxt => {
   return {
     currentNodeId: nodeId,
     nodeCursorRowId: initRowId,
-    nodeName: node.name,
+    nodeTitle: node.name,
     nodeEntry: entries[initRowId]
   };
 });
@@ -25,7 +25,7 @@ let saveNodeNameAction = assign(ctxt => {
 
   return {
     nodes: copyNodes,
-    nodeName: currentNodeNameTextEntry,
+    nodeTitle: currentNodeNameTextEntry,
   };
 
 });
