@@ -171,11 +171,11 @@
     if (event.keyCode === ENTER_KEYCODE) {
       flowikiService.send('CREATE_ENTRY_BELOW');
     } else if(event.keyCode === ARROW_UP_KEYCODE) {
-      if (!atFirst) {
+      if (!atFirstRow) {
         flowikiService.send('UP');
       }
     } else if(event.keyCode === ARROW_DOWN_KEYCODE) {
-      if (!atLast) {
+      if (!atLastRow) {
         flowikiService.send('DOWN');
       }
     } else if (CURSOR_POS_CHANGE_KEYCODES.indexOf(event.keyCode) > -1) {
@@ -198,8 +198,8 @@
     ? machineState.context.nodes[machineState.context.currentNodeId].entries
     : [""]);
 
-  $: atFirst = machineState.context.nodeCursorRowId === 0;
-  $: atLast = machineState.context.nodeCursorRowId === displayNodeEntries.length - 1;
+  $: atFirstRow = machineState.context.nodeCursorRowId === 0;
+  $: atLastRow = machineState.context.nodeCursorRowId === displayNodeEntries.length - 1;
 
   $: nodeIsEditingName = (() => {
     let curr = machineState.value.flowiki;
