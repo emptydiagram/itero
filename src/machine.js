@@ -80,51 +80,35 @@ let goDownAction = assign(ctxt => {
   };
 });
 
-let createEntryBelowAction = assign(ctxt => {
-  let nodeCursorRowId = ctxt.nodeCursorRowId;
+let splitEntryAction = assign(ctxt => {
+  let rowId = ctxt.nodeCursorRowId;
 
   // only update nodes if there's a nodeId
   let newNodes;
   newNodes = {...ctxt.nodes};
-  let id = ctxt.currentNodeId
-  let initialText = '';
-  newNodes[id].entries = [...newNodes[id].entries];
-  newNodes[id].entries.splice(nodeCursorRowId+1, 0, initialText);
-
-  return {
-    nodeCursorRowId: nodeCursorRowId + 1,
-    nodeEntry: initialText,
-    nodes: newNodes,
-  };
-});
-
-let mergeAdjacentEntriesAction = assign(ctxt => {
-  let rowId = ctxt.nodeCursorRowId;
-  let prevRowId = rowId - 1;
-
-  let newNodes;
-  newNodes = {...ctxt.nodes};
-  let nodeId = ctxt.currentNodeId
+  let nodeId = ctxt.currentNodeId;
   let currNode = newNodes[nodeId];
+  let currEntry = currNode.entries[rowId];
 
-  let prevRowOrigEntryLen = currNode.entries[prevRowId].length;
+  let colId = ctxt.nodeCursorColId;
+  let updatedCurrEntry = currEntry.substring(0, colId);
+  let newEntry = currEntry.substring(colId, currEntry.length);
 
   currNode.entries = [...currNode.entries];
-  let currEntry = currNode.entries[rowId];
-  newNodes[nodeId].entries.splice(rowId, 1);
-  currNode.entries[prevRowId] += currEntry;
+  currNode.entries[rowId] = updatedCurrEntry;
+  currNode.entries.splice(rowId+1, 0, newEntry);
 
   return {
-    nodeCursorRowId: prevRowId,
-    nodeCursorColId: prevRowOrigEntryLen,
+    nodeCursorRowId: rowId + 1,
+    nodeCursorColId: 0,
     nodePrevCursorColId: 0,
-    nodeEntry: currNode.entries[prevRowId],
+    nodeEntry: newEntry,
     nodes: newNodes,
   };
 });
 
 
-export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction) => {
+export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction, mergeAdjacentEntriesAction) => {
 
   const nodeStates = {
     states: {
@@ -174,8 +158,8 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
           DOWN: {
             actions: goDownAction
           },
-          CREATE_ENTRY_BELOW: {
-            actions: createEntryBelowAction,
+          SPLIT_ENTRY: {
+            actions: splitEntryAction,
           },
           MERGE_ADJACENT_ENTRIES: {
             actions: mergeAdjacentEntriesAction,
