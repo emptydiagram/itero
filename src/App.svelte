@@ -82,11 +82,41 @@
     };
   });
 
+  let mergeAdjacentEntriesAction = assign(ctxt => {
+    let rowId = ctxt.nodeCursorRowId;
+    let prevRowId = rowId - 1;
+    console.log(" !!!! inside merge, (rowId, prevRowId) = ", rowId, prevRowId);
+
+    let newNodes;
+    newNodes = {...ctxt.nodes};
+    let nodeId = ctxt.currentNodeId
+    let currNode = newNodes[nodeId];
+
+    let prevRowOrigEntryLen = currNode.entries[prevRowId].length;
+
+    currNode.entries = [...currNode.entries];
+    let currEntry = currNode.entries[rowId];
+    newNodes[nodeId].entries.splice(rowId, 1);
+    currNode.entries[prevRowId] += currEntry;
+
+    // NOTE: we *set* currentCursorColId and prevCursorColId here.
+    currentCursorColId = prevRowOrigEntryLen;
+    prevCursorColId = prevRowOrigEntryLen;
+    return {
+      nodeCursorRowId: prevRowId,
+      nodeCursorColId: prevRowOrigEntryLen,
+      nodePrevCursorColId: prevRowOrigEntryLen,
+      nodeEntry: currNode.entries[prevRowId],
+      nodes: newNodes,
+    };
+  });
+
+
 
 
   /*** service and state ***/
 
-  let machine = createMachine(navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction);
+  let machine = createMachine(navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction, mergeAdjacentEntriesAction);
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
@@ -176,7 +206,7 @@
   function handleKeyup(event) {
     // console.log("key up, event = ", event);
     if (event.keyCode === ENTER_KEYCODE) {
-      flowikiService.send('CREATE_ENTRY_BELOW');
+      flowikiService.send('SPLIT_ENTRY');
     } else if(event.keyCode === ARROW_UP_KEYCODE) {
       if (!atFirstRow) {
         flowikiService.send('UP');
