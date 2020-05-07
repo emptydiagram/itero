@@ -6,6 +6,7 @@
   import createMachine from './machine.js';
 
   const ENTER_KEYCODE = 13;
+  const BACKSPACE_KEYCODE = 8;
   const ARROW_LEFT_KEYCODE = 37;
   const ARROW_UP_KEYCODE = 38;
   const ARROW_RIGHT_KEYCODE = 39;
@@ -18,6 +19,7 @@
   let currentNodeEntryText;
   let currentCursorRowId;
   let currentCursorColId;
+  let prevCursorColId;
 
   function isObject(obj) {
     return obj === Object(obj);
@@ -63,17 +65,20 @@
     };
   });
 
+  // the action of SAVE_FULL_CURSOR
   let saveFullCursorAction = assign(ctxt => {
     return {
       nodeCursorRowId: currentCursorRowId,
       nodeCursorColId: currentCursorColId,
+      nodePrevCursorColId: currentCursorColId,
       nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[currentCursorRowId]
     };
   });
 
   let saveCursorColIdAction = assign(ctxt => {
     return {
-      nodeCursorColId: currentCursorColId
+      nodeCursorColId: currentCursorColId,
+      nodePrevCursorColId: prevCursorColId,
     };
   });
 
@@ -157,11 +162,13 @@
 
   function handleSaveFullCursor(rowId, colId) {
     currentCursorRowId = rowId;
+    prevCursorColId = currentCursorColId;
     currentCursorColId = colId;
     flowikiService.send('SAVE_FULL_CURSOR');
   }
 
   function handleSaveCursorColId(colId) {
+    prevCursorColId = currentCursorColId;
     currentCursorColId = colId;
     flowikiService.send('SAVE_CURSOR_COL_ID');
   }
@@ -184,6 +191,16 @@
       if (el) {
         handleSaveCursorColId(el.selectionStart);
       }
+    } else if (event.keyCode === BACKSPACE_KEYCODE) {
+      // TODO: this code assumes that the events from the backspace keydown have
+      // already happened
+      let el = document.getElementById("text-input");
+      if (el) {
+        handleSaveCursorColId(el.selectionStart);
+      }
+      if (prevColWasFirst && !atFirstRow) {
+        flowikiService.send('MERGE_ADJACENT_ENTRIES');
+      }
     }
   }
 
@@ -200,6 +217,7 @@
 
   $: atFirstRow = machineState.context.nodeCursorRowId === 0;
   $: atLastRow = machineState.context.nodeCursorRowId === displayNodeEntries.length - 1;
+  $: prevColWasFirst = machineState.context.nodePrevCursorColId === 0;
 
   $: nodeIsEditingName = (() => {
     let curr = machineState.value.flowiki;
