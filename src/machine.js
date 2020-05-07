@@ -25,6 +25,7 @@ function generateTestContext() {
     displayNodes: [1, 2, 4],
     nodeCursorRowId: 0,
     nodeCursorColId: 0,
+    nodePrevCursorColId: 0,
   };
 }
 
@@ -53,6 +54,7 @@ let createNodeAction = assign(ctxt => {
     currentNodeId: newId,
     nodeCursorRowId: 0,
     nodeCursorColId: 0,
+    nodePrevCursorColId: 0,
     nodeTitle: 'New document',
     nodeEntry: newNodeEntries[0],
     nodes: copyNodes,
@@ -92,6 +94,31 @@ let createEntryBelowAction = assign(ctxt => {
   return {
     nodeCursorRowId: nodeCursorRowId + 1,
     nodeEntry: initialText,
+    nodes: newNodes,
+  };
+});
+
+let mergeAdjacentEntriesAction = assign(ctxt => {
+  let rowId = ctxt.nodeCursorRowId;
+  let prevRowId = rowId - 1;
+
+  let newNodes;
+  newNodes = {...ctxt.nodes};
+  let nodeId = ctxt.currentNodeId
+  let currNode = newNodes[nodeId];
+
+  let prevRowOrigEntryLen = currNode.entries[prevRowId].length;
+
+  currNode.entries = [...currNode.entries];
+  let currEntry = currNode.entries[rowId];
+  newNodes[nodeId].entries.splice(rowId, 1);
+  currNode.entries[prevRowId] += currEntry;
+
+  return {
+    nodeCursorRowId: prevRowId,
+    nodeCursorColId: prevRowOrigEntryLen,
+    nodePrevCursorColId: 0,
+    nodeEntry: currNode.entries[prevRowId],
     nodes: newNodes,
   };
 });
@@ -149,6 +176,9 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
           },
           CREATE_ENTRY_BELOW: {
             actions: createEntryBelowAction,
+          },
+          MERGE_ADJACENT_ENTRIES: {
+            actions: mergeAdjacentEntriesAction,
           },
           SAVE_NODE_ENTRY: {
             actions: saveNodeEntryAction,
