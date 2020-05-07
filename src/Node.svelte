@@ -62,9 +62,10 @@
 <style>
   .node-name-edit-action {
     cursor: pointer;
-  }
-  .node-name-edit-action:hover {
     text-decoration: underline;
+  }
+  .node-name-edit-action:active {
+    color: rgb(0,80,160);
   }
 
   #node-name {
