@@ -23,6 +23,17 @@ On the document view, there are navigation and editing actions:
 
 There's also a child state-machine that runs the editing of document titles.
 
+## why
+
+<blockquote><pre>
+ statecharts = state-diagrams + depth
+             + orthogonality + broadcast-communication
+</pre></blockquote>
+
+ - [Statecharts: A Visual Formalism for Complex Systems](http://www.inf.ed.ac.uk/teaching/courses/seoc/2005_2006/resources/statecharts.pdf)
+
+See also: <https://statecharts.github.io/>
+
 
 ## chronology
 
@@ -59,13 +70,3 @@ definition: <https://github.com/ohalmanacs/treacle/blob/master/viz-v0.0.6-machin
 (direct link to visualizer: <https://xstate.js.org/viz/?gist=f920db08e3da7fa6086264f68bd08828&embed=1>)
 <iframe style="width: 42em; height: 55em;" src="https://xstate.js.org/viz/?gist=f920db08e3da7fa6086264f68bd08828&embed=1"></iframe>
 
-## Notes
-
-<blockquote><pre>
- statecharts = state-diagrams + depth
-             + orthogonality + broadcast-communication
-</pre></blockquote>
-
- - [Statecharts: A Visual Formalism for Complex Systems](http://www.inf.ed.ac.uk/teaching/courses/seoc/2005_2006/resources/statecharts.pdf)
-
-See also: <https://statecharts.github.io/>
