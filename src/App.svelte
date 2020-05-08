@@ -205,9 +205,7 @@
 
   function handleKeyup(event) {
     // console.log("key up, event = ", event);
-    if (event.keyCode === ENTER_KEYCODE) {
-      flowikiService.send('SPLIT_ENTRY');
-    } else if(event.keyCode === ARROW_UP_KEYCODE) {
+    if(event.keyCode === ARROW_UP_KEYCODE) {
       if (!atFirstRow) {
         flowikiService.send('UP');
       }
@@ -231,6 +229,12 @@
       if (prevColWasFirst && !atFirstRow) {
         flowikiService.send('MERGE_ADJACENT_ENTRIES');
       }
+    }
+  }
+
+  function handleKeydown(event) {
+    if (event.keyCode === ENTER_KEYCODE) {
+      flowikiService.send('SPLIT_ENTRY');
     }
   }
 
@@ -274,7 +278,7 @@
   }
 </style>
 
-<svelte:window on:keyup={handleKeyup} />
+<svelte:window on:keyup={handleKeyup} on:keydown={handleKeydown} />
 
 
 
