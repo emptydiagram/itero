@@ -2,6 +2,7 @@ let currentHashId = 1;
 let currentNodeNameTextEntry = "some name";
 let currentNodeEntryText = "abcde";
 let currentCursorColId = 0;
+let prevCursorColId = 0;
 
 let navigateToNodeAction = assign(ctxt => {
   let nodeId = currentHashId;
@@ -43,17 +44,48 @@ let saveNodeEntryAction = assign(ctxt => {
   };
 });
 
+// the action of SAVE_FULL_CURSOR
 let saveFullCursorAction = assign(ctxt => {
   return {
     nodeCursorRowId: currentCursorRowId,
     nodeCursorColId: currentCursorColId,
+    nodePrevCursorColId: currentCursorColId,
     nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[currentCursorRowId]
   };
 });
 
 let saveCursorColIdAction = assign(ctxt => {
   return {
-    nodeCursorColId: currentCursorColId
+    nodeCursorColId: currentCursorColId,
+    nodePrevCursorColId: prevCursorColId,
+  };
+});
+
+let mergeAdjacentEntriesAction = assign(ctxt => {
+  let rowId = ctxt.nodeCursorRowId;
+  let prevRowId = rowId - 1;
+
+  let newNodes;
+  newNodes = {...ctxt.nodes};
+  let nodeId = ctxt.currentNodeId
+  let currNode = newNodes[nodeId];
+
+  let prevRowOrigEntryLen = currNode.entries[prevRowId].length;
+
+  currNode.entries = [...currNode.entries];
+  let currEntry = currNode.entries[rowId];
+  newNodes[nodeId].entries.splice(rowId, 1);
+  currNode.entries[prevRowId] += currEntry;
+
+  // NOTE: we *set* currentCursorColId and prevCursorColId here.
+  currentCursorColId = prevRowOrigEntryLen;
+  prevCursorColId = prevRowOrigEntryLen;
+  return {
+    nodeCursorRowId: prevRowId,
+    nodeCursorColId: prevRowOrigEntryLen,
+    nodePrevCursorColId: prevRowOrigEntryLen,
+    nodeEntry: currNode.entries[prevRowId],
+    nodes: newNodes,
   };
 });
 
@@ -84,6 +116,7 @@ function generateTestContext() {
     displayNodes: [1, 2, 4],
     nodeCursorRowId: 0,
     nodeCursorColId: 0,
+    nodePrevCursorColId: 0,
   };
 }
 
@@ -112,6 +145,7 @@ let createNodeAction = assign(ctxt => {
     currentNodeId: newId,
     nodeCursorRowId: 0,
     nodeCursorColId: 0,
+    nodePrevCursorColId: 0,
     nodeTitle: 'New document',
     nodeEntry: newNodeEntries[0],
     nodes: copyNodes,
@@ -137,23 +171,33 @@ let goDownAction = assign(ctxt => {
   };
 });
 
-let createEntryBelowAction = assign(ctxt => {
-  let nodeCursorRowId = ctxt.nodeCursorRowId;
+let splitEntryAction = assign(ctxt => {
+  let rowId = ctxt.nodeCursorRowId;
 
   // only update nodes if there's a nodeId
   let newNodes;
   newNodes = {...ctxt.nodes};
-  let id = ctxt.currentNodeId
-  let initialText = '';
-  newNodes[id].entries = [...newNodes[id].entries];
-  newNodes[id].entries.splice(nodeCursorRowId+1, 0, initialText);
+  let nodeId = ctxt.currentNodeId;
+  let currNode = newNodes[nodeId];
+  let currEntry = currNode.entries[rowId];
+
+  let colId = ctxt.nodeCursorColId;
+  let updatedCurrEntry = currEntry.substring(0, colId);
+  let newEntry = currEntry.substring(colId, currEntry.length);
+
+  currNode.entries = [...currNode.entries];
+  currNode.entries[rowId] = updatedCurrEntry;
+  currNode.entries.splice(rowId+1, 0, newEntry);
 
   return {
-    nodeCursorRowId: nodeCursorRowId + 1,
-    nodeEntry: initialText,
+    nodeCursorRowId: rowId + 1,
+    nodeCursorColId: 0,
+    nodePrevCursorColId: 0,
+    nodeEntry: newEntry,
     nodes: newNodes,
   };
 });
+
 
 
 const nodeStates = {
@@ -204,8 +248,11 @@ const flowikiStates = {
         DOWN: {
           actions: goDownAction
         },
-        CREATE_ENTRY_BELOW: {
-          actions: createEntryBelowAction,
+        SPLIT_ENTRY: {
+          actions: splitEntryAction,
+        },
+        MERGE_ADJACENT_ENTRIES: {
+          actions: mergeAdjacentEntriesAction,
         },
         SAVE_NODE_ENTRY: {
           actions: saveNodeEntryAction,
