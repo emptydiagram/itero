@@ -12,7 +12,7 @@ This is a [statechart](https://xstate.js.org/docs/#why) to help organize:
 definition: <https://github.com/ohalmanacs/treacle/blob/master/viz-v0.0.8-machine.js>
 
 (direct link to visualizer: <https://xstate.js.org/viz/?gist=f47c8de7e70a2b9f206cf8ad05a9bcf2>)
-<iframe style="width: 47em; height: 35em;" src="https://xstate.js.org/viz/?gist=f47c8de7e70a2b9f206cf8ad05a9bcf2&embed=1"></iframe>
+<iframe style="width: 47em; height: 40em;" src="https://xstate.js.org/viz/?gist=f47c8de7e70a2b9f206cf8ad05a9bcf2&embed=1"></iframe>
 
 On the document view, there are navigation and editing actions:
 
