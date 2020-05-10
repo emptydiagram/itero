@@ -8,13 +8,13 @@ function generateTestContext() {
     nodes: {
       '1': {
         id: 1,
-        name: 'foo',
-        entries: ['a', 'b', 'c'],
+        name: 'some letters',
+        entries: ['abc', 'def', 'ghi'],
       },
       '2': {
         id: 2,
-        name: 'bar',
-        entries: ['4', '5' ],
+        name: 'some numbers',
+        entries: ['4', '5', 'seventy', '-1' ],
       },
       '4': {
         id: 4,
