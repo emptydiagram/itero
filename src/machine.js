@@ -9,12 +9,12 @@ function generateTestContext() {
       '1': {
         id: 1,
         name: 'some letters',
-        entries: ['a', 'b', 'c'],
+        entries: ['abc', 'def', 'ghi'],
       },
       '2': {
         id: 2,
         name: 'some numbers',
-        entries: ['4', '5' ],
+        entries: ['4', '5', 'seventy', '-1' ],
       },
       '4': {
         id: 4,
