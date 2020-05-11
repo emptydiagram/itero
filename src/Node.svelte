@@ -1,22 +1,24 @@
 <script>
   export let entries, nodeTitle, nodeEntry, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
-  export let handleSaveNodeEntry, handleSaveFullCursor, handleSaveCursorColId;
+  export let handleSaveNodeEntry, handleSaveFullCursor;
   import { afterUpdate } from 'svelte';
 
   let nodeTitleText = nodeTitle;
-  let nodeEntryText = nodeEntry;
+  // let nodeEntryText = nodeEntry;
   let currCursorRowId = nodeCursorRowId;
 
   afterUpdate(() => {
     let el = document.getElementById("text-input");
     let nni = document.getElementById("node-name-input");
-    if (document.activeElement !== el && document.activeElement !== nni) {
+    if (document.activeElement === el || (document.activeElement !== el && document.activeElement !== nni)) {
+      console.log(" %%% UPDATING SELECTION TO -> ", nodeCursorColId);
       el.focus();
       el.setSelectionRange(nodeCursorColId, nodeCursorColId);
     }
   });
 
+  /*
   // user moved to another row
   // TODO: this should be done in an action, because context has to be updated
   // this is a hack. I need to figure out
@@ -30,6 +32,7 @@
   $: if (entries[nodeCursorRowId] !== nodeEntryText) {
     handleSaveNodeEntry(nodeEntryText);
   }
+   */
 
   $: handleSaveName = () => handleSaveNodeName(nodeTitleText);
 
@@ -49,9 +52,8 @@
 
   $: handleInput = (ev) => {
     let colId = ev.target.selectionStart;
-    if (colId !== nodeCursorColId) {
-      handleSaveCursorColId(colId);
-    }
+    let entryText = ev.target.value;
+    handleSaveNodeEntry(entryText, colId);
   }
 
   $: atFirst = nodeCursorRowId === 0;
@@ -135,9 +137,13 @@
 {#each entries as entry, i}
   <li class={i === nodeCursorRowId ? "highlighted" : ""}>
     {#if i === nodeCursorRowId}
-      <input type="text" id="text-input" class="entry-input" on:input={handleInput} bind:value={nodeEntryText} />
+      <input
+        type="text" id="text-input" class="entry-input"
+        on:input={handleInput}
+        value={nodeEntry} />
     {:else}
-      <input type="text" class="entry-input" value={entry} on:click={(e) => handleMoveClick(i, e)} />
+      <input type="text" class="entry-input"
+        value={entry} on:click={(e) => handleMoveClick(i, e)} />
     {/if}
   </li>
 {/each}

@@ -25,7 +25,6 @@ function generateTestContext() {
     displayNodes: [1, 2, 4],
     nodeCursorRowId: 0,
     nodeCursorColId: 0,
-    nodePrevCursorColId: 0,
   };
 }
 
@@ -54,7 +53,6 @@ let createNodeAction = assign(ctxt => {
     currentNodeId: newId,
     nodeCursorRowId: 0,
     nodeCursorColId: 0,
-    nodePrevCursorColId: 0,
     nodeTitle: 'New document',
     nodeEntry: newNodeEntries[0],
     nodes: copyNodes,
@@ -101,7 +99,6 @@ let splitEntryAction = assign(ctxt => {
   return {
     nodeCursorRowId: rowId + 1,
     nodeCursorColId: 0,
-    nodePrevCursorColId: 0,
     nodeEntry: newEntry,
     nodes: newNodes,
   };

@@ -19,7 +19,6 @@
   let currentNodeEntryText;
   let currentCursorRowId;
   let currentCursorColId;
-  let prevCursorColId;
 
   function isObject(obj) {
     return obj === Object(obj);
@@ -61,7 +60,8 @@
     copyNodes[i].entries = [...copyNodes[i].entries];
     copyNodes[i].entries[j] = currentNodeEntryText;
     return {
-      nodes: copyNodes
+      nodes: copyNodes,
+      nodeCursorColId: currentCursorColId,
     };
   });
 
@@ -70,7 +70,6 @@
     return {
       nodeCursorRowId: currentCursorRowId,
       nodeCursorColId: currentCursorColId,
-      nodePrevCursorColId: currentCursorColId,
       nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[currentCursorRowId]
     };
   });
@@ -78,7 +77,6 @@
   let saveCursorColIdAction = assign(ctxt => {
     return {
       nodeCursorColId: currentCursorColId,
-      nodePrevCursorColId: prevCursorColId,
     };
   });
 
@@ -94,10 +92,8 @@
       console.log("colId = ", colId, "newEntry = ", newEntry);
       currentNode.entries[ctxt.nodeCursorRowId] = newEntry;
 
-      prevCursorColId = colId;
       currentCursorColId = colId - 1;
       return {
-        nodePrevCursorColId: colId,
         nodeCursorColId: colId - 1,
         nodes: copyNodes,
         nodeEntry: newEntry
@@ -124,11 +120,9 @@
 
     // NOTE: we *set* currentCursorColId and prevCursorColId here.
     currentCursorColId = prevRowOrigEntryLen;
-    prevCursorColId = prevRowOrigEntryLen;
     return {
       nodeCursorRowId: prevRowId,
       nodeCursorColId: prevRowOrigEntryLen,
-      nodePrevCursorColId: prevRowOrigEntryLen,
       nodeEntry: currNode.entries[prevRowId],
       nodes: newNodes,
     };
@@ -209,20 +203,20 @@
     flowikiService.send('SAVE_NODE_NAME');
   }
 
-  function handleSaveNodeEntry(entryText) {
+  function handleSaveNodeEntry(entryText, colId) {
     currentNodeEntryText = entryText;
     flowikiService.send('SAVE_NODE_ENTRY');
+    currentCursorColId = colId;
+    flowikiService.send('SAVE_CURSOR_COL_ID');
   }
 
   function handleSaveFullCursor(rowId, colId) {
     currentCursorRowId = rowId;
-    prevCursorColId = currentCursorColId;
     currentCursorColId = colId;
     flowikiService.send('SAVE_FULL_CURSOR');
   }
 
   function handleSaveCursorColId(colId) {
-    prevCursorColId = currentCursorColId;
     currentCursorColId = colId;
     flowikiService.send('SAVE_CURSOR_COL_ID');
   }
@@ -270,7 +264,6 @@
 
   $: atFirstRow = machineState.context.nodeCursorRowId === 0;
   $: atLastRow = machineState.context.nodeCursorRowId === displayNodeEntries.length - 1;
-  //  $: prevColWasFirst = machineState.context.nodePrevCursorColId === 0;
 
   $: nodeIsEditingName = (() => {
     let curr = machineState.value.flowiki;
@@ -325,6 +318,5 @@
     handleSaveNodeName={handleSaveNodeName}
     handleSaveNodeEntry={handleSaveNodeEntry}
     handleSaveFullCursor={handleSaveFullCursor}
-    handleSaveCursorColId={handleSaveCursorColId}
   />
 {/if}
