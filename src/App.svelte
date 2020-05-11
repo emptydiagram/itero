@@ -82,10 +82,33 @@
     };
   });
 
-  let mergeAdjacentEntriesAction = assign(ctxt => {
+  let backspaceAction = assign(ctxt => {
+    let copyNodes = {...ctxt.nodes};
+    let currentNode = copyNodes[ctxt.currentNodeId];
+    currentNode.entries = [...currentNode.entries];
+    let colId = ctxt.nodeCursorColId;
+
+    if (colId > 0) {
+      let currEntry = currentNode.entries[ctxt.nodeCursorRowId];
+      let newEntry = currEntry.substring(0, colId - 1) + currEntry.substring(colId);
+      console.log("colId = ", colId, "newEntry = ", newEntry);
+      currentNode.entries[ctxt.nodeCursorRowId] = newEntry;
+
+      prevCursorColId = colId;
+      currentCursorColId = colId - 1;
+      return {
+        nodePrevCursorColId: colId,
+        nodeCursorColId: colId - 1,
+        nodes: copyNodes,
+        nodeEntry: newEntry
+      }
+    }
+
+    // col is zero, so we merge adjacent entries
+
     let rowId = ctxt.nodeCursorRowId;
     let prevRowId = rowId - 1;
-    console.log(" !!!! inside merge, (rowId, prevRowId) = ", rowId, prevRowId);
+    console.log(" !!!! inside bksp, col is zero, (rowId, prevRowId) = ", rowId, prevRowId);
 
     let newNodes;
     newNodes = {...ctxt.nodes};
@@ -109,6 +132,7 @@
       nodeEntry: currNode.entries[prevRowId],
       nodes: newNodes,
     };
+
   });
 
 
@@ -116,7 +140,7 @@
 
   /*** service and state ***/
 
-  let machine = createMachine(navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction, mergeAdjacentEntriesAction);
+  let machine = createMachine(navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction);
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
@@ -203,6 +227,7 @@
     flowikiService.send('SAVE_CURSOR_COL_ID');
   }
 
+
   function handleKeyup(event) {
     // console.log("key up, event = ", event);
     if(event.keyCode === ARROW_UP_KEYCODE) {
@@ -219,22 +244,16 @@
       if (el) {
         handleSaveCursorColId(el.selectionStart);
       }
-    } else if (event.keyCode === BACKSPACE_KEYCODE) {
-      // TODO: this code assumes that the events from the backspace keydown have
-      // already happened
-      let el = document.getElementById("text-input");
-      if (el) {
-        handleSaveCursorColId(el.selectionStart);
-      }
-      if (prevColWasFirst && !atFirstRow) {
-        flowikiService.send('MERGE_ADJACENT_ENTRIES');
-      }
     }
   }
 
   function handleKeydown(event) {
     if (event.keyCode === ENTER_KEYCODE) {
       flowikiService.send('SPLIT_ENTRY');
+    } else if (event.keyCode === BACKSPACE_KEYCODE) {
+      event.preventDefault();
+
+      flowikiService.send('ENTRY_BACKSPACE');
     }
   }
 
@@ -251,7 +270,7 @@
 
   $: atFirstRow = machineState.context.nodeCursorRowId === 0;
   $: atLastRow = machineState.context.nodeCursorRowId === displayNodeEntries.length - 1;
-  $: prevColWasFirst = machineState.context.nodePrevCursorColId === 0;
+  //  $: prevColWasFirst = machineState.context.nodePrevCursorColId === 0;
 
   $: nodeIsEditingName = (() => {
     let curr = machineState.value.flowiki;
