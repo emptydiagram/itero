@@ -12,8 +12,9 @@
     let el = document.getElementById("text-input");
     let nni = document.getElementById("node-name-input");
     if (document.activeElement === el || (document.activeElement !== el && document.activeElement !== nni)) {
-      console.log(" %%% UPDATING SELECTION TO -> ", nodeCursorColId);
-      el.focus();
+      if (document.activeElement !== el) {
+        el.focus();
+      }
       el.setSelectionRange(nodeCursorColId, nodeCursorColId);
     }
   });
