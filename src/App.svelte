@@ -205,9 +205,8 @@
 
   function handleSaveNodeEntry(entryText, colId) {
     currentNodeEntryText = entryText;
-    flowikiService.send('SAVE_NODE_ENTRY');
     currentCursorColId = colId;
-    flowikiService.send('SAVE_CURSOR_COL_ID');
+    flowikiService.send('SAVE_NODE_ENTRY');
   }
 
   function handleSaveFullCursor(rowId, colId) {
@@ -222,9 +221,14 @@
   }
 
 
-  function handleKeyup(event) {
-    // console.log("key up, event = ", event);
-    if(event.keyCode === ARROW_UP_KEYCODE) {
+  function handleKeydown(event) {
+    if (event.keyCode === ENTER_KEYCODE) {
+      flowikiService.send('SPLIT_ENTRY');
+    } else if (event.keyCode === BACKSPACE_KEYCODE) {
+      event.preventDefault();
+
+      flowikiService.send('ENTRY_BACKSPACE');
+    } else if(event.keyCode === ARROW_UP_KEYCODE) {
       if (!atFirstRow) {
         flowikiService.send('UP');
       }
@@ -233,21 +237,36 @@
         flowikiService.send('DOWN');
       }
     } else if (CURSOR_POS_CHANGE_KEYCODES.indexOf(event.keyCode) > -1) {
-      // TODO: check whether i'm in node/top instead
-      let el = document.getElementById("text-input");
-      if (el) {
-        handleSaveCursorColId(el.selectionStart);
-      }
-    }
-  }
-
-  function handleKeydown(event) {
-    if (event.keyCode === ENTER_KEYCODE) {
-      flowikiService.send('SPLIT_ENTRY');
-    } else if (event.keyCode === BACKSPACE_KEYCODE) {
+      // TODO: this used to run on key up. we changed it to run on key down
+      //  and now the following bit happens before(??) the selectionStart gets
+      //  updated as normally upon left/right
+      // TODO: use preventDefault and calculate and manually set selection?
       event.preventDefault();
 
-      flowikiService.send('ENTRY_BACKSPACE');
+      let el = document.getElementById("text-input");
+      if (el) {
+        let colId = el.selectionStart;
+        let newColId = colId;
+
+        switch (event.keyCode) {
+          case ARROW_LEFT_KEYCODE:
+            newColId = Math.max(0, colId - 1);
+            break;
+          case ARROW_RIGHT_KEYCODE:
+            newColId = Math.min(el.value.length, colId + 1);
+            break;
+          case HOME_KEYCODE:
+            newColId = 0;
+            break;
+          case END_KEYCODE:
+            newColId = el.value.length;
+            break;
+        }
+
+        el.setSelectionRange(newColId, newColId)
+
+        handleSaveCursorColId(el.selectionStart);
+      }
     }
   }
 
@@ -290,7 +309,7 @@
   }
 </style>
 
-<svelte:window on:keyup={handleKeyup} on:keydown={handleKeydown} />
+<svelte:window on:keydown={handleKeydown} />
 
 
 
