@@ -108,7 +108,9 @@ let splitEntryAction = assign(ctxt => {
 });
 
 
-export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction, mergeAdjacentEntriesAction) => {
+
+
+export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction) => {
 
   const nodeStates = {
     states: {
@@ -161,8 +163,8 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
           SPLIT_ENTRY: {
             actions: splitEntryAction,
           },
-          MERGE_ADJACENT_ENTRIES: {
-            actions: mergeAdjacentEntriesAction,
+          ENTRY_BACKSPACE: {
+            actions: backspaceAction,
           },
           SAVE_NODE_ENTRY: {
             actions: saveNodeEntryAction,
