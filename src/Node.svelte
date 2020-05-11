@@ -5,8 +5,6 @@
   import { afterUpdate } from 'svelte';
 
   let nodeTitleText = nodeTitle;
-  // let nodeEntryText = nodeEntry;
-  let currCursorRowId = nodeCursorRowId;
 
   afterUpdate(() => {
     let el = document.getElementById("text-input");
@@ -19,21 +17,6 @@
     }
   });
 
-  /*
-  // user moved to another row
-  // TODO: this should be done in an action, because context has to be updated
-  // this is a hack. I need to figure out
-  $: if (currCursorRowId !== nodeCursorRowId) {
-    nodeEntryText = nodeEntry;
-    currCursorRowId = nodeCursorRowId;
-  }
-
-  // if nodeEntryText, which tracks the value in the <input>, no longer matches
-  // the entry, then update the entry
-  $: if (entries[nodeCursorRowId] !== nodeEntryText) {
-    handleSaveNodeEntry(nodeEntryText);
-  }
-   */
 
   $: handleSaveName = () => handleSaveNodeName(nodeTitleText);
 
