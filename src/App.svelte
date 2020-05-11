@@ -118,7 +118,7 @@
     newNodes[nodeId].entries.splice(rowId, 1);
     currNode.entries[prevRowId] += currEntry;
 
-    // NOTE: we *set* currentCursorColId and prevCursorColId here.
+    // NOTE: we *set* currentCursorColId here.
     currentCursorColId = prevRowOrigEntryLen;
     return {
       nodeCursorRowId: prevRowId,
