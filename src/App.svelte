@@ -62,6 +62,7 @@
     return {
       nodes: copyNodes,
       nodeCursorColId: currentCursorColId,
+      nodeEntry: currentNodeEntryText,
     };
   });
 
@@ -89,7 +90,7 @@
     if (colId > 0) {
       let currEntry = currentNode.entries[ctxt.nodeCursorRowId];
       let newEntry = currEntry.substring(0, colId - 1) + currEntry.substring(colId);
-      console.log("colId = ", colId, "newEntry = ", newEntry);
+      console.log("BKSP, colId = ", colId, "newEntry = ", newEntry);
       currentNode.entries[ctxt.nodeCursorRowId] = newEntry;
 
       currentCursorColId = colId - 1;
