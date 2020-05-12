@@ -30,10 +30,10 @@
     handleStartEditingNodeName();
   }
 
-  $: handleMoveClick = (index, event) => {
+  $: handleEntryInputClick = (index, event) => {
     let colId = event.target.selectionStart;
     if (nodeCursorRowId !== index || nodeCursorColId != colId) {
-      handleSaveFullCursor(index, event.target.selectionStart);
+      handleSaveFullCursor(index, colId);
     }
   }
 
@@ -126,11 +126,16 @@
     {#if i === nodeCursorRowId}
       <input
         type="text" id="text-input" class="entry-input"
+        value={nodeEntry}
         on:input={handleInput}
-        value={nodeEntry} />
+        on:click={(e) => handleEntryInputClick(i, e)}
+      />
     {:else}
-      <input type="text" class="entry-input"
-        value={entry} on:click={(e) => handleMoveClick(i, e)} />
+      <input
+        type="text" class="entry-input"
+        value={entry}
+        on:click={(e) => handleEntryInputClick(i, e)}
+      />
     {/if}
   </li>
 {/each}
