@@ -94,7 +94,7 @@ let splitEntryAction = assign(ctxt => {
 
   currNode.entries = [...currNode.entries];
   currNode.entries[rowId] = updatedCurrEntry;
-  currNode.entries.splice(rowId+1, 0, newEntry);
+  currNode.entries.splice(rowId + 1, 0, newEntry);
 
   return {
     nodeCursorRowId: rowId + 1,
