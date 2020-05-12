@@ -31,7 +31,10 @@
   }
 
   $: handleMoveClick = (index, event) => {
-    handleSaveFullCursor(index, event.target.selectionStart);
+    let colId = event.target.selectionStart;
+    if (nodeCursorRowId !== index || nodeCursorColId != colId) {
+      handleSaveFullCursor(index, event.target.selectionStart);
+    }
   }
 
   $: handleInput = (ev) => {
