@@ -1,19 +1,25 @@
 <script>
-  export let entries, nodeTitle, nodeEntry, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
+  export let entries, nodeTitle, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
   export let handleSaveNodeEntry, handleSaveFullCursor;
   import { afterUpdate } from 'svelte';
 
   let nodeTitleText = nodeTitle;
 
+  let textInputs = new Array(10);
+
   afterUpdate(() => {
-    let el = document.getElementById("text-input");
     let nni = document.getElementById("node-name-input");
-    if (document.activeElement === el || (document.activeElement !== el && document.activeElement !== nni)) {
-      if (document.activeElement !== el) {
-        el.focus();
+    // let textInput = document.getElementById("text-input");
+    let textInput = textInputs[nodeCursorRowId];
+    if (document.activeElement === textInput
+        || (document.activeElement !== textInput && document.activeElement !== nni)) {
+      if (document.activeElement !== textInput) {
+        console.log("  afterUpdat, STEALING FOCUS!");
+        textInput.focus();
       }
-      el.setSelectionRange(nodeCursorColId, nodeCursorColId);
+      textInput.setSelectionRange(nodeCursorColId, nodeCursorColId);
+
     }
   });
 
@@ -95,10 +101,6 @@
     background-color: #e6fcf1;
   }
 
-  #text-input {
-    background-color: #e6fcf1;
-  }
-
   .entry-input {
     margin: 0;
     padding: 0;
@@ -123,20 +125,14 @@
 <ul id="entries">
 {#each entries as entry, i}
   <li class={i === nodeCursorRowId ? "highlighted" : ""}>
-    {#if i === nodeCursorRowId}
-      <input
-        type="text" id="text-input" class="entry-input"
-        value={nodeEntry}
-        on:input={handleInput}
-        on:click={(e) => handleEntryInputClick(i, e)}
-      />
-    {:else}
-      <input
-        type="text" class="entry-input"
-        value={entry}
-        on:click={(e) => handleEntryInputClick(i, e)}
-      />
-    {/if}
+    <input
+      type="text"
+      class="entry-input"
+      value={entry}
+      bind:this={textInputs[i]}
+      on:input={handleInput}
+      on:click={(e) => handleEntryInputClick(i, e)}
+    />
   </li>
 {/each}
 </ul>
