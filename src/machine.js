@@ -4,7 +4,7 @@ function generateTestContext() {
   return {
     currentNodeId: null,
     nodeTitle: '',
-    nodeEntry: '',
+    // nodeEntry: '',
     nodes: {
       '1': {
         id: 1,
@@ -54,7 +54,7 @@ let createNodeAction = assign(ctxt => {
     nodeCursorRowId: 0,
     nodeCursorColId: 0,
     nodeTitle: 'New document',
-    nodeEntry: newNodeEntries[0],
+    // nodeEntry: newNodeEntries[0],
     nodes: copyNodes,
     displayNodes: newDisplayNodes,
   };
@@ -65,7 +65,7 @@ let goUpAction = assign(ctxt => {
   let newRowId = ctxt.nodeCursorRowId === 0 ? 0 : ctxt.nodeCursorRowId - 1;
   return {
     nodeCursorRowId: newRowId,
-    nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[newRowId],
+    // nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[newRowId],
   };
 });
 
@@ -74,7 +74,7 @@ let goDownAction = assign(ctxt => {
   let newRowId = ctxt.nodeCursorRowId >= numEntries - 1 ? numEntries - 1 : ctxt.nodeCursorRowId + 1;
   return {
     nodeCursorRowId: newRowId,
-    nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[newRowId],
+    // nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[newRowId],
   };
 });
 
@@ -99,7 +99,7 @@ let splitEntryAction = assign(ctxt => {
   return {
     nodeCursorRowId: rowId + 1,
     nodeCursorColId: 0,
-    nodeEntry: newEntry,
+    // nodeEntry: newEntry,
     nodes: newNodes,
   };
 });
