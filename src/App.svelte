@@ -1,4 +1,5 @@
 <script>
+  import { tick } from 'svelte';
   import { createHashHistory } from 'history';
   import { assign, interpret } from 'xstate';
   import Node from './Node.svelte';
@@ -33,7 +34,7 @@
       currentNodeId: nodeId,
       nodeCursorRowId: initRowId,
       nodeTitle: node.name,
-      nodeEntry: entries[initRowId]
+      // nodeEntry: entries[initRowId]
     };
   });
 
@@ -62,7 +63,7 @@
     return {
       nodes: copyNodes,
       nodeCursorColId: currentCursorColId,
-      nodeEntry: currentNodeEntryText,
+      // nodeEntry: currentNodeEntryText,
     };
   });
 
@@ -71,7 +72,7 @@
     return {
       nodeCursorRowId: currentCursorRowId,
       nodeCursorColId: currentCursorColId,
-      nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[currentCursorRowId]
+      // nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[currentCursorRowId]
     };
   });
 
@@ -97,7 +98,7 @@
       return {
         nodeCursorColId: colId - 1,
         nodes: copyNodes,
-        nodeEntry: newEntry
+        // nodeEntry: newEntry
       }
     }
 
@@ -124,7 +125,7 @@
     return {
       nodeCursorRowId: prevRowId,
       nodeCursorColId: prevRowOrigEntryLen,
-      nodeEntry: currNode.entries[prevRowId],
+      // nodeEntry: currNode.entries[prevRowId],
       nodes: newNodes,
     };
 
@@ -140,6 +141,7 @@
 
   const flowikiService = interpret(machine);
   flowikiService.onTransition(state => {
+    console.log("-------------------");
     console.log("transitioning to context = ", state.context, ", state = ", state.value);
     machineState = state;
   });
@@ -222,7 +224,7 @@
   }
 
 
-  function handleKeydown(event) {
+  async function handleKeydown(event) {
     if (event.keyCode === ENTER_KEYCODE) {
       flowikiService.send('SPLIT_ENTRY');
     } else if (event.keyCode === BACKSPACE_KEYCODE) {
@@ -236,6 +238,15 @@
     } else if(event.keyCode === ARROW_DOWN_KEYCODE) {
       if (!atLastRow) {
         flowikiService.send('DOWN');
+
+        await tick();
+        let entryInputs = document.querySelectorAll(".entry-input");
+        let el = entryInputs[machineState.context.nodeCursorRowId];
+        if (el) {
+          let newColId = machineState.context.nodeCursorColId;
+          el.setSelectionRange(newColId, newColId)
+          console.log(" ``` handleKeydown DOWN, after tick, newColId = ", newColId);
+        }
       }
     } else if (CURSOR_POS_CHANGE_KEYCODES.indexOf(event.keyCode) > -1) {
       // TODO: this used to run on key up. we changed it to run on key down
@@ -244,7 +255,8 @@
       // TODO: use preventDefault and calculate and manually set selection?
       event.preventDefault();
 
-      let el = document.getElementById("text-input");
+      let entryInputs = document.querySelectorAll(".entry-input");
+      let el = entryInputs[machineState.context.nodeCursorRowId];
       if (el) {
         let colId = el.selectionStart;
         let newColId = colId;
@@ -264,9 +276,13 @@
             break;
         }
 
-        el.setSelectionRange(newColId, newColId)
+        // el.setSelectionRange(newColId, newColId)
 
-        handleSaveCursorColId(el.selectionStart);
+        handleSaveCursorColId(newColId);
+
+        await tick();
+        el.setSelectionRange(newColId, newColId)
+        console.log(" ``` handleKeydown, after tick, newColId = ", newColId);
       }
     }
   }
@@ -331,7 +347,6 @@
     nodeCursorRowId={machineState.context.nodeCursorRowId}
     nodeCursorColId={machineState.context.nodeCursorColId}
     nodeTitle={machineState.context.nodeTitle}
-    nodeEntry={machineState.context.nodeEntry}
     nodeIsEditingName={nodeIsEditingName}
     handleStartEditingNodeName={handleStartEditingNodeName}
     handleCancelEditingNodeName={handleCancelEditingNodeName}
