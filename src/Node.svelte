@@ -2,6 +2,7 @@
   export let entries, nodeTitle, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
   export let handleSaveNodeEntry, handleSaveFullCursor, handleGoUp, handleGoDown, handleEntryBackspace, handleSplitEntry;
+  export let handleSaveCursorColId;
   import EntryInput from './EntryInput.svelte';
 
   let nodeTitleText = nodeTitle;
@@ -102,6 +103,7 @@
       handleGoDown={handleGoDown}
       handleSplitEntry={handleSplitEntry}
       handleEntryBackspace={handleEntryBackspace}
+      handleSaveCursorColId={handleSaveCursorColId}
     />
   </li>
 {/each}
