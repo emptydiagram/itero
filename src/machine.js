@@ -89,6 +89,7 @@ let splitEntryAction = assign(ctxt => {
   let currEntry = currNode.entries[rowId];
 
   let colId = ctxt.nodeCursorColId;
+  console.log(" Splitting '" + currEntry + "' at colId = ", colId);
   let updatedCurrEntry = currEntry.substring(0, colId);
   let newEntry = currEntry.substring(colId, currEntry.length);
 

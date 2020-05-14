@@ -1,27 +1,10 @@
 <script>
   export let entries, nodeTitle, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
-  export let handleSaveNodeEntry, handleSaveFullCursor;
-  import { afterUpdate } from 'svelte';
+  export let handleSaveNodeEntry, handleSaveFullCursor, handleGoUp, handleGoDown;
+  import EntryInput from './EntryInput.svelte';
 
   let nodeTitleText = nodeTitle;
-
-  let textInputs = new Array(10);
-
-  afterUpdate(() => {
-    let nni = document.getElementById("node-name-input");
-    // let textInput = document.getElementById("text-input");
-    let textInput = textInputs[nodeCursorRowId];
-    if (document.activeElement === textInput
-        || (document.activeElement !== textInput && document.activeElement !== nni)) {
-      if (document.activeElement !== textInput) {
-        console.log("  afterUpdat, STEALING FOCUS!");
-        textInput.focus();
-      }
-      textInput.setSelectionRange(nodeCursorColId, nodeCursorColId);
-
-    }
-  });
 
 
   $: handleSaveName = () => handleSaveNodeName(nodeTitleText);
@@ -36,21 +19,8 @@
     handleStartEditingNodeName();
   }
 
-  $: handleEntryInputClick = (index, event) => {
-    let colId = event.target.selectionStart;
-    if (nodeCursorRowId !== index || nodeCursorColId != colId) {
-      handleSaveFullCursor(index, colId);
-    }
-  }
-
-  $: handleInput = (ev) => {
-    let colId = ev.target.selectionStart;
-    let entryText = ev.target.value;
-    handleSaveNodeEntry(entryText, colId);
-  }
-
-  $: atFirst = nodeCursorRowId === 0;
-  $: atLast = nodeCursorRowId === entries.length - 1;
+  $: atFirstRow = nodeCursorRowId === 0;
+  $: atLastRow = nodeCursorRowId === entries.length - 1;
 
 </script>
 
@@ -101,12 +71,6 @@
     background-color: #e6fcf1;
   }
 
-  .entry-input {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    width: 100%;
-  }
 </style>
 
 {#if nodeIsEditingName}
@@ -125,13 +89,17 @@
 <ul id="entries">
 {#each entries as entry, i}
   <li class={i === nodeCursorRowId ? "highlighted" : ""}>
-    <input
-      type="text"
-      class="entry-input"
-      value={entry}
-      bind:this={textInputs[i]}
-      on:input={handleInput}
-      on:click={(e) => handleEntryInputClick(i, e)}
+    <EntryInput
+      entryId={i}
+      entryValue={entry}
+      nodeCursorRowId={nodeCursorRowId}
+      nodeCursorColId={nodeCursorColId}
+      atFirstRow={atFirstRow}
+      atLastRow={atLastRow}
+      handleSaveNodeEntry={handleSaveNodeEntry}
+      handleSaveFullCursor={handleSaveFullCursor}
+      handleGoUp={handleGoUp}
+      handleGoDown={handleGoDown}
     />
   </li>
 {/each}
