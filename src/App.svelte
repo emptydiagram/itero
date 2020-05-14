@@ -6,11 +6,6 @@
   import Top from './Top.svelte';
   import createMachine from './machine.js';
 
-  const ARROW_LEFT_KEYCODE = 37;
-  const ARROW_RIGHT_KEYCODE = 39;
-  const HOME_KEYCODE = 36;
-  const END_KEYCODE = 35;
-  const CURSOR_POS_CHANGE_KEYCODES = [ARROW_LEFT_KEYCODE, ARROW_RIGHT_KEYCODE, HOME_KEYCODE, END_KEYCODE]
   let currentHashId;
   let currentNodeNameTextEntry;
   let currentNodeEntryText;
@@ -225,47 +220,6 @@
     flowikiService.send('SPLIT_ENTRY');
   }
 
-  async function handleKeydown(event) {
-    if (CURSOR_POS_CHANGE_KEYCODES.indexOf(event.keyCode) > -1) {
-      // TODO: this used to run on key up. we changed it to run on key down
-      //  and now the following bit happens before(??) the selectionStart gets
-      //  updated as normally upon left/right
-      // TODO: use preventDefault and calculate and manually set selection?
-      event.preventDefault();
-
-      let entryInputs = document.querySelectorAll(".entry-input");
-      let el = entryInputs[machineState.context.nodeCursorRowId];
-      if (el) {
-        let colId = el.selectionStart;
-        let newColId = colId;
-
-        switch (event.keyCode) {
-          case ARROW_LEFT_KEYCODE:
-            newColId = Math.max(0, colId - 1);
-            break;
-          case ARROW_RIGHT_KEYCODE:
-            newColId = Math.min(el.value.length, colId + 1);
-            break;
-          case HOME_KEYCODE:
-            newColId = 0;
-            break;
-          case END_KEYCODE:
-            newColId = el.value.length;
-            break;
-        }
-
-        // el.setSelectionRange(newColId, newColId)
-
-        handleSaveCursorColId(newColId);
-
-        await tick();
-        el.setSelectionRange(newColId, newColId)
-        console.log(" ``` handleKeydown, after tick, newColId = ", newColId);
-      }
-    }
-  }
-
-  // console.log("+++machineState = ", machineState);
   $: isAtTop = machineState.value.flowiki === 'top';
 
   $: displayNodes = machineState.context.displayNodes.map(id => {
@@ -301,10 +255,6 @@
   }
 </style>
 
-<svelte:window on:keydown={handleKeydown} />
-
-
-
 {#if isAtTop}
   <header>
     <span>notes</span>
@@ -329,6 +279,7 @@
     handleGoDown={handleGoDown}
     handleSplitEntry={handleSplitEntry}
     handleEntryBackspace={handleEntryBackspace}
+    handleSaveCursorColId={handleSaveCursorColId}
     handleSaveNodeName={handleSaveNodeName}
     handleSaveNodeEntry={handleSaveNodeEntry}
     handleSaveFullCursor={handleSaveFullCursor}

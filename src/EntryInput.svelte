@@ -1,7 +1,7 @@
 <script>
   export let entryId, entryValue, nodeCursorRowId, nodeCursorColId, atFirstRow, atLastRow;
   export let handleSaveNodeEntry, handleSaveFullCursor;
-  export let handleGoUp, handleGoDown, handleEntryBackspace, handleSplitEntry;
+  export let handleGoUp, handleGoDown, handleEntryBackspace, handleSplitEntry, handleSaveCursorColId;
 
   import { afterUpdate, tick } from 'svelte';
 
@@ -44,6 +44,32 @@
     } else if (ev.key === "Enter") {
       ev.preventDefault();
       handleSplitEntry();
+    } else if (["ArrowLeft", "ArrowRight", "Home", "End"].indexOf(ev.key) > -1) {
+      ev.preventDefault();
+
+      let colId = this.selectionStart;
+      let newColId = colId;
+
+      switch (event.key) {
+        case "ArrowLeft":
+          newColId = Math.max(0, colId - 1);
+          break;
+        case "ArrowRight":
+          newColId = Math.min(this.value.length, colId + 1);
+          break;
+        case "Home":
+          newColId = 0;
+          break;
+        case "End":
+          newColId = this.value.length;
+          break;
+      }
+
+      handleSaveCursorColId(newColId);
+
+      await tick();
+      this.setSelectionRange(newColId, newColId)
+      console.log(" ``` handleKeydown, after tick, newColId = ", newColId);
     } else {
       return;
     }
@@ -57,7 +83,6 @@
   $: handleEntryInputClick = (index, ev) => {
     let colId = ev.target.selectionStart;
     if (nodeCursorRowId !== index || nodeCursorColId != colId) {
-      console.log(" $$ handleEntryInputClick w/ (r, c) = (", index, colId, ")");
       handleSaveFullCursor(index, colId);
     }
   }
@@ -65,7 +90,6 @@
   $: handleInput = (ev) => {
     let colId = ev.target.selectionStart;
     let entryText = ev.target.value;
-    console.log(" *~*~ handleInput w/ (colId, entryText) = (", colId, entryText, ")");
     handleSaveNodeEntry(entryText, colId);
   }
 
