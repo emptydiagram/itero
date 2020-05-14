@@ -91,7 +91,6 @@
     if (colId > 0) {
       let currEntry = currentNode.entries[ctxt.nodeCursorRowId];
       let newEntry = currEntry.substring(0, colId - 1) + currEntry.substring(colId);
-      console.log("BKSP, colId = ", colId, "newEntry = ", newEntry);
       currentNode.entries[ctxt.nodeCursorRowId] = newEntry;
 
       currentCursorColId = colId - 1;
@@ -106,7 +105,6 @@
 
     let rowId = ctxt.nodeCursorRowId;
     let prevRowId = rowId - 1;
-    console.log(" !!!! inside bksp, col is zero, (rowId, prevRowId) = ", rowId, prevRowId);
 
     let newNodes;
     newNodes = {...ctxt.nodes};
@@ -223,6 +221,12 @@
     flowikiService.send('SAVE_CURSOR_COL_ID');
   }
 
+  function handleGoUp() {
+    flowikiService.send('UP');
+  }
+  function handleGoDown() {
+    flowikiService.send('DOWN');
+  }
 
   async function handleKeydown(event) {
     if (event.keyCode === ENTER_KEYCODE) {
@@ -231,23 +235,6 @@
       event.preventDefault();
 
       flowikiService.send('ENTRY_BACKSPACE');
-    } else if(event.keyCode === ARROW_UP_KEYCODE) {
-      if (!atFirstRow) {
-        flowikiService.send('UP');
-      }
-    } else if(event.keyCode === ARROW_DOWN_KEYCODE) {
-      if (!atLastRow) {
-        flowikiService.send('DOWN');
-
-        await tick();
-        let entryInputs = document.querySelectorAll(".entry-input");
-        let el = entryInputs[machineState.context.nodeCursorRowId];
-        if (el) {
-          let newColId = machineState.context.nodeCursorColId;
-          el.setSelectionRange(newColId, newColId)
-          console.log(" ``` handleKeydown DOWN, after tick, newColId = ", newColId);
-        }
-      }
     } else if (CURSOR_POS_CHANGE_KEYCODES.indexOf(event.keyCode) > -1) {
       // TODO: this used to run on key up. we changed it to run on key down
       //  and now the following bit happens before(??) the selectionStart gets
@@ -298,9 +285,6 @@
     ? machineState.context.nodes[machineState.context.currentNodeId].entries
     : [""]);
 
-  $: atFirstRow = machineState.context.nodeCursorRowId === 0;
-  $: atLastRow = machineState.context.nodeCursorRowId === displayNodeEntries.length - 1;
-
   $: nodeIsEditingName = (() => {
     let curr = machineState.value.flowiki;
     if (!isObject(curr)) {
@@ -350,6 +334,8 @@
     nodeIsEditingName={nodeIsEditingName}
     handleStartEditingNodeName={handleStartEditingNodeName}
     handleCancelEditingNodeName={handleCancelEditingNodeName}
+    handleGoUp={handleGoUp}
+    handleGoDown={handleGoDown}
     handleSaveNodeName={handleSaveNodeName}
     handleSaveNodeEntry={handleSaveNodeEntry}
     handleSaveFullCursor={handleSaveFullCursor}
