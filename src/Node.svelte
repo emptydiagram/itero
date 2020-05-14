@@ -1,7 +1,7 @@
 <script>
   export let entries, nodeTitle, nodeCursorRowId, nodeCursorColId, nodeIsEditingName;
   export let handleStartEditingNodeName, handleCancelEditingNodeName, handleSaveNodeName;
-  export let handleSaveNodeEntry, handleSaveFullCursor, handleGoUp, handleGoDown;
+  export let handleSaveNodeEntry, handleSaveFullCursor, handleGoUp, handleGoDown, handleEntryBackspace, handleSplitEntry;
   import EntryInput from './EntryInput.svelte';
 
   let nodeTitleText = nodeTitle;
@@ -100,6 +100,8 @@
       handleSaveFullCursor={handleSaveFullCursor}
       handleGoUp={handleGoUp}
       handleGoDown={handleGoDown}
+      handleSplitEntry={handleSplitEntry}
+      handleEntryBackspace={handleEntryBackspace}
     />
   </li>
 {/each}

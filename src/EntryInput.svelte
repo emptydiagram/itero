@@ -1,7 +1,7 @@
 <script>
   export let entryId, entryValue, nodeCursorRowId, nodeCursorColId, atFirstRow, atLastRow;
   export let handleSaveNodeEntry, handleSaveFullCursor;
-  export let handleGoUp, handleGoDown;
+  export let handleGoUp, handleGoDown, handleEntryBackspace, handleSplitEntry;
 
   import { afterUpdate, tick } from 'svelte';
 
@@ -9,10 +9,11 @@
 
   afterUpdate(async () => {
     let nni = document.getElementById("node-name-input");
-    let shouldUpdateColId = (document.activeElement === theInput
-      || (document.activeElement !== theInput && document.activeElement !== nni));
+    if (document.activeElement === nni) {
+      return;
+    }
 
-    if (theInput && shouldUpdateColId) {
+    if (theInput) {
     // take focus if id equals current row id
       if (entryId === nodeCursorRowId && document.activeElement !== theInput) {
         theInput.focus();
@@ -37,6 +38,14 @@
       if (!atLastRow) {
         handleGoDown();
       }
+    } else if (ev.key === "Backspace") {
+      ev.preventDefault();
+      handleEntryBackspace();
+    } else if (ev.key === "Enter") {
+      ev.preventDefault();
+      handleSplitEntry();
+    } else {
+      return;
     }
     await tick();
     this.selectionStart = nodeCursorColId;
