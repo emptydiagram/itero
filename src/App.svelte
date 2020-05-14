@@ -34,7 +34,6 @@
       currentNodeId: nodeId,
       nodeCursorRowId: initRowId,
       nodeTitle: node.name,
-      // nodeEntry: entries[initRowId]
     };
   });
 
@@ -63,7 +62,6 @@
     return {
       nodes: copyNodes,
       nodeCursorColId: currentCursorColId,
-      // nodeEntry: currentNodeEntryText,
     };
   });
 
@@ -72,7 +70,6 @@
     return {
       nodeCursorRowId: currentCursorRowId,
       nodeCursorColId: currentCursorColId,
-      // nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[currentCursorRowId]
     };
   });
 
@@ -97,7 +94,6 @@
       return {
         nodeCursorColId: colId - 1,
         nodes: copyNodes,
-        // nodeEntry: newEntry
       }
     }
 
@@ -123,7 +119,6 @@
     return {
       nodeCursorRowId: prevRowId,
       nodeCursorColId: prevRowOrigEntryLen,
-      // nodeEntry: currNode.entries[prevRowId],
       nodes: newNodes,
     };
 
