@@ -12,7 +12,6 @@ let navigateToNodeAction = assign(ctxt => {
     currentNodeId: nodeId,
     nodeCursorRowId: initRowId,
     nodeTitle: node.name,
-    nodeEntry: entries[initRowId]
   };
 });
 
@@ -49,7 +48,6 @@ let saveFullCursorAction = assign(ctxt => {
   return {
     nodeCursorRowId: currentCursorRowId,
     nodeCursorColId: currentCursorColId,
-    nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[currentCursorRowId]
   };
 });
 
@@ -74,7 +72,6 @@ let backspaceAction = assign(ctxt => {
     return {
       nodeCursorColId: colId - 1,
       nodes: copyNodes,
-      nodeEntry: newEntry
     }
   }
 
@@ -100,7 +97,6 @@ let backspaceAction = assign(ctxt => {
   return {
     nodeCursorRowId: prevRowId,
     nodeCursorColId: prevRowOrigEntryLen,
-    nodeEntry: currNode.entries[prevRowId],
     nodes: newNodes,
   };
 
@@ -110,7 +106,6 @@ function generateTestContext() {
   return {
     currentNodeId: null,
     nodeTitle: '',
-    nodeEntry: '',
     nodes: {
       '1': {
         id: 1,
@@ -160,7 +155,6 @@ let createNodeAction = assign(ctxt => {
     nodeCursorRowId: 0,
     nodeCursorColId: 0,
     nodeTitle: 'New document',
-    nodeEntry: newNodeEntries[0],
     nodes: copyNodes,
     displayNodes: newDisplayNodes,
   };
@@ -171,7 +165,6 @@ let goUpAction = assign(ctxt => {
   let newRowId = ctxt.nodeCursorRowId === 0 ? 0 : ctxt.nodeCursorRowId - 1;
   return {
     nodeCursorRowId: newRowId,
-    nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[newRowId],
   };
 });
 
@@ -180,7 +173,6 @@ let goDownAction = assign(ctxt => {
   let newRowId = ctxt.nodeCursorRowId >= numEntries - 1 ? numEntries - 1 : ctxt.nodeCursorRowId + 1;
   return {
     nodeCursorRowId: newRowId,
-    nodeEntry: ctxt.nodes[ctxt.currentNodeId].entries[newRowId],
   };
 });
 
@@ -200,12 +192,11 @@ let splitEntryAction = assign(ctxt => {
 
   currNode.entries = [...currNode.entries];
   currNode.entries[rowId] = updatedCurrEntry;
-  currNode.entries.splice(rowId+1, 0, newEntry);
+  currNode.entries.splice(rowId + 1, 0, newEntry);
 
   return {
     nodeCursorRowId: rowId + 1,
     nodeCursorColId: 0,
-    nodeEntry: newEntry,
     nodes: newNodes,
   };
 });
