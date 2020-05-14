@@ -6,12 +6,8 @@
   import Top from './Top.svelte';
   import createMachine from './machine.js';
 
-  const ENTER_KEYCODE = 13;
-  const BACKSPACE_KEYCODE = 8;
   const ARROW_LEFT_KEYCODE = 37;
-  const ARROW_UP_KEYCODE = 38;
   const ARROW_RIGHT_KEYCODE = 39;
-  const ARROW_DOWN_KEYCODE = 40;
   const HOME_KEYCODE = 36;
   const END_KEYCODE = 35;
   const CURSOR_POS_CHANGE_KEYCODES = [ARROW_LEFT_KEYCODE, ARROW_RIGHT_KEYCODE, HOME_KEYCODE, END_KEYCODE]
@@ -222,15 +218,15 @@
   function handleGoDown() {
     flowikiService.send('DOWN');
   }
+  function handleEntryBackspace() {
+    flowikiService.send('ENTRY_BACKSPACE');
+  }
+  function handleSplitEntry() {
+    flowikiService.send('SPLIT_ENTRY');
+  }
 
   async function handleKeydown(event) {
-    if (event.keyCode === ENTER_KEYCODE) {
-      flowikiService.send('SPLIT_ENTRY');
-    } else if (event.keyCode === BACKSPACE_KEYCODE) {
-      event.preventDefault();
-
-      flowikiService.send('ENTRY_BACKSPACE');
-    } else if (CURSOR_POS_CHANGE_KEYCODES.indexOf(event.keyCode) > -1) {
+    if (CURSOR_POS_CHANGE_KEYCODES.indexOf(event.keyCode) > -1) {
       // TODO: this used to run on key up. we changed it to run on key down
       //  and now the following bit happens before(??) the selectionStart gets
       //  updated as normally upon left/right
@@ -331,6 +327,8 @@
     handleCancelEditingNodeName={handleCancelEditingNodeName}
     handleGoUp={handleGoUp}
     handleGoDown={handleGoDown}
+    handleSplitEntry={handleSplitEntry}
+    handleEntryBackspace={handleEntryBackspace}
     handleSaveNodeName={handleSaveNodeName}
     handleSaveNodeEntry={handleSaveNodeEntry}
     handleSaveFullCursor={handleSaveFullCursor}
