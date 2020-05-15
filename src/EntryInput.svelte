@@ -49,6 +49,13 @@
   }
 
   async function handleKeydown(ev, entryInput) {
+    // TODO
+    if (ev.key === "Tab") {
+      ev.preventDefault();
+      console.log("TODO: do something on"+(ev.shiftKey ? " shift" : "")+" tab");
+      return;
+    }
+
     if (ev.key === "ArrowUp") {
       ev.preventDefault();
       if (!atFirstRow) {
