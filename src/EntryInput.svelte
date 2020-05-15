@@ -27,7 +27,28 @@
     }
   });
 
-  async function handleKeydown(ev) {
+  function handleCursorMove(colId, entryValueSize) {
+    let newColId = colId;
+
+    switch (event.key) {
+      case "ArrowLeft":
+        newColId = Math.max(0, colId - 1);
+        break;
+      case "ArrowRight":
+        newColId = Math.min(entryValueSize, colId + 1);
+        break;
+      case "Home":
+        newColId = 0;
+        break;
+      case "End":
+        newColId = entryValueSize;
+        break;
+    }
+
+    handleSaveCursorColId(newColId);
+  }
+
+  async function handleKeydown(ev, entryInput) {
     if (ev.key === "ArrowUp") {
       ev.preventDefault();
       if (!atFirstRow) {
@@ -47,29 +68,7 @@
     } else if (["ArrowLeft", "ArrowRight", "Home", "End"].indexOf(ev.key) > -1) {
       ev.preventDefault();
 
-      let colId = this.selectionStart;
-      let newColId = colId;
-
-      switch (event.key) {
-        case "ArrowLeft":
-          newColId = Math.max(0, colId - 1);
-          break;
-        case "ArrowRight":
-          newColId = Math.min(this.value.length, colId + 1);
-          break;
-        case "Home":
-          newColId = 0;
-          break;
-        case "End":
-          newColId = this.value.length;
-          break;
-      }
-
-      handleSaveCursorColId(newColId);
-
-      await tick();
-      this.setSelectionRange(newColId, newColId)
-      console.log(" ``` handleKeydown, after tick, newColId = ", newColId);
+      handleCursorMove(this.selectionStart, this.value.length);
     } else {
       return;
     }
