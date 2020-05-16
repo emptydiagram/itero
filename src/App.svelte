@@ -28,8 +28,7 @@
   let navigateToNodeAction = assign(ctxt => {
     let nodeId = currentHashId;
     let node = ctxt.nodes[nodeId];
-    let entries = node.entries;
-    let initRowId = entries.size() - 1;
+    let initRowId = node.doc.size() - 1;
     return {
       currentNodeId: nodeId,
       nodeCursorRowId: initRowId,
@@ -57,8 +56,8 @@
     let i = ctxt.currentNodeId;
     let j = ctxt.nodeCursorRowId;
     copyNodes[i] = {...ctxt.nodes[i]};
-    let newTree = entriesListToTree([...copyNodes[i].entries.getEntries()]);
-    copyNodes[i].entries = newTree;
+    let newTree = entriesListToTree([...copyNodes[i].doc.getEntries()]);
+    copyNodes[i].doc = newTree;
     newTree.setEntry(j, currentNodeEntryText);
     return {
       nodes: copyNodes,
@@ -83,13 +82,13 @@
   let backspaceAction = assign(ctxt => {
     let copyNodes = {...ctxt.nodes};
     let currentNode = copyNodes[ctxt.currentNodeId];
-    currentNode.entries = entriesListToTree([...currentNode.entries.getEntries()]);
+    currentNode.doc = entriesListToTree([...currentNode.doc.getEntries()]);
     let colId = ctxt.nodeCursorColId;
 
     if (colId > 0) {
-      let currEntry = currentNode.entries.getEntry(ctxt.nodeCursorRowId);
+      let currEntry = currentNode.doc.getEntry(ctxt.nodeCursorRowId);
       let newEntry = currEntry.substring(0, colId - 1) + currEntry.substring(colId);
-      currentNode.entries.setEntry(ctxt.nodeCursorRowId, newEntry);
+      currentNode.doc.setEntry(ctxt.nodeCursorRowId, newEntry);
 
       currentCursorColId = colId - 1;
       return {
@@ -108,12 +107,12 @@
     let nodeId = ctxt.currentNodeId
     let currNode = newNodes[nodeId];
 
-    let prevRowOrigEntryLen = currNode.entries.getEntry(prevRowId).length;
+    let prevRowOrigEntryLen = currNode.doc.getEntry(prevRowId).length;
 
-    currNode.entries = entriesListToTree([...currNode.entries.getEntries()]);
-    let currEntry = currNode.entries.getEntry(rowId);
-    currNode.entries.deleteAt(rowId);
-    currNode.entries.setEntry(prevRowId, currNode.entries.getEntry(prevRowId) + currEntry);
+    currNode.doc = entriesListToTree([...currNode.doc.getEntries()]);
+    let currEntry = currNode.doc.getEntry(rowId);
+    currNode.doc.deleteAt(rowId);
+    currNode.doc.setEntry(prevRowId, currNode.doc.getEntry(prevRowId) + currEntry);
 
     // NOTE: we *set* currentCursorColId here.
     currentCursorColId = prevRowOrigEntryLen;
@@ -237,7 +236,7 @@
   });
 
   $: displayNodeEntries = (machineState.context.currentNodeId !== null
-    ? machineState.context.nodes[machineState.context.currentNodeId].entries.getEntries()
+    ? machineState.context.nodes[machineState.context.currentNodeId].doc.getEntries()
     : [""]);
 
   $: nodeIsEditingName = (() => {
