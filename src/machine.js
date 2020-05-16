@@ -21,17 +21,17 @@ function generateTestContext() {
       '1': {
         id: 1,
         name: 'some letters',
-        entries: entriesListToTree(entries[0]),
+        doc: entriesListToTree(entries[0]),
       },
       '2': {
         id: 2,
         name: 'some numbers',
-        entries: entriesListToTree(entries[1]),
+        doc: entriesListToTree(entries[1]),
       },
       '4': {
         id: 4,
         name: 'some greek letters',
-        entries: entriesListToTree(entries[2]),
+        doc: entriesListToTree(entries[2]),
       }
     },
     displayNodes: [1, 2, 4],
@@ -53,7 +53,7 @@ let createNodeAction = assign(ctxt => {
   copyNodes[newId] = {
     id: newId,
     name: newNodeName,
-    entries: newNodeEntries,
+    doc: newNodeEntries,
   };
 
   console.log(" ++ new node = ", copyNodes[newId]);
@@ -81,7 +81,7 @@ let goUpAction = assign(ctxt => {
 });
 
 let goDownAction = assign(ctxt => {
-  const numEntries = ctxt.nodes[ctxt.currentNodeId].entries.length;
+  const numEntries = ctxt.nodes[ctxt.currentNodeId].doc.size();
   let newRowId = ctxt.nodeCursorRowId >= numEntries - 1 ? numEntries - 1 : ctxt.nodeCursorRowId + 1;
   return {
     nodeCursorRowId: newRowId,
@@ -96,15 +96,15 @@ let splitEntryAction = assign(ctxt => {
   newNodes = {...ctxt.nodes};
   let nodeId = ctxt.currentNodeId;
   let currNode = newNodes[nodeId];
-  let currEntry = currNode.entries.getEntry(rowId);
+  let currEntry = currNode.doc.getEntry(rowId);
 
   let colId = ctxt.nodeCursorColId;
   console.log(" Splitting '" + currEntry + "' at colId = ", colId);
   let updatedCurrEntry = currEntry.substring(0, colId);
   let newEntry = currEntry.substring(colId, currEntry.length);
 
-  let newTree = entriesListToTree([...currNode.entries.getEntries()]);
-  currNode.entries = newTree;
+  let newTree = entriesListToTree([...currNode.doc.getEntries()]);
+  currNode.doc = newTree;
 
   newTree.setEntry(rowId, updatedCurrEntry);
   newTree.insertAt(rowId + 1, newEntry);
