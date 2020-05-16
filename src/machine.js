@@ -1,6 +1,12 @@
 import { Machine, assign } from 'xstate';
+  import FlowyTree from './FlowyTree.js';
 
 function generateTestContext() {
+  let entries = [
+    ['abc', 'def', 'ghi'],
+    ['4', '5', 'seventy', '-1' ],
+    ['alpha', 'beta', 'gamma', 'delta']
+  ];
   return {
     currentNodeId: null,
     nodeTitle: '',
@@ -8,17 +14,17 @@ function generateTestContext() {
       '1': {
         id: 1,
         name: 'some letters',
-        entries: ['abc', 'def', 'ghi'],
+        entries: new FlowyTree(entries[0]),
       },
       '2': {
         id: 2,
         name: 'some numbers',
-        entries: ['4', '5', 'seventy', '-1' ],
+        entries: new FlowyTree(entries[1]),
       },
       '4': {
         id: 4,
         name: 'some greek letters',
-        entries: ['alpha', 'beta', 'gamma', 'delta']
+        entries: new FlowyTree(entries[2]),
       }
     },
     displayNodes: [1, 2, 4],
@@ -33,7 +39,7 @@ let createNodeAction = assign(ctxt => {
   let existingIds = Object.keys(copyNodes).map(id => parseInt(id));
   let maxId = Math.max(...existingIds);
   let newId = maxId + 1
-  let newNodeEntries = ['TODO'];
+  let newNodeEntries = new FlowyTree(['TODO']);
   let newNodeName = 'New document'
 
   copyNodes[newId] = {
@@ -82,16 +88,18 @@ let splitEntryAction = assign(ctxt => {
   newNodes = {...ctxt.nodes};
   let nodeId = ctxt.currentNodeId;
   let currNode = newNodes[nodeId];
-  let currEntry = currNode.entries[rowId];
+  let currEntry = currNode.entries.getEntry(rowId);
 
   let colId = ctxt.nodeCursorColId;
   console.log(" Splitting '" + currEntry + "' at colId = ", colId);
   let updatedCurrEntry = currEntry.substring(0, colId);
   let newEntry = currEntry.substring(colId, currEntry.length);
 
-  currNode.entries = [...currNode.entries];
-  currNode.entries[rowId] = updatedCurrEntry;
-  currNode.entries.splice(rowId + 1, 0, newEntry);
+  let newTree = new FlowyTree([...currNode.entries.entries])
+  currNode.entries = newTree;
+
+  newTree.setEntry(rowId, updatedCurrEntry);
+  newTree.insertAt(rowId + 1, newEntry);
 
   return {
     nodeCursorRowId: rowId + 1,
