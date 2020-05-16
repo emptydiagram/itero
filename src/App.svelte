@@ -5,6 +5,7 @@
   import Node from './Node.svelte';
   import Top from './Top.svelte';
   import FlowyTree from './FlowyTree.js';
+  import FlowyTreeNode from './FlowyTreeNode.js';
   import createMachine from './machine.js';
 
   let currentHashId;
@@ -15,6 +16,13 @@
 
   function isObject(obj) {
     return obj === Object(obj);
+  }
+
+  //TODO: duplicated with machine.js
+  function entriesListToTree(entriesList) {
+    let children = entriesList.map(entry => new FlowyTreeNode(entry, []));
+    let root = new FlowyTreeNode(null, children);
+    return new FlowyTree(entriesList, root);
   }
 
   let navigateToNodeAction = assign(ctxt => {
@@ -49,7 +57,7 @@
     let i = ctxt.currentNodeId;
     let j = ctxt.nodeCursorRowId;
     copyNodes[i] = {...ctxt.nodes[i]};
-    let newTree = new FlowyTree([...copyNodes[i].entries.getEntries()]);
+    let newTree = entriesListToTree([...copyNodes[i].entries.getEntries()]);
     copyNodes[i].entries = newTree;
     newTree.setEntry(j, currentNodeEntryText);
     return {
@@ -75,7 +83,7 @@
   let backspaceAction = assign(ctxt => {
     let copyNodes = {...ctxt.nodes};
     let currentNode = copyNodes[ctxt.currentNodeId];
-    currentNode.entries = new FlowyTree([...currentNode.entries.getEntries()]);
+    currentNode.entries = entriesListToTree([...currentNode.entries.getEntries()]);
     let colId = ctxt.nodeCursorColId;
 
     if (colId > 0) {
@@ -102,7 +110,7 @@
 
     let prevRowOrigEntryLen = currNode.entries.getEntry(prevRowId).length;
 
-    currNode.entries = new FlowyTree([...currNode.entries.getEntries()]);
+    currNode.entries = entriesListToTree([...currNode.entries.getEntries()]);
     let currEntry = currNode.entries.getEntry(rowId);
     currNode.entries.deleteAt(rowId);
     currNode.entries.setEntry(prevRowId, currNode.entries.getEntry(prevRowId) + currEntry);
