@@ -48,7 +48,7 @@
     handleSaveCursorColId(newColId);
   }
 
-  async function handleKeydown(ev, entryInput) {
+  async function handleKeydown(ev) {
     // TODO
     if (ev.key === "Tab") {
       ev.preventDefault();
