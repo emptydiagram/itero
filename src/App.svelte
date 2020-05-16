@@ -49,7 +49,7 @@
     let i = ctxt.currentNodeId;
     let j = ctxt.nodeCursorRowId;
     copyNodes[i] = {...ctxt.nodes[i]};
-    let newTree = new FlowyTree([...copyNodes[i].entries.entries]);
+    let newTree = new FlowyTree([...copyNodes[i].entries.getEntries()]);
     copyNodes[i].entries = newTree;
     newTree.setEntry(j, currentNodeEntryText);
     return {
@@ -75,7 +75,7 @@
   let backspaceAction = assign(ctxt => {
     let copyNodes = {...ctxt.nodes};
     let currentNode = copyNodes[ctxt.currentNodeId];
-    currentNode.entries = new FlowyTree([...currentNode.entries.entries]);
+    currentNode.entries = new FlowyTree([...currentNode.entries.getEntries()]);
     let colId = ctxt.nodeCursorColId;
 
     if (colId > 0) {
@@ -102,7 +102,7 @@
 
     let prevRowOrigEntryLen = currNode.entries.getEntry(prevRowId).length;
 
-    currNode.entries = new FlowyTree([...currNode.entries.entries]);
+    currNode.entries = new FlowyTree([...currNode.entries.getEntries()]);
     let currEntry = currNode.entries.getEntry(rowId);
     currNode.entries.deleteAt(rowId);
     currNode.entries.setEntry(prevRowId, currNode.entries.getEntry(prevRowId) + currEntry);
@@ -229,7 +229,7 @@
   });
 
   $: displayNodeEntries = (machineState.context.currentNodeId !== null
-    ? machineState.context.nodes[machineState.context.currentNodeId].entries.entries
+    ? machineState.context.nodes[machineState.context.currentNodeId].entries.getEntries()
     : [""]);
 
   $: nodeIsEditingName = (() => {
