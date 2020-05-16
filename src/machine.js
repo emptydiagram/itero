@@ -95,7 +95,7 @@ let splitEntryAction = assign(ctxt => {
   let updatedCurrEntry = currEntry.substring(0, colId);
   let newEntry = currEntry.substring(colId, currEntry.length);
 
-  let newTree = new FlowyTree([...currNode.entries.entries])
+  let newTree = new FlowyTree([...currNode.entries.getEntries()])
   currNode.entries = newTree;
 
   newTree.setEntry(rowId, updatedCurrEntry);
