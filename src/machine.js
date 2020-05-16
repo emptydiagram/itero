@@ -10,7 +10,7 @@ function entriesListToTree(entriesList) {
 
 function generateTestContext() {
   let entries = [
-    ['abc', 'def', 'ghi'],
+    ['ab cd', 'eEe EeE', 'Ff Gg Hh Ii Jj'],
     ['4', '5', 'seventy', '-1' ],
     ['alpha', 'beta', 'gamma', 'delta']
   ];
