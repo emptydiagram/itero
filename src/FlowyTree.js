@@ -1,30 +1,35 @@
-
 export default class FlowyTree {
-  constructor(entries) {
-    this.entries = entries;
+  // root: FlowyTreeNode
+  constructor(entriesList, root) {
+    this.entriesList = entriesList;
+    this.root = root;
   }
 
   getEntries() {
-    return this.entries;
+    return this.entriesList;
+  }
+
+  getRoot() {
+    return this.root;
   }
 
   getEntry(index) {
-    return this.entries[index];
+    return this.entriesList[index];
   }
 
   setEntry(index, value) {
-    this.entries[index] = value;
+    this.entriesList[index] = value;
   }
 
   insertAt(index, newEntry) {
-    this.entries.splice(index, 0, newEntry);
+    this.entriesList.splice(index, 0, newEntry);
   }
 
   deleteAt(index) {
-    this.entries.splice(index, 1);
+    this.entriesList.splice(index, 1);
   }
 
   size() {
-    return this.entries.length;
+    return this.entriesList.length;
   }
 }
