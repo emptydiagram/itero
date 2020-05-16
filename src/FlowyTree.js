@@ -4,6 +4,10 @@ export default class FlowyTree {
     this.entries = entries;
   }
 
+  getEntries() {
+    return this.entries;
+  }
+
   getEntry(index) {
     return this.entries[index];
   }
