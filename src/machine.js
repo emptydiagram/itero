@@ -1,5 +1,12 @@
 import { Machine, assign } from 'xstate';
-  import FlowyTree from './FlowyTree.js';
+import FlowyTree from './FlowyTree.js';
+import FlowyTreeNode from './FlowyTreeNode.js';
+
+function entriesListToTree(entriesList) {
+  let children = entriesList.map(entry => new FlowyTreeNode(entry, []));
+  let root = new FlowyTreeNode(null, children);
+  return new FlowyTree(entriesList, root);
+}
 
 function generateTestContext() {
   let entries = [
@@ -14,17 +21,17 @@ function generateTestContext() {
       '1': {
         id: 1,
         name: 'some letters',
-        entries: new FlowyTree(entries[0]),
+        entries: entriesListToTree(entries[0]),
       },
       '2': {
         id: 2,
         name: 'some numbers',
-        entries: new FlowyTree(entries[1]),
+        entries: entriesListToTree(entries[1]),
       },
       '4': {
         id: 4,
         name: 'some greek letters',
-        entries: new FlowyTree(entries[2]),
+        entries: entriesListToTree(entries[2]),
       }
     },
     displayNodes: [1, 2, 4],
@@ -39,7 +46,8 @@ let createNodeAction = assign(ctxt => {
   let existingIds = Object.keys(copyNodes).map(id => parseInt(id));
   let maxId = Math.max(...existingIds);
   let newId = maxId + 1
-  let newNodeEntries = new FlowyTree(['TODO']);
+  let initEntryText = 'TODO';
+  let newNodeEntries = entriesListToTree([initEntryText]);
   let newNodeName = 'New document'
 
   copyNodes[newId] = {
@@ -95,7 +103,7 @@ let splitEntryAction = assign(ctxt => {
   let updatedCurrEntry = currEntry.substring(0, colId);
   let newEntry = currEntry.substring(colId, currEntry.length);
 
-  let newTree = new FlowyTree([...currNode.entries.getEntries()])
+  let newTree = entriesListToTree([...currNode.entries.getEntries()]);
   currNode.entries = newTree;
 
   newTree.setEntry(rowId, updatedCurrEntry);
