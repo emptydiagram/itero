@@ -4,6 +4,7 @@
   export let handleSaveNodeEntry, handleSaveFullCursor, handleGoUp, handleGoDown, handleEntryBackspace, handleSplitEntry;
   export let handleSaveCursorColId;
   import EntryInput from './EntryInput.svelte';
+  import FlowyTree from './FlowyTree.js';
 
   let nodeTitleText = nodeTitle;
 

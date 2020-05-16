@@ -4,6 +4,7 @@
   import { assign, interpret } from 'xstate';
   import Node from './Node.svelte';
   import Top from './Top.svelte';
+  import FlowyTree from './FlowyTree.js';
   import createMachine from './machine.js';
 
   let currentHashId;
@@ -20,7 +21,7 @@
     let nodeId = currentHashId;
     let node = ctxt.nodes[nodeId];
     let entries = node.entries;
-    let initRowId = entries.length - 1;
+    let initRowId = entries.size() - 1;
     return {
       currentNodeId: nodeId,
       nodeCursorRowId: initRowId,
@@ -48,8 +49,9 @@
     let i = ctxt.currentNodeId;
     let j = ctxt.nodeCursorRowId;
     copyNodes[i] = {...ctxt.nodes[i]};
-    copyNodes[i].entries = [...copyNodes[i].entries];
-    copyNodes[i].entries[j] = currentNodeEntryText;
+    let newTree = new FlowyTree([...copyNodes[i].entries.entries]);
+    copyNodes[i].entries = newTree;
+    newTree.setEntry(j, currentNodeEntryText);
     return {
       nodes: copyNodes,
       nodeCursorColId: currentCursorColId,
@@ -73,13 +75,13 @@
   let backspaceAction = assign(ctxt => {
     let copyNodes = {...ctxt.nodes};
     let currentNode = copyNodes[ctxt.currentNodeId];
-    currentNode.entries = [...currentNode.entries];
+    currentNode.entries = new FlowyTree([...currentNode.entries.entries]);
     let colId = ctxt.nodeCursorColId;
 
     if (colId > 0) {
-      let currEntry = currentNode.entries[ctxt.nodeCursorRowId];
+      let currEntry = currentNode.entries.getEntry(ctxt.nodeCursorRowId);
       let newEntry = currEntry.substring(0, colId - 1) + currEntry.substring(colId);
-      currentNode.entries[ctxt.nodeCursorRowId] = newEntry;
+      currentNode.entries.setEntry(ctxt.nodeCursorRowId, newEntry);
 
       currentCursorColId = colId - 1;
       return {
@@ -98,12 +100,12 @@
     let nodeId = ctxt.currentNodeId
     let currNode = newNodes[nodeId];
 
-    let prevRowOrigEntryLen = currNode.entries[prevRowId].length;
+    let prevRowOrigEntryLen = currNode.entries.getEntry(prevRowId).length;
 
-    currNode.entries = [...currNode.entries];
-    let currEntry = currNode.entries[rowId];
-    newNodes[nodeId].entries.splice(rowId, 1);
-    currNode.entries[prevRowId] += currEntry;
+    currNode.entries = new FlowyTree([...currNode.entries.entries]);
+    let currEntry = currNode.entries.getEntry(rowId);
+    currNode.entries.deleteAt(rowId);
+    currNode.entries.setEntry(prevRowId, currNode.entries.getEntry(prevRowId) + currEntry);
 
     // NOTE: we *set* currentCursorColId here.
     currentCursorColId = prevRowOrigEntryLen;
@@ -227,7 +229,7 @@
   });
 
   $: displayNodeEntries = (machineState.context.currentNodeId !== null
-    ? machineState.context.nodes[machineState.context.currentNodeId].entries
+    ? machineState.context.nodes[machineState.context.currentNodeId].entries.entries
     : [""]);
 
   $: nodeIsEditingName = (() => {
