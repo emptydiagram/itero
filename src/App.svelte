@@ -1,5 +1,4 @@
 <script>
-  import { tick } from 'svelte';
   import { createHashHistory } from 'history';
   import { assign, interpret } from 'xstate';
   import Node from './Node.svelte';
@@ -66,14 +65,14 @@
   });
 
   // the action of SAVE_FULL_CURSOR
-  let saveFullCursorAction = assign(ctxt => {
+  let saveFullCursorAction = assign(_ctxt => {
     return {
       nodeCursorRowId: currentCursorRowId,
       nodeCursorColId: currentCursorColId,
     };
   });
 
-  let saveCursorColIdAction = assign(ctxt => {
+  let saveCursorColIdAction = assign(_ctxt => {
     return {
       nodeCursorColId: currentCursorColId,
     };
@@ -166,7 +165,7 @@
   const history = createHashHistory();
 
   // Listen for changes to the current location.
-  const unlisten = history.listen((location, action) => {
+  const _unlisten = history.listen((location, action) => {
     // location is an object like window.location
     console.log(action, location.pathname, location.state);
 
