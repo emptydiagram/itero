@@ -1,3 +1,9 @@
+# innecto
+
+![Node.js CI](https://github.com/ohalmanacs/innecto/workflows/Node.js%20CI/badge.svg?branch=master)
+
+-----
+
 # svelte app
 
 This is a project template for [Svelte](https://svelte.dev) apps. It lives at https://github.com/sveltejs/template-webpack.
