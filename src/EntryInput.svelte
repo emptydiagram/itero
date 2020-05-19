@@ -1,9 +1,18 @@
 <script>
-  export let entryId, entryValue, nodeCursorRowId, nodeCursorColId, atFirstRow, atLastRow;
+  export let entryId,
+    entryValue,
+    nodeCursorRowId,
+    nodeCursorColId,
+    atFirstRow,
+    atLastRow;
   export let handleSaveNodeEntry, handleSaveFullCursor;
-  export let handleGoUp, handleGoDown, handleEntryBackspace, handleSplitEntry, handleSaveCursorColId;
+  export let handleGoUp,
+    handleGoDown,
+    handleEntryBackspace,
+    handleSplitEntry,
+    handleSaveCursorColId;
 
-  import { afterUpdate, tick } from 'svelte';
+  import { afterUpdate, tick } from "svelte";
 
   let theInput;
 
@@ -14,7 +23,7 @@
     }
 
     if (theInput) {
-    // take focus if id equals current row id
+      // take focus if id equals current row id
       if (entryId === nodeCursorRowId && document.activeElement !== theInput) {
         theInput.focus();
       }
@@ -52,7 +61,9 @@
     // TODO
     if (ev.key === "Tab") {
       ev.preventDefault();
-      console.log("TODO: do something on"+(ev.shiftKey ? " shift" : "")+" tab");
+      console.log(
+        "TODO: do something on" + (ev.shiftKey ? " shift" : "") + " tab"
+      );
       return;
     }
 
@@ -72,7 +83,9 @@
     } else if (ev.key === "Enter") {
       ev.preventDefault();
       handleSplitEntry();
-    } else if (["ArrowLeft", "ArrowRight", "Home", "End"].indexOf(ev.key) > -1) {
+    } else if (
+      ["ArrowLeft", "ArrowRight", "Home", "End"].indexOf(ev.key) > -1
+    ) {
       ev.preventDefault();
 
       handleCursorMove(this.selectionStart, this.value.length);
@@ -84,21 +97,18 @@
     this.selectionEnd = nodeCursorColId;
   }
 
-
-
   $: handleEntryInputClick = (index, ev) => {
     let colId = ev.target.selectionStart;
     if (nodeCursorRowId !== index || nodeCursorColId != colId) {
       handleSaveFullCursor(index, colId);
     }
-  }
+  };
 
-  $: handleInput = (ev) => {
+  $: handleInput = ev => {
     let colId = ev.target.selectionStart;
     let entryText = ev.target.value;
     handleSaveNodeEntry(entryText, colId);
-  }
-
+  };
 </script>
 
 <style>
@@ -116,6 +126,5 @@
   value={entryValue}
   bind:this={theInput}
   on:input={handleInput}
-  on:click={(e) => handleEntryInputClick(entryId, e)}
-  on:keydown={handleKeydown}
-/>
+  on:click={e => handleEntryInputClick(entryId, e)}
+  on:keydown={handleKeydown} />

@@ -1,11 +1,11 @@
 <script>
-  import { createHashHistory } from 'history';
-  import { assign, interpret } from 'xstate';
-  import Node from './Node.svelte';
-  import Top from './Top.svelte';
-  import FlowyTree from './FlowyTree.js';
-  import FlowyTreeNode from './FlowyTreeNode.js';
-  import createMachine from './machine.js';
+  import { createHashHistory } from "history";
+  import { assign, interpret } from "xstate";
+  import Node from "./Node.svelte";
+  import Top from "./Top.svelte";
+  import FlowyTree from "./FlowyTree.js";
+  import FlowyTreeNode from "./FlowyTreeNode.js";
+  import createMachine from "./machine.js";
 
   let currentHashId;
   let currentNodeNameTextEntry;
@@ -31,36 +31,34 @@
     return {
       currentNodeId: nodeId,
       nodeCursorRowId: initRowId,
-      nodeTitle: node.name,
+      nodeTitle: node.name
     };
   });
 
-
   let saveNodeNameAction = assign(ctxt => {
-    let copyNodes = {...ctxt.nodes};
+    let copyNodes = { ...ctxt.nodes };
 
     let i = ctxt.currentNodeId;
-    copyNodes[i] = {...ctxt.nodes[i]};
+    copyNodes[i] = { ...ctxt.nodes[i] };
     copyNodes[i].name = currentNodeNameTextEntry;
 
     return {
       nodes: copyNodes,
-      nodeTitle: currentNodeNameTextEntry,
+      nodeTitle: currentNodeNameTextEntry
     };
-
   });
 
   let saveNodeEntryAction = assign(ctxt => {
-    let copyNodes = {...ctxt.nodes};
+    let copyNodes = { ...ctxt.nodes };
     let i = ctxt.currentNodeId;
     let j = ctxt.nodeCursorRowId;
-    copyNodes[i] = {...ctxt.nodes[i]};
+    copyNodes[i] = { ...ctxt.nodes[i] };
     let newTree = entriesListToTree([...copyNodes[i].doc.getEntries()]);
     copyNodes[i].doc = newTree;
     newTree.setEntry(j, currentNodeEntryText);
     return {
       nodes: copyNodes,
-      nodeCursorColId: currentCursorColId,
+      nodeCursorColId: currentCursorColId
     };
   });
 
@@ -68,32 +66,33 @@
   let saveFullCursorAction = assign(_ctxt => {
     return {
       nodeCursorRowId: currentCursorRowId,
-      nodeCursorColId: currentCursorColId,
+      nodeCursorColId: currentCursorColId
     };
   });
 
   let saveCursorColIdAction = assign(_ctxt => {
     return {
-      nodeCursorColId: currentCursorColId,
+      nodeCursorColId: currentCursorColId
     };
   });
 
   let backspaceAction = assign(ctxt => {
-    let copyNodes = {...ctxt.nodes};
+    let copyNodes = { ...ctxt.nodes };
     let currentNode = copyNodes[ctxt.currentNodeId];
     currentNode.doc = entriesListToTree([...currentNode.doc.getEntries()]);
     let colId = ctxt.nodeCursorColId;
 
     if (colId > 0) {
       let currEntry = currentNode.doc.getEntry(ctxt.nodeCursorRowId);
-      let newEntry = currEntry.substring(0, colId - 1) + currEntry.substring(colId);
+      let newEntry =
+        currEntry.substring(0, colId - 1) + currEntry.substring(colId);
       currentNode.doc.setEntry(ctxt.nodeCursorRowId, newEntry);
 
       currentCursorColId = colId - 1;
       return {
         nodeCursorColId: colId - 1,
-        nodes: copyNodes,
-      }
+        nodes: copyNodes
+      };
     }
 
     // col is zero, so we merge adjacent entries
@@ -102,8 +101,8 @@
     let prevRowId = rowId - 1;
 
     let newNodes;
-    newNodes = {...ctxt.nodes};
-    let nodeId = ctxt.currentNodeId
+    newNodes = { ...ctxt.nodes };
+    let nodeId = ctxt.currentNodeId;
     let currNode = newNodes[nodeId];
 
     let prevRowOrigEntryLen = currNode.doc.getEntry(prevRowId).length;
@@ -111,30 +110,41 @@
     currNode.doc = entriesListToTree([...currNode.doc.getEntries()]);
     let currEntry = currNode.doc.getEntry(rowId);
     currNode.doc.deleteAt(rowId);
-    currNode.doc.setEntry(prevRowId, currNode.doc.getEntry(prevRowId) + currEntry);
+    currNode.doc.setEntry(
+      prevRowId,
+      currNode.doc.getEntry(prevRowId) + currEntry
+    );
 
     // NOTE: we *set* currentCursorColId here.
     currentCursorColId = prevRowOrigEntryLen;
     return {
       nodeCursorRowId: prevRowId,
       nodeCursorColId: prevRowOrigEntryLen,
-      nodes: newNodes,
+      nodes: newNodes
     };
-
   });
-
-
-
 
   /*** service and state ***/
 
-  let machine = createMachine(navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction);
+  let machine = createMachine(
+    navigateToNodeAction,
+    saveNodeNameAction,
+    saveNodeEntryAction,
+    saveFullCursorAction,
+    saveCursorColIdAction,
+    backspaceAction
+  );
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
   flowikiService.onTransition(state => {
     console.log("-------------------");
-    console.log("transitioning to context = ", state.context, ", state = ", state.value);
+    console.log(
+      "transitioning to context = ",
+      state.context,
+      ", state = ",
+      state.value
+    );
     machineState = state;
   });
   flowikiService.start();
@@ -143,24 +153,23 @@
 
   function route(pathname) {
     let newId = pathname.substring(1);
-    if (newId === '') {
-      flowikiService.send('GO_HOME');
+    if (newId === "") {
+      flowikiService.send("GO_HOME");
       return;
     }
-    if (newId === 'create') {
-      flowikiService.send('INIT_CREATE_NODE');
+    if (newId === "create") {
+      flowikiService.send("INIT_CREATE_NODE");
       return;
     }
 
     let parseResult = parseInt(newId);
     if (!isNaN(parseResult)) {
       currentHashId = parseResult;
-      flowikiService.send('NAVIGATE');
+      flowikiService.send("NAVIGATE");
     } else {
-      flowikiService.send('GO_HOME');
+      flowikiService.send("GO_HOME");
     }
   }
-
 
   const history = createHashHistory();
 
@@ -169,83 +178,83 @@
     // location is an object like window.location
     console.log(action, location.pathname, location.state);
 
-    if (!location.pathname.startsWith('/')) {
+    if (!location.pathname.startsWith("/")) {
       return;
     }
 
-    route(location.pathname)
+    route(location.pathname);
   });
-
 
   /*** event handlers & some reactive variables ***/
 
   function createNode() {
-
     // navigate to #/create
-    history.push('/create');
+    history.push("/create");
   }
 
   function handleStartEditingNodeName() {
-    flowikiService.send('START_EDITING_NAME');
+    flowikiService.send("START_EDITING_NAME");
   }
 
   function handleCancelEditingNodeName() {
-    flowikiService.send('CANCEL_EDITING_NAME');
+    flowikiService.send("CANCEL_EDITING_NAME");
   }
 
   function handleSaveNodeName(nodeNameText) {
     currentNodeNameTextEntry = nodeNameText;
-    flowikiService.send('SAVE_NODE_NAME');
+    flowikiService.send("SAVE_NODE_NAME");
   }
 
   function handleSaveNodeEntry(entryText, colId) {
     currentNodeEntryText = entryText;
     currentCursorColId = colId;
-    flowikiService.send('SAVE_NODE_ENTRY');
+    flowikiService.send("SAVE_NODE_ENTRY");
   }
 
   function handleSaveFullCursor(rowId, colId) {
     currentCursorRowId = rowId;
     currentCursorColId = colId;
-    flowikiService.send('SAVE_FULL_CURSOR');
+    flowikiService.send("SAVE_FULL_CURSOR");
   }
 
   function handleSaveCursorColId(colId) {
     currentCursorColId = colId;
-    flowikiService.send('SAVE_CURSOR_COL_ID');
+    flowikiService.send("SAVE_CURSOR_COL_ID");
   }
 
   function handleGoUp() {
-    flowikiService.send('UP');
+    flowikiService.send("UP");
   }
   function handleGoDown() {
-    flowikiService.send('DOWN');
+    flowikiService.send("DOWN");
   }
   function handleEntryBackspace() {
-    flowikiService.send('ENTRY_BACKSPACE');
+    flowikiService.send("ENTRY_BACKSPACE");
   }
   function handleSplitEntry() {
-    flowikiService.send('SPLIT_ENTRY');
+    flowikiService.send("SPLIT_ENTRY");
   }
 
-  $: isAtTop = machineState.value.flowiki === 'top';
+  $: isAtTop = machineState.value.flowiki === "top";
 
   $: displayNodes = machineState.context.displayNodes.map(id => {
     return machineState.context.nodes[id];
   });
 
-  $: displayNodeEntries = (machineState.context.currentNodeId !== null
-    ? machineState.context.nodes[machineState.context.currentNodeId].doc.getEntries()
-    : [""]);
+  $: displayNodeEntries =
+    machineState.context.currentNodeId !== null
+      ? machineState.context.nodes[
+          machineState.context.currentNodeId
+        ].doc.getEntries()
+      : [""];
 
   $: nodeIsEditingName = (() => {
     let curr = machineState.value.flowiki;
     if (!isObject(curr)) {
-      return nodeIsEditingName
+      return nodeIsEditingName;
     }
     return curr.node.nodeTitle === "editing";
   })();
-
 </script>
 
 <style>
@@ -255,7 +264,10 @@
     margin-top: 1.5em;
     border-bottom: 2px solid #666;
     margin-bottom: 0.3em;
-    font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+    font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console",
+      "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono",
+      "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier,
+      monospace;
   }
 
   #home-link {
@@ -267,29 +279,28 @@
   <header>
     <span>notes</span>
   </header>
-  <Top
-    displayNodes={displayNodes}
-    createNode={createNode}
-  />
+  <Top {displayNodes} {createNode} />
 {:else}
   <header>
-    <span id="home-link"><a href="#/">🏠</a></span> &gt;
+    <span id="home-link">
+      <a href="#/">🏠</a>
+    </span>
+    &gt;
   </header>
   <Node
     entries={displayNodeEntries}
     nodeCursorRowId={machineState.context.nodeCursorRowId}
     nodeCursorColId={machineState.context.nodeCursorColId}
     nodeTitle={machineState.context.nodeTitle}
-    nodeIsEditingName={nodeIsEditingName}
-    handleStartEditingNodeName={handleStartEditingNodeName}
-    handleCancelEditingNodeName={handleCancelEditingNodeName}
-    handleGoUp={handleGoUp}
-    handleGoDown={handleGoDown}
-    handleSplitEntry={handleSplitEntry}
-    handleEntryBackspace={handleEntryBackspace}
-    handleSaveCursorColId={handleSaveCursorColId}
-    handleSaveNodeName={handleSaveNodeName}
-    handleSaveNodeEntry={handleSaveNodeEntry}
-    handleSaveFullCursor={handleSaveFullCursor}
-  />
+    {nodeIsEditingName}
+    {handleStartEditingNodeName}
+    {handleCancelEditingNodeName}
+    {handleGoUp}
+    {handleGoDown}
+    {handleSplitEntry}
+    {handleEntryBackspace}
+    {handleSaveCursorColId}
+    {handleSaveNodeName}
+    {handleSaveNodeEntry}
+    {handleSaveFullCursor} />
 {/if}
