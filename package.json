@@ -1,5 +1,5 @@
 {
-  "name": "svelte-app",
+  "name": "innecto",
   "version": "0.0.10-dev",
   "devDependencies": {
     "cross-env": "^5.2.0",
