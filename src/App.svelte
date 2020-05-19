@@ -1,7 +1,7 @@
 <script>
   import { createHashHistory } from "history";
   import { assign, interpret } from "xstate";
-  import Node from "./Node.svelte";
+  import Document from "./Document.svelte";
   import Top from "./Top.svelte";
   import FlowyTree from "./FlowyTree.js";
   import FlowyTreeNode from "./FlowyTreeNode.js";
@@ -287,7 +287,7 @@
     </span>
     &gt;
   </header>
-  <Node
+  <Document
     entries={displayNodeEntries}
     nodeCursorRowId={machineState.context.nodeCursorRowId}
     nodeCursorColId={machineState.context.nodeCursorColId}
