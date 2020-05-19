@@ -78,10 +78,6 @@
       monospace;
     font-size: 1em;
   }
-
-  .highlighted {
-    background-color: #e6fcf1;
-  }
 </style>
 
 {#if nodeIsEditingName}
@@ -105,7 +101,7 @@
 
 <ul id="entries">
   {#each entries as entry, i}
-    <li class={i === nodeCursorRowId ? 'highlighted' : ''}>
+    <li>
       <EntryInput
         entryId={i}
         entryValue={entry}
