@@ -11,7 +11,7 @@ function entriesListToTree(entriesList) {
 function generateTestContext() {
   let entries = [
     ['ab cd', 'eEe EeE', 'Ff Gg Hh Ii Jj'],
-    ['4', '5', 'seventy', '-1' ],
+    ['4', '5', 'seventy', '-1'],
     ['alpha', 'beta', 'gamma', 'delta']
   ];
   return {
@@ -42,7 +42,7 @@ function generateTestContext() {
 
 
 let createNodeAction = assign(ctxt => {
-  let copyNodes = {...ctxt.nodes};
+  let copyNodes = { ...ctxt.nodes };
   let existingIds = Object.keys(copyNodes).map(id => parseInt(id));
   let maxId = Math.max(...existingIds);
   let newId = maxId + 1
@@ -93,7 +93,7 @@ let splitEntryAction = assign(ctxt => {
 
   // only update nodes if there's a nodeId
   let newNodes;
-  newNodes = {...ctxt.nodes};
+  newNodes = { ...ctxt.nodes };
   let nodeId = ctxt.currentNodeId;
   let currNode = newNodes[nodeId];
   let currEntry = currNode.doc.getEntry(rowId);
