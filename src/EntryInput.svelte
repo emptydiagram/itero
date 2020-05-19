@@ -118,11 +118,15 @@
     border: 0;
     width: 100%;
   }
+  .highlighted {
+    background-color: #e6fcf1;
+  }
 </style>
 
 <input
   type="text"
   class="entry-input"
+  class:highlighted={entryId === nodeCursorRowId}
   value={entryValue}
   bind:this={theInput}
   on:input={handleInput}
