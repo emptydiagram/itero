@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "history": "^4.10.1",
+    "linked-list": "^2.1.0",
     "xstate": "^4.8.0"
   }
 }
