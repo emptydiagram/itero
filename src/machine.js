@@ -1,11 +1,15 @@
 import { Machine, assign } from 'xstate';
 import FlowyTree from './FlowyTree.js';
 import FlowyTreeNode from './FlowyTreeNode.js';
+import { LinkedListItem, LinkedList } from './LinkedList.js';
 
 function entriesListToTree(entriesList) {
-  let children = entriesList.map(entry => new FlowyTreeNode(entry, []));
-  let root = new FlowyTreeNode(null, children);
-  return new FlowyTree(entriesList, root);
+  let entries = {};
+  entriesList.forEach((entry, i) => {
+    entries[i] = entry;
+  });
+  let itemsList = Array.from(Array(entriesList.length), (_v, i) => new LinkedListItem(i));
+  return new FlowyTree(entries, new LinkedList(...itemsList));
 }
 
 function generateTestContext() {
@@ -103,7 +107,7 @@ let splitEntryAction = assign(ctxt => {
   let updatedCurrEntry = currEntry.substring(0, colId);
   let newEntry = currEntry.substring(colId, currEntry.length);
 
-  let newTree = entriesListToTree([...currNode.doc.getEntries()]);
+  let newTree = new FlowyTree(currNode.doc.getEntries(), currNode.doc.getEntriesList());
   currNode.doc = newTree;
 
   newTree.setEntry(rowId, updatedCurrEntry);

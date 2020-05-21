@@ -1,35 +1,57 @@
+import { LinkedListItem } from "./LinkedList";
+
 export default class FlowyTree {
-  // root: FlowyTreeNode
-  constructor(entriesList, root) {
+  // entries: Map<EntryId, String>
+  // entriesList: LinkedList
+  constructor(entries, entriesList) {
+    this.entries = entries;
     this.entriesList = entriesList;
-    this.root = root;
   }
 
   getEntries() {
+    return this.entries;
+  }
+
+  getEntriesList() {
     return this.entriesList;
   }
 
-  getRoot() {
-    return this.root;
+  getEntryTexts() {
+    return this.entriesList.toArray().map(item => this.entries[item.value])
   }
 
   getEntry(index) {
-    return this.entriesList[index];
+    let entryId = this.entriesList.get(index).value;
+    return this.entries[entryId];
   }
 
   setEntry(index, value) {
-    this.entriesList[index] = value;
+    let entryId = this.entriesList.get(index).value;
+    this.entries[entryId] = value;
   }
 
   insertAt(index, newEntry) {
-    this.entriesList.splice(index, 0, newEntry);
+    let n = this.entriesList.size;
+    if (index > n) {
+      throw `insertAt: index ${index} is too large, there are only ${n} items`
+    }
+
+    let existingIds = Object.keys(this.entries).map(id => parseInt(id));
+    let newId = Math.max(...existingIds) + 1;
+    this.entries[newId] = newEntry;
+
+    let newNode = new LinkedListItem(newId);
+    let prevNode = this.entriesList.get(index - 1);
+    prevNode.append(newNode);
   }
 
   deleteAt(index) {
-    this.entriesList.splice(index, 1);
+    let node = this.entriesList.get(index);
+    delete this.entries[node.value];
+    node.detach();
   }
 
   size() {
-    return this.entriesList.length;
+    return this.entries.length;
   }
 }
