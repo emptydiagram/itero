@@ -17,13 +17,6 @@
     return obj === Object(obj);
   }
 
-  //TODO: duplicated with machine.js
-  function entriesListToTree(entriesList) {
-    let children = entriesList.map(entry => new FlowyTreeNode(entry, []));
-    let root = new FlowyTreeNode(null, children);
-    return new FlowyTree(entriesList, root);
-  }
-
   let navigateToNodeAction = assign(ctxt => {
     let nodeId = currentHashId;
     let node = ctxt.nodes[nodeId];
@@ -53,7 +46,7 @@
     let i = ctxt.currentNodeId;
     let j = ctxt.nodeCursorRowId;
     copyNodes[i] = { ...ctxt.nodes[i] };
-    let newTree = entriesListToTree([...copyNodes[i].doc.getEntries()]);
+    let newTree = new FlowyTree(copyNodes[i].doc.getEntries(), copyNodes[i].doc.getEntriesList());
     copyNodes[i].doc = newTree;
     newTree.setEntry(j, currentNodeEntryText);
     return {
@@ -79,7 +72,7 @@
   let backspaceAction = assign(ctxt => {
     let copyNodes = { ...ctxt.nodes };
     let currentNode = copyNodes[ctxt.currentNodeId];
-    currentNode.doc = entriesListToTree([...currentNode.doc.getEntries()]);
+    currentNode.doc = new FlowyTree(currentNode.doc.getEntries(), currentNode.doc.getEntriesList());
     let colId = ctxt.nodeCursorColId;
 
     if (colId > 0) {
@@ -96,32 +89,33 @@
     }
 
     // col is zero, so we merge adjacent entries
-
     let rowId = ctxt.nodeCursorRowId;
-    let prevRowId = rowId - 1;
+    if (rowId > 0) {
+      let prevRowId = rowId - 1;
 
-    let newNodes;
-    newNodes = { ...ctxt.nodes };
-    let nodeId = ctxt.currentNodeId;
-    let currNode = newNodes[nodeId];
+      let newNodes;
+      newNodes = { ...ctxt.nodes };
+      let nodeId = ctxt.currentNodeId;
+      let currNode = newNodes[nodeId];
 
-    let prevRowOrigEntryLen = currNode.doc.getEntry(prevRowId).length;
+      let prevRowOrigEntryLen = currNode.doc.getEntry(prevRowId).length;
 
-    currNode.doc = entriesListToTree([...currNode.doc.getEntries()]);
-    let currEntry = currNode.doc.getEntry(rowId);
-    currNode.doc.deleteAt(rowId);
-    currNode.doc.setEntry(
-      prevRowId,
-      currNode.doc.getEntry(prevRowId) + currEntry
-    );
+      currentNode.doc = new FlowyTree(currNode.doc.getEntries(), currNode.doc.getEntriesList());
+      let currEntry = currNode.doc.getEntry(rowId);
+      currNode.doc.deleteAt(rowId);
+      currNode.doc.setEntry(
+        prevRowId,
+        currNode.doc.getEntry(prevRowId) + currEntry
+      );
 
-    // NOTE: we *set* currentCursorColId here.
-    currentCursorColId = prevRowOrigEntryLen;
-    return {
-      nodeCursorRowId: prevRowId,
-      nodeCursorColId: prevRowOrigEntryLen,
-      nodes: newNodes
-    };
+      // NOTE: we *set* currentCursorColId here.
+      currentCursorColId = prevRowOrigEntryLen;
+      return {
+        nodeCursorRowId: prevRowId,
+        nodeCursorColId: prevRowOrigEntryLen,
+        nodes: newNodes
+      };
+    }
   });
 
   /*** service and state ***/
@@ -245,7 +239,7 @@
     machineState.context.currentNodeId !== null
       ? machineState.context.nodes[
           machineState.context.currentNodeId
-        ].doc.getEntries()
+        ].doc.getEntryTexts()
       : [""];
 
   $: nodeIsEditingName = (() => {
