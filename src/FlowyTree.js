@@ -19,16 +19,16 @@ export default class FlowyTree {
   }
 
   getEntryTexts() {
-    return this.root.getChildren().toArray().map(item => this.entries[item.value])
+    return this.root.getChildren().toArray().map(item => this.entries[item.value.getId()])
   }
 
   getEntry(index) {
-    let entryId = this.root.getChildren().get(index).value;
+    let entryId = this.root.getChildren().get(index).value.getId();
     return this.entries[entryId];
   }
 
   setEntry(index, value) {
-    let entryId = this.root.getChildren().get(index).value;
+    let entryId = this.root.getChildren().get(index).value.getId();
     this.entries[entryId] = value;
   }
 
@@ -42,14 +42,14 @@ export default class FlowyTree {
     let newId = Math.max(...existingIds) + 1;
     this.entries[newId] = newEntry;
 
-    let newNode = new LinkedListItem(newId);
+    let newNode = new LinkedListItem(new FlowyTreeNode(newId, null));
     let prevNode = this.root.getChildren().get(index - 1);
     prevNode.append(newNode);
   }
 
   deleteAt(index) {
     let node = this.root.getChildren().get(index);
-    delete this.entries[node.value];
+    delete this.entries[node.value.getId()];
     node.detach();
   }
 
