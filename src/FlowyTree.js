@@ -23,7 +23,7 @@ export default class FlowyTree {
     return this.root.getChildren().toArray().map(item => this.entries[item.value.getId()])
   }
 
-  getEntry(index) {
+  getEntryByRow(index) {
     let entryId = this.root.getChildren().get(index).value.getId();
     return this.entries[entryId];
   }
