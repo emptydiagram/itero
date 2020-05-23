@@ -31,10 +31,6 @@ export default class FlowyTree {
     return this.entries;
   }
 
-  getEntryItems() {
-    return this.entryItems;
-  }
-
   getRoot() {
     return this.root;
   }
@@ -45,9 +41,42 @@ export default class FlowyTree {
 
   hasEntryAbove(entryId) {
     console.log("_____:: hasEntryAbove, (entryId, item) = ", entryId, this.entryItems[entryId]);
+    return this.entryItems[entryId].prev !== null || this.entryItems[entryId].value.parentId !== null;
   }
+
+  getEntryIdAbove(entryId) {
+    if (this.entryItems[entryId].prev !== null) {
+      return this.entryItems[entryId].prev.value.getId();
+    }
+    return this.entryItems[entryId].value.parentId;
+  }
+
+  // true iff it has a next sibling or if an ancestor has a next sibling
   hasEntryBelow(entryId) {
     console.log("_____:: hasEntryBelow, (entryId, item) = ", entryId, this.entryItems[entryId]);
+    return this.entryItems[entryId].next !== null || entryAncestorHasNextSibling(entryId);
+  }
+
+  getEntryIdBelow(entryId) {
+    if (this.entryItems[entryId].next !== null) {
+      return this.entryItems[entryId].next.value.getId();
+    }
+    // TODO:
+    let parentId = this.entryItems[entryId].value.parentId;
+    return this.entryItems[parentId].next;
+  }
+
+  entryAncestorHasNextSibling(entryId) {
+    if (!this.entryItems[entryId].value.parentId) {
+      return false;
+    }
+    let parentId = this.entryItems[entryId].value.parentId;
+    // TODO: traverse all ancestors (in order) to search for an ancestor with a next sibling
+    return this.entryItems[parentId].next !== null;
+  }
+
+  getEntry(entryId) {
+    return this.entries[entryId];
   }
 
   getEntryByRow(index) {
@@ -55,7 +84,7 @@ export default class FlowyTree {
     return this.entries[entryId];
   }
 
-  setEntry(index, value) {
+  setEntryByRow(index, value) {
     let entryId = this.root.getChildren().get(index).value.getId();
     this.entries[entryId] = value;
   }
