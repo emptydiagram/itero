@@ -11,9 +11,6 @@
   import EntryInput from "./EntryInput.svelte";
   import Node from "./Node.svelte";
 
-  $: console.log("%$#@ in NODE, entries = ", entries);
-  $: console.log("%$#@ in NODE, flowyTreeNode = ", flowyTreeNode);
-
   $: atFirstRow = nodeCursorRowId === 0;
   $: atLastRow = nodeCursorRowId === Object.keys(entries).length - 1;
   $: childNodeArray = flowyTreeNode.getChildNodeArray();

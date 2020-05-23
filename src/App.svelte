@@ -50,7 +50,7 @@
       copyNodes[i].doc.getRoot()
     );
     copyNodes[i].doc = newTree;
-    newTree.setEntry(j, currentNodeEntryText);
+    newTree.setEntryByRow(j, currentNodeEntryText);
     return {
       nodes: copyNodes,
       nodeCursorColId: currentCursorColId
@@ -84,7 +84,7 @@
       let currEntry = currentNode.doc.getEntryByRow(ctxt.nodeCursorRowId);
       let newEntry =
         currEntry.substring(0, colId - 1) + currEntry.substring(colId);
-      currentNode.doc.setEntry(ctxt.nodeCursorRowId, newEntry);
+      currentNode.doc.setEntryByRow(ctxt.nodeCursorRowId, newEntry);
 
       currentCursorColId = colId - 1;
       return {
@@ -111,7 +111,7 @@
       );
       let currEntry = currNode.doc.getEntryByRow(rowId);
       currNode.doc.deleteAt(rowId);
-      currNode.doc.setEntry(
+      currNode.doc.setEntryByRow(
         prevRowId,
         currNode.doc.getEntryByRow(prevRowId) + currEntry
       );
