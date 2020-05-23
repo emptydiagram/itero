@@ -3,16 +3,11 @@ import FlowyTree from './FlowyTree.js';
 import FlowyTreeNode from './FlowyTreeNode.js';
 import { LinkedListItem, LinkedList } from './LinkedList.js';
 
-function entriesListToTree(entriesList) {
-  let entries = {};
-  entriesList.forEach((entry, i) => {
-    entries[i] = entry;
-  });
-
+function makeTree(entries, treeObj) {
   // a linked list of FlowyTreeNodes, one for each item in entriesList
   let nodesArray = Array.from(
-    Array(entriesList.length),
-    (_v, i) => new LinkedListItem(new FlowyTreeNode(i, null)));
+    treeObj.root,
+    id => new LinkedListItem(new FlowyTreeNode(id, null)));
   let nodesList = new LinkedList(...nodesArray);
 
   let theRoot = new FlowyTreeNode(null, null, nodesList);
@@ -21,9 +16,9 @@ function entriesListToTree(entriesList) {
 
 function generateTestContext() {
   let entries = [
-    ['ab cd', 'eEe EeE', 'Ff Gg Hh Ii Jj'],
-    ['4', '5', 'seventy', '-1'],
-    ['alpha', 'beta', 'gamma', 'delta']
+    [{0: 'abcdefg', 1: 'eEe EeE', 2: 'Ww Xx Yy Zz'}, {root: [0, 1, 2]}],
+    [{0: '4', 1: 'five', 2: 'seventy', 3: '-1'}, {root: [2, 0, 3, 1]}],
+    [{0: 'alpha', 1: 'beta', 2: 'gamma', 3: 'delta'}, {root: [0, 1, 2, 3]}],
   ];
   return {
     currentNodeId: null,
@@ -32,17 +27,17 @@ function generateTestContext() {
       '1': {
         id: 1,
         name: 'some letters',
-        doc: entriesListToTree(entries[0]),
+        doc: makeTree(...entries[0]),
       },
       '2': {
         id: 2,
         name: 'some numbers',
-        doc: entriesListToTree(entries[1]),
+        doc: makeTree(...entries[1]),
       },
       '4': {
         id: 4,
         name: 'some greek letters',
-        doc: entriesListToTree(entries[2]),
+        doc: makeTree(...entries[2]),
       }
     },
     displayNodes: [1, 2, 4],
@@ -58,13 +53,13 @@ let createNodeAction = assign(ctxt => {
   let maxId = Math.max(...existingIds);
   let newId = maxId + 1
   let initEntryText = 'TODO';
-  let newNodeEntries = entriesListToTree([initEntryText]);
+  let newTree = makeTree({0: initEntryText}, {root: [0]});
   let newNodeName = 'New document'
 
   copyNodes[newId] = {
     id: newId,
     name: newNodeName,
-    doc: newNodeEntries,
+    doc: newTree,
   };
 
   let newDisplayNodes = [...ctxt.displayNodes];

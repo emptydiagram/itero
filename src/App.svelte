@@ -4,7 +4,6 @@
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
   import FlowyTree from "./FlowyTree.js";
-  import FlowyTreeNode from "./FlowyTreeNode.js";
   import createMachine from "./machine.js";
 
   let currentHashId;
