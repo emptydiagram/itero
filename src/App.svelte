@@ -234,12 +234,19 @@
     return machineState.context.nodes[id];
   });
 
-  $: displayNodeEntries =
+  $: currentNodeRoot =
     machineState.context.currentNodeId !== null
       ? machineState.context.nodes[
           machineState.context.currentNodeId
-        ].doc.getEntryTexts()
-      : [""];
+        ].doc.getRoot()
+      : null;
+
+  $: currentNodeEntries =
+    machineState.context.currentNodeId !== null
+      ? machineState.context.nodes[
+          machineState.context.currentNodeId
+        ].doc.getEntries()
+      : null;
 
   $: nodeIsEditingName = (() => {
     let curr = machineState.value.flowiki;
@@ -281,7 +288,8 @@
     &gt;
   </header>
   <Document
-    entries={displayNodeEntries}
+    entries={currentNodeEntries}
+    flowyTreeNode={currentNodeRoot}
     nodeCursorRowId={machineState.context.nodeCursorRowId}
     nodeCursorColId={machineState.context.nodeCursorColId}
     nodeTitle={machineState.context.nodeTitle}

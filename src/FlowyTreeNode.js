@@ -1,6 +1,6 @@
 import { LinkedList } from "./LinkedList";
 
- export default class FlowyTreeNode {
+export default class FlowyTreeNode {
   constructor(id, parentId, children) {
     this.id = id;
     this.parentId = parentId;
@@ -19,5 +19,9 @@ import { LinkedList } from "./LinkedList";
 
   getChildren() {
     return this.children;
+  }
+
+  getChildNodeArray() {
+    return this.children.toArray();
   }
 }
