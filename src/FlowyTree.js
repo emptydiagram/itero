@@ -1,6 +1,7 @@
 import { LinkedListItem } from "./LinkedList.js";
 import FlowyTreeNode from './FlowyTreeNode.js'
 
+// todo: handle full trees
 export default class FlowyTree {
   // entries: Map<EntryId, String>
   // entriesList: LinkedList<EntryId>
@@ -17,12 +18,6 @@ export default class FlowyTree {
   getRoot() {
     return this.root;
   }
-
-  /*
-  getEntriesList() {
-    return this.root.getChildren();
-  }
-  */
 
   getEntryTexts() {
     return this.root.getChildren().toArray().map(item => this.entries[item.value.getId()])

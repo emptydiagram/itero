@@ -1,5 +1,6 @@
 <script>
   export let entries,
+    flowyTreeNode,
     nodeTitle,
     nodeCursorRowId,
     nodeCursorColId,
@@ -67,35 +68,46 @@
     font-weight: bold;
     background-color: #f7f7f2;
   }
+
+  #document {
+    font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console",
+      "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono",
+      "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier,
+      monospace;
+    font-size: 1em;
+  }
 </style>
 
-{#if nodeIsEditingName}
-  <div>
-    <input
-      type="text"
-      id="node-name-input"
-      bind:value={nodeTitleText}
-      placeholder="Document name" />
-    <span class="node-name-edit-action" on:click={handleSaveName}>save</span>
-    <span class="node-name-edit-action" on:click={handleEditingCancel}>
-      cancel
-    </span>
-  </div>
-{:else}
-  <div id="node-name">
-    <span id="node-name-display">{nodeTitle}</span>
-    <span id="node-name-edit" on:click={handleStartEditing}>edit</span>
-  </div>
-{/if}
+<div id="document">
+  {#if nodeIsEditingName}
+    <div>
+      <input
+        type="text"
+        id="node-name-input"
+        bind:value={nodeTitleText}
+        placeholder="Document name" />
+      <span class="node-name-edit-action" on:click={handleSaveName}>save</span>
+      <span class="node-name-edit-action" on:click={handleEditingCancel}>
+        cancel
+      </span>
+    </div>
+  {:else}
+    <div id="node-name">
+      <span id="node-name-display">{nodeTitle}</span>
+      <span id="node-name-edit" on:click={handleStartEditing}>edit</span>
+    </div>
+  {/if}
 
-<Node
-  {entries}
-  {nodeCursorRowId}
-  {nodeCursorColId}
-  {handleSaveNodeEntry}
-  {handleSaveFullCursor}
-  {handleGoUp}
-  {handleGoDown}
-  {handleSplitEntry}
-  {handleEntryBackspace}
-  {handleSaveCursorColId} />
+  <Node
+    {entries}
+    {flowyTreeNode}
+    {nodeCursorRowId}
+    {nodeCursorColId}
+    {handleSaveNodeEntry}
+    {handleSaveFullCursor}
+    {handleGoUp}
+    {handleGoDown}
+    {handleSplitEntry}
+    {handleEntryBackspace}
+    {handleSaveCursorColId} />
+</div>

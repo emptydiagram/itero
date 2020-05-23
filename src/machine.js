@@ -3,22 +3,52 @@ import FlowyTree from './FlowyTree.js';
 import FlowyTreeNode from './FlowyTreeNode.js';
 import { LinkedListItem, LinkedList } from './LinkedList.js';
 
-function makeTree(entries, treeObj) {
-  // a linked list of FlowyTreeNodes, one for each item in entriesList
+function isObject(obj) {
+  return obj === Object(obj);
+}
+
+// impl full handling of treeObj
+//
+// returns: a FlowyTreeNode which corresponds to the specification in treeObj
+function treeObjToNode(treeObj, parentId) {
+  let rootKey = Object.keys(treeObj)[0];
+  let currNode = treeObj[rootKey];
+  let currId = rootKey === "root" ? null : parseInt(rootKey);
   let nodesArray = Array.from(
-    treeObj.root,
-    id => new LinkedListItem(new FlowyTreeNode(id, null)));
+    currNode,
+    child => new LinkedListItem(
+      isObject(child)
+      ? treeObjToNode(child, currId)
+      : new FlowyTreeNode(child, currId)));
+  // a linked list of (LinkedListItems of) FlowyTreeNodes, one for each child in treeObj
   let nodesList = new LinkedList(...nodesArray);
 
-  let theRoot = new FlowyTreeNode(null, null, nodesList);
+  return new FlowyTreeNode(currId, parentId || null, nodesList);
+}
+
+function makeTree(entries, treeObj) {
+  let theRoot = treeObjToNode(treeObj);
   return new FlowyTree(entries, theRoot);
 }
 
 function generateTestContext() {
   let entries = [
-    [{0: 'abcdefg', 1: 'eEe EeE', 2: 'Ww Xx Yy Zz'}, {root: [0, 1, 2]}],
-    [{0: '4', 1: 'five', 2: 'seventy', 3: '-1'}, {root: [2, 0, 3, 1]}],
-    [{0: 'alpha', 1: 'beta', 2: 'gamma', 3: 'delta'}, {root: [0, 1, 2, 3]}],
+    [
+      {0: 'abc', 1: 'def', 2: 'ghi', 3: 'eEe EeE', 4: 'Ww Xx Yy Zz'},
+      {root: [{0: [1, 2]}, 3, 4]}
+    ],
+    [
+      {0: '4', 1: 'five', 2: 'seventy', 3: '-1'},
+      {root: [2, 0, 3, 1]}
+    ],
+    [
+      {0: 'alpha', 1: 'beta', 2: 'gamma', 3: 'delta'},
+      {root: [
+        {0: [
+          {1: [2, 3]}
+        ]}
+      ]}
+    ],
   ];
   return {
     currentNodeId: null,
