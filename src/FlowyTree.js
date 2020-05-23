@@ -1,18 +1,38 @@
 import { LinkedListItem } from "./LinkedList.js";
 import FlowyTreeNode from './FlowyTreeNode.js'
+import Queue from "./Queue.js";
 
-// todo: handle full trees
+// TODO: handle full trees
 export default class FlowyTree {
   // entries: Map<EntryId, String>
-  // entriesList: LinkedList<EntryId>
+  // root: FlowyTreeNode
+  // entryItems: Map<EntryId, LinkedListItem<FlowyTreeNode>>
   constructor(entries, root) {
     this.entries = entries;
     // this.root = new FlowyTreeNode(null, null, entriesList);
     this.root = root;
+
+    let q = new Queue();
+    let entryItems = {};
+    let item;
+    console.log("## ## ## new FlowyTree, (entries, root) = ", entries, root);
+    this.root.getChildNodeArray().forEach(it => q.add(it));
+    while (!q.isEmpty()) {
+      item = q.remove();
+      entryItems[item.value.getId()] = item;
+      item.value.getChildNodeArray().forEach(it => q.add(it));
+    }
+
+    console.log("## ## ## in new FlowyTree, entryItems = ", entryItems);
+    this.entryItems = entryItems;
   }
 
   getEntries() {
     return this.entries;
+  }
+
+  getEntryItems() {
+    return this.entryItems;
   }
 
   getRoot() {
@@ -21,6 +41,13 @@ export default class FlowyTree {
 
   getEntryTexts() {
     return this.root.getChildren().toArray().map(item => this.entries[item.value.getId()])
+  }
+
+  hasEntryAbove(entryId) {
+    console.log("_____:: hasEntryAbove, (entryId, item) = ", entryId, this.entryItems[entryId]);
+  }
+  hasEntryBelow(entryId) {
+    console.log("_____:: hasEntryBelow, (entryId, item) = ", entryId, this.entryItems[entryId]);
   }
 
   getEntryByRow(index) {
