@@ -8,8 +8,14 @@ function entriesListToTree(entriesList) {
   entriesList.forEach((entry, i) => {
     entries[i] = entry;
   });
-  let itemsList = Array.from(Array(entriesList.length), (_v, i) => new LinkedListItem(i));
-  return new FlowyTree(entries, new LinkedList(...itemsList));
+
+  // a linked list of FlowyTreeNodes, one for each item in entriesList
+  let nodesArray = Array.from(
+    Array(entriesList.length),
+    (_v, i) => new LinkedListItem(new FlowyTreeNode(i, null)));
+  let nodesList = new LinkedList(...nodesArray);
+
+  return new FlowyTree(entries, nodesList);
 }
 
 function generateTestContext() {
@@ -59,8 +65,6 @@ let createNodeAction = assign(ctxt => {
     name: newNodeName,
     doc: newNodeEntries,
   };
-
-  console.log(" ++ new node = ", copyNodes[newId]);
 
   let newDisplayNodes = [...ctxt.displayNodes];
   newDisplayNodes.push(newId);

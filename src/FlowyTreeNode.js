@@ -13,6 +13,10 @@ import { LinkedList } from "./LinkedList";
     this.childLookup = this.children.toArray();
   }
 
+  getId() {
+    return this.id;
+  }
+
   getChildren() {
     return this.children;
   }
