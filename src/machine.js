@@ -76,6 +76,7 @@ function generateTestContext() {
     },
     displayNodes: [1, 2, 4],
     nodeCursorRowId: 0,
+    nodeCursorEntryId: null,
     nodeCursorColId: 0,
   };
 }
@@ -99,10 +100,11 @@ let createNodeAction = assign(ctxt => {
   let newDisplayNodes = [...ctxt.displayNodes];
   newDisplayNodes.push(newId);
 
-
+  let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
   return {
     currentNodeId: newId,
     nodeCursorRowId: 0,
+    nodeCursorEntryId: null,
     nodeCursorColId: 0,
     nodeTitle: 'New document',
     nodes: copyNodes,
@@ -116,32 +118,36 @@ let goUpAction = assign(ctxt => {
   //   a) check if current entry can go up (is the top-most entry in the document)
   //   b) if not, get the entry id of the entry immediately above
   let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
+  let hasEntryAbove = currTree.hasEntryAbove(ctxt.nodeCursorEntryId);
 
 
-  let newRowId = ctxt.nodeCursorRowId === 0 ? 0 : ctxt.nodeCursorRowId - 1;
+  let newEntryId = hasEntryAbove ? currTree.getEntryIdAbove(ctxt.nodeCursorEntryId) : ctxt.nodeCursorEntryId;
   return {
-    nodeCursorRowId: newRowId,
+    nodeCursorEntryId: newEntryId,
   };
 });
 
 let goDownAction = assign(ctxt => {
   // TODO
-  const numEntries = ctxt.nodes[ctxt.currentNodeId].doc.size();
-  let newRowId = ctxt.nodeCursorRowId >= numEntries - 1 ? numEntries - 1 : ctxt.nodeCursorRowId + 1;
+  let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
+  let hasEntryBelow = currTree.hasEntryBelow(ctxt.nodeCursorEntryId);
+
+
+  let newEntryId = hasEntryBelow ? currTree.getEntryIdBelow(ctxt.nodeCursorEntryId) : ctxt.nodeCursorEntryId;
   return {
-    nodeCursorRowId: newRowId,
+    nodeCursorEntryId: newEntryId,
   };
 });
 
 let splitEntryAction = assign(ctxt => {
-  let rowId = ctxt.nodeCursorRowId;
+  let entryId = ctxt.nodeCursorEntryId;
 
   // only update nodes if there's a nodeId
   let newNodes;
   newNodes = { ...ctxt.nodes };
   let nodeId = ctxt.currentNodeId;
   let currNode = newNodes[nodeId];
-  let currEntry = currNode.doc.getEntryByRow(rowId);
+  let currEntry = currNode.doc.getEntry(entryId);
 
   let colId = ctxt.nodeCursorColId;
   console.log(" Splitting '" + currEntry + "' at colId = ", colId);
@@ -151,11 +157,14 @@ let splitEntryAction = assign(ctxt => {
   let newTree = new FlowyTree(currNode.doc.getEntries(), currNode.doc.getRoot());
   currNode.doc = newTree;
 
-  newTree.setEntry(rowId, updatedCurrEntry);
+  newTree.setEntryByRow(rowId, updatedCurrEntry);
   newTree.insertAt(rowId + 1, newEntry);
+
+  let newEntryId = hasEntryBelow ? currTree.getEntryIdBelow(ctxt.nodeCursorEntryId) : ctxt.nodeCursorEntryId;
 
   return {
     nodeCursorRowId: rowId + 1,
+    nodeCursorEntryId: null,
     nodeCursorColId: 0,
     nodes: newNodes,
   };
