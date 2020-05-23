@@ -20,9 +20,9 @@
 </script>
 
 <style>
-.tree-node-list {
-  padding-left: 2em;
-}
+  .tree-node-list {
+    padding-left: 2em;
+  }
 </style>
 
 {#if flowyTreeNode.getId() !== null}
@@ -46,18 +46,18 @@
   <ul class="tree-node-list">
     {#each childNodeArray as child, i}
       <li>
-      <Node
-        {entries}
-        flowyTreeNode={child.value}
-        {nodeCursorRowId}
-        {nodeCursorColId}
-        {handleSaveNodeEntry}
-        {handleSaveFullCursor}
-        {handleGoUp}
-        {handleGoDown}
-        {handleSplitEntry}
-        {handleEntryBackspace}
-        {handleSaveCursorColId} />
+        <Node
+          {entries}
+          flowyTreeNode={child.value}
+          {nodeCursorRowId}
+          {nodeCursorColId}
+          {handleSaveNodeEntry}
+          {handleSaveFullCursor}
+          {handleGoUp}
+          {handleGoDown}
+          {handleSplitEntry}
+          {handleEntryBackspace}
+          {handleSaveCursorColId} />
       </li>
     {/each}
   </ul>
