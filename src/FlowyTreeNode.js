@@ -10,7 +10,6 @@ export default class FlowyTreeNode {
 
     // Map<Int, LinkedList.Item>
     console.log("FTN, (id, pid) = ", id, parentId, " this.children = ", this.children);
-    this.childLookup = this.children.toArray();
   }
 
   getId() {

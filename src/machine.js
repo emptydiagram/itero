@@ -18,8 +18,8 @@ function treeObjToNode(treeObj, parentId) {
     currNode,
     child => new LinkedListItem(
       isObject(child)
-      ? treeObjToNode(child, currId)
-      : new FlowyTreeNode(child, currId)));
+        ? treeObjToNode(child, currId)
+        : new FlowyTreeNode(child, currId)));
   // a linked list of (LinkedListItems of) FlowyTreeNodes, one for each child in treeObj
   let nodesList = new LinkedList(...nodesArray);
 
@@ -34,20 +34,24 @@ function makeTree(entries, treeObj) {
 function generateTestContext() {
   let entries = [
     [
-      {0: 'abc', 1: 'def', 2: 'ghi', 3: 'eEe EeE', 4: 'Ww Xx Yy Zz'},
-      {root: [{0: [1, 2]}, 3, 4]}
+      { 0: 'abc', 1: 'def', 2: 'ghi', 3: 'eEe EeE', 4: 'Ww Xx Yy Zz' },
+      { root: [{ 0: [1, 2] }, 3, 4] }
     ],
     [
-      {0: '4', 1: 'five', 2: 'seventy', 3: '-1'},
-      {root: [2, 0, 3, 1]}
+      { 0: '4', 1: 'five', 2: 'seventy', 3: '-1' },
+      { root: [2, 0, 3, 1] }
     ],
     [
-      {0: 'alpha', 1: 'beta', 2: 'gamma', 3: 'delta'},
-      {root: [
-        {0: [
-          {1: [2, 3]}
-        ]}
-      ]}
+      { 0: 'alpha', 1: 'beta', 2: 'gamma', 3: 'delta' },
+      {
+        root: [
+          {
+            0: [
+              { 1: [2, 3] }
+            ]
+          }
+        ]
+      }
     ],
   ];
   return {
@@ -83,7 +87,7 @@ let createNodeAction = assign(ctxt => {
   let maxId = Math.max(...existingIds);
   let newId = maxId + 1
   let initEntryText = 'TODO';
-  let newTree = makeTree({0: initEntryText}, {root: [0]});
+  let newTree = makeTree({ 0: initEntryText }, { root: [0] });
   let newNodeName = 'New document'
 
   copyNodes[newId] = {
@@ -108,6 +112,12 @@ let createNodeAction = assign(ctxt => {
 
 
 let goUpAction = assign(ctxt => {
+  // TODO: use currentNodeId to get current flowy tree. use current tree to
+  //   a) check if current entry can go up (is the top-most entry in the document)
+  //   b) if not, get the entry id of the entry immediately above
+  let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
+
+
   let newRowId = ctxt.nodeCursorRowId === 0 ? 0 : ctxt.nodeCursorRowId - 1;
   return {
     nodeCursorRowId: newRowId,
@@ -115,6 +125,7 @@ let goUpAction = assign(ctxt => {
 });
 
 let goDownAction = assign(ctxt => {
+  // TODO
   const numEntries = ctxt.nodes[ctxt.currentNodeId].doc.size();
   let newRowId = ctxt.nodeCursorRowId >= numEntries - 1 ? numEntries - 1 : ctxt.nodeCursorRowId + 1;
   return {
