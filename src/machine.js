@@ -15,7 +15,8 @@ function entriesListToTree(entriesList) {
     (_v, i) => new LinkedListItem(new FlowyTreeNode(i, null)));
   let nodesList = new LinkedList(...nodesArray);
 
-  return new FlowyTree(entries, nodesList);
+  let theRoot = new FlowyTreeNode(null, null, nodesList);
+  return new FlowyTree(entries, theRoot);
 }
 
 function generateTestContext() {
@@ -111,7 +112,7 @@ let splitEntryAction = assign(ctxt => {
   let updatedCurrEntry = currEntry.substring(0, colId);
   let newEntry = currEntry.substring(colId, currEntry.length);
 
-  let newTree = new FlowyTree(currNode.doc.getEntries(), currNode.doc.getEntriesList());
+  let newTree = new FlowyTree(currNode.doc.getEntries(), currNode.doc.getRoot());
   currNode.doc = newTree;
 
   newTree.setEntry(rowId, updatedCurrEntry);

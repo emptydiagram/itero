@@ -4,19 +4,25 @@ import FlowyTreeNode from './FlowyTreeNode.js'
 export default class FlowyTree {
   // entries: Map<EntryId, String>
   // entriesList: LinkedList<EntryId>
-  constructor(entries, entriesList) {
+  constructor(entries, root) {
     this.entries = entries;
-    // this.entriesList = entriesList;
-    this.root = new FlowyTreeNode(null, null, entriesList);
+    // this.root = new FlowyTreeNode(null, null, entriesList);
+    this.root = root;
   }
 
   getEntries() {
     return this.entries;
   }
 
+  getRoot() {
+    return this.root;
+  }
+
+  /*
   getEntriesList() {
     return this.root.getChildren();
   }
+  */
 
   getEntryTexts() {
     return this.root.getChildren().toArray().map(item => this.entries[item.value.getId()])

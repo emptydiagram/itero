@@ -46,7 +46,7 @@
     let i = ctxt.currentNodeId;
     let j = ctxt.nodeCursorRowId;
     copyNodes[i] = { ...ctxt.nodes[i] };
-    let newTree = new FlowyTree(copyNodes[i].doc.getEntries(), copyNodes[i].doc.getEntriesList());
+    let newTree = new FlowyTree(copyNodes[i].doc.getEntries(), copyNodes[i].doc.getRoot());
     copyNodes[i].doc = newTree;
     newTree.setEntry(j, currentNodeEntryText);
     return {
@@ -72,7 +72,7 @@
   let backspaceAction = assign(ctxt => {
     let copyNodes = { ...ctxt.nodes };
     let currentNode = copyNodes[ctxt.currentNodeId];
-    currentNode.doc = new FlowyTree(currentNode.doc.getEntries(), currentNode.doc.getEntriesList());
+    currentNode.doc = new FlowyTree(currentNode.doc.getEntries(), currentNode.doc.getRoot());
     let colId = ctxt.nodeCursorColId;
 
     if (colId > 0) {
@@ -100,7 +100,7 @@
 
       let prevRowOrigEntryLen = currNode.doc.getEntry(prevRowId).length;
 
-      currentNode.doc = new FlowyTree(currNode.doc.getEntries(), currNode.doc.getEntriesList());
+      currentNode.doc = new FlowyTree(currNode.doc.getEntries(), currNode.doc.getRoot());
       let currEntry = currNode.doc.getEntry(rowId);
       currNode.doc.deleteAt(rowId);
       currNode.doc.setEntry(
