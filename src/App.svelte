@@ -81,7 +81,7 @@
     let colId = ctxt.nodeCursorColId;
 
     if (colId > 0) {
-      let currEntry = currentNode.doc.getEntry(ctxt.nodeCursorRowId);
+      let currEntry = currentNode.doc.getEntryByRow(ctxt.nodeCursorRowId);
       let newEntry =
         currEntry.substring(0, colId - 1) + currEntry.substring(colId);
       currentNode.doc.setEntry(ctxt.nodeCursorRowId, newEntry);
@@ -103,17 +103,17 @@
       let nodeId = ctxt.currentNodeId;
       let currNode = newNodes[nodeId];
 
-      let prevRowOrigEntryLen = currNode.doc.getEntry(prevRowId).length;
+      let prevRowOrigEntryLen = currNode.doc.getEntryByRow(prevRowId).length;
 
       currentNode.doc = new FlowyTree(
         currNode.doc.getEntries(),
         currNode.doc.getRoot()
       );
-      let currEntry = currNode.doc.getEntry(rowId);
+      let currEntry = currNode.doc.getEntryByRow(rowId);
       currNode.doc.deleteAt(rowId);
       currNode.doc.setEntry(
         prevRowId,
-        currNode.doc.getEntry(prevRowId) + currEntry
+        currNode.doc.getEntryByRow(prevRowId) + currEntry
       );
 
       // NOTE: we *set* currentCursorColId here.

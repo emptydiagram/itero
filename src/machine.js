@@ -130,7 +130,7 @@ let splitEntryAction = assign(ctxt => {
   newNodes = { ...ctxt.nodes };
   let nodeId = ctxt.currentNodeId;
   let currNode = newNodes[nodeId];
-  let currEntry = currNode.doc.getEntry(rowId);
+  let currEntry = currNode.doc.getEntryByRow(rowId);
 
   let colId = ctxt.nodeCursorColId;
   console.log(" Splitting '" + currEntry + "' at colId = ", colId);
