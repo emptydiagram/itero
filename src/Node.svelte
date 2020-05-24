@@ -16,7 +16,7 @@
 
 <style>
   .tree-node-list {
-    padding-left: 2em;
+    padding-left: 1.8em;
   }
 </style>
 

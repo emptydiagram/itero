@@ -80,7 +80,9 @@ export default class FlowyTree {
   // true iff it has a child or next sibling or if an ancestor has a next sibling
   hasEntryBelow(entryId) {
     let entryItem = this.entryItems[entryId];
-    return entryItem.value.getChildren().size > 0 || entryItem.next !== null || this.entryAncestorHasNextSibling(entryId);
+    return entryItem.value.getChildren().size > 0
+      || entryItem.next !== null
+      || this.entryAncestorHasNextSibling(entryId);
   }
 
   getEntryIdBelow(entryId) {
@@ -141,15 +143,8 @@ export default class FlowyTree {
     return this.entryItems[entryId].value.parentId;
   }
 
-  // TODO
+  // returns: the id of the new entry (the one just inserted)
   insertEntryBelow(entryId, parentId, newEntry) {
-    /*
-    let n = this.root.getChildren().size;
-    if (index > n) {
-      throw `insertAt: index ${index} is too large, there are only ${n} items`
-    }
-    */
-
     let existingIds = Object.keys(this.entries).map(id => parseInt(id));
     let newId = Math.max(...existingIds) + 1;
     this.entries[newId] = newEntry;
@@ -160,6 +155,7 @@ export default class FlowyTree {
     prevItem.append(newNode);
 
     this.entryItems[newId] = newNode;
+    return newId;
   }
 
   deleteAt(entryId) {

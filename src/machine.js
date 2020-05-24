@@ -142,7 +142,6 @@ let goDownAction = assign(ctxt => {
 let splitEntryAction = assign(ctxt => {
   let entryId = ctxt.nodeCursorEntryId;
   let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
-  let hasEntryBelow = currTree.hasEntryBelow(ctxt.nodeCursorEntryId);
 
   // only update nodes if there's a nodeId
   let newNodes;
@@ -160,12 +159,11 @@ let splitEntryAction = assign(ctxt => {
   currNode.doc = newTree;
 
   newTree.setEntry(entryId, updatedCurrEntry);
-  newTree.insertEntryBelow(entryId, currNode.doc.getParentId(entryId), newEntry);
-
-  let newEntryId = hasEntryBelow ? currNode.doc.getEntryIdBelow(ctxt.nodeCursorEntryId) : ctxt.nodeCursorEntryId;
+  let parentId = currNode.doc.getParentId(entryId);
+  let newId = newTree.insertEntryBelow(entryId, parentId, newEntry);
 
   return {
-    nodeCursorEntryId: newEntryId,
+    nodeCursorEntryId: newId,
     nodeCursorColId: 0,
     nodes: newNodes,
   };
