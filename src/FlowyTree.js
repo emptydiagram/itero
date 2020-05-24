@@ -44,10 +44,22 @@ export default class FlowyTree {
     return this.entryItems[entryId].prev !== null || this.entryItems[entryId].value.parentId !== null;
   }
 
+
+  getLastAncestorNode(node) {
+    let curr = node;
+    while (curr.hasChildren()) {
+      curr = curr.getLastChildNode();
+    }
+    return curr;
+  }
+
   getEntryIdAbove(entryId) {
     if (this.entryItems[entryId].prev !== null) {
-      return this.entryItems[entryId].prev.value.getId();
+      let prevNode = this.entryItems[entryId].prev.value;
+      return this.getLastAncestorNode(prevNode).getId();
     }
+
+    // return the parentId, or null if none
     return this.entryItems[entryId].value.parentId;
   }
 
@@ -58,10 +70,17 @@ export default class FlowyTree {
   }
 
   getEntryIdBelow(entryId) {
+    // return first child id, if it exists
+    let ch = this.entryItems[entryId].value.getChildren();
+    if (ch.size > 0) {
+      return ch.head.value.getId();
+    }
+
+    // get next sibling if it exists
     if (this.entryItems[entryId].next !== null) {
       return this.entryItems[entryId].next.value.getId();
     }
-    // TODO:
+    // TODO: there's no child and no next sibling, find first ancestor with a next sibling
     let parentId = this.entryItems[entryId].value.parentId;
     return this.entryItems[parentId].next;
   }

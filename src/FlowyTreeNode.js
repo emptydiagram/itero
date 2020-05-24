@@ -16,11 +16,20 @@ export default class FlowyTreeNode {
     return this.id;
   }
 
+  hasChildren() {
+    return this.children.size;
+  }
+
   getChildren() {
     return this.children;
   }
 
+  // TODO: rename to getChildItemArray?
   getChildNodeArray() {
     return this.children.toArray();
+  }
+
+  getLastChildNode() {
+    return this.children.tail.value;
   }
 }
