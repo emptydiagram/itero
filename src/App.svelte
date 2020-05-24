@@ -97,7 +97,7 @@
     let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
     let entryId = ctxt.nodeCursorEntryId;
     if (currTree.hasEntryAbove(entryId)) {
-      let prevEntryId = currTree.getEntryIdAbove(entryId)
+      let prevEntryId = currTree.getEntryIdAbove(entryId);
 
       let newNodes;
       newNodes = { ...ctxt.nodes };
@@ -247,12 +247,10 @@
 
   $: currentTree =
     machineState.context.currentNodeId !== null
-      ? machineState.context.nodes[
-          machineState.context.currentNodeId
-        ].doc
+      ? machineState.context.nodes[machineState.context.currentNodeId].doc
       : null;
 
-  $: currentTreeRoot = currentTree && currentTree.getRoot() || null;
+  $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
 
   $: nodeIsEditingName = (() => {
     let curr = machineState.value.flowiki;
