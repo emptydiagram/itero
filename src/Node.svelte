@@ -6,6 +6,7 @@
     handleGoDown,
     handleSplitEntry,
     handleEntryBackspace,
+    handleIndent,
     handleSaveCursorColId;
 
   import EntryInput from "./EntryInput.svelte";
@@ -34,6 +35,7 @@
     {handleGoDown}
     {handleSplitEntry}
     {handleEntryBackspace}
+    {handleIndent}
     {handleSaveCursorColId} />
 {/if}
 
@@ -52,6 +54,7 @@
           {handleGoDown}
           {handleSplitEntry}
           {handleEntryBackspace}
+          {handleIndent}
           {handleSaveCursorColId} />
       </li>
     {/each}

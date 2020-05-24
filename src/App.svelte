@@ -238,6 +238,9 @@
   function handleSplitEntry() {
     flowikiService.send("SPLIT_ENTRY");
   }
+  function handleIndent() {
+    flowikiService.send("INDENT");
+  }
 
   $: isAtTop = machineState.value.flowiki === "top";
 
@@ -304,6 +307,7 @@
     {handleGoDown}
     {handleSplitEntry}
     {handleEntryBackspace}
+    {handleIndent}
     {handleSaveCursorColId}
     {handleSaveNodeName}
     {handleSaveNodeEntry}

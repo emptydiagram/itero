@@ -10,6 +10,7 @@
     handleGoDown,
     handleEntryBackspace,
     handleSplitEntry,
+    handleIndent,
     handleSaveCursorColId;
 
   import { afterUpdate, tick } from "svelte";
@@ -59,12 +60,15 @@
   }
 
   async function handleKeydown(ev) {
-    // TODO
     if (ev.key === "Tab") {
       ev.preventDefault();
-      console.log(
-        "TODO: do something on" + (ev.shiftKey ? " shift" : "") + " tab"
-      );
+
+      if (ev.shiftKey) {
+        console.log( "TODO: do something on shift tab");
+        // TODO
+      } else {
+        handleIndent();
+      }
       return;
     }
 

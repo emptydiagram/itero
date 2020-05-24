@@ -5,16 +5,17 @@
     nodeCursorEntryId,
     nodeCursorColId,
     nodeIsEditingName;
-  export let handleStartEditingNodeName,
-    handleCancelEditingNodeName,
-    handleSaveNodeName;
   export let handleSaveNodeEntry,
     handleSaveFullCursor,
     handleGoUp,
     handleGoDown,
     handleEntryBackspace,
-    handleSplitEntry;
-  export let handleSaveCursorColId;
+    handleSplitEntry,
+    handleIndent;
+  export let handleStartEditingNodeName,
+    handleCancelEditingNodeName,
+    handleSaveNodeName,
+    handleSaveCursorColId;
   import Node from "./Node.svelte";
 
   let nodeTitleText = nodeTitle;
@@ -109,5 +110,6 @@
     {handleGoDown}
     {handleSplitEntry}
     {handleEntryBackspace}
+    {handleIndent}
     {handleSaveCursorColId} />
 </div>
