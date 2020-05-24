@@ -126,6 +126,10 @@ export default class FlowyTree {
     return this.entries[entryId];
   }
 
+  getEntryItem(entryId) {
+    return this.entryItems[entryId];
+  }
+
   setEntry(entryId, value) {
     this.entries[entryId] = value;
   }
@@ -157,5 +161,14 @@ export default class FlowyTree {
 
   size() {
     return this.entries.length;
+  }
+
+  hasPrevSibling(entryId) {
+    return this.entryItems[entryId].prev !== null;
+  }
+
+  getPrevSiblingNode(entryId) {
+    console.log(` #**# getPrevSiblingNode, entryId = ${entryId}`);
+    return this.entryItems[entryId].prev.value;
   }
 }

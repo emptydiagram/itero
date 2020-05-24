@@ -21,12 +21,20 @@ export default class FlowyTreeNode {
     return this.parentId;
   }
 
+  setParentId(parentId) {
+    this.parentId = parentId;
+  }
+
   hasChildren() {
     return this.children.size;
   }
 
   getChildren() {
     return this.children;
+  }
+
+  appendChildItem(item) {
+    return this.children.append(item);
   }
 
   // TODO: rename to getChildItemArray?
