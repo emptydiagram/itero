@@ -100,8 +100,6 @@ let createNodeAction = assign(ctxt => {
   let newDisplayNodes = [...ctxt.displayNodes];
   newDisplayNodes.push(newId);
 
-  // TODO
-  let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
   return {
     currentNodeId: newId,
     nodeCursorEntryId: null,
@@ -140,7 +138,6 @@ let goDownAction = assign(ctxt => {
 
 let splitEntryAction = assign(ctxt => {
   let entryId = ctxt.nodeCursorEntryId;
-  let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
 
   // only update nodes if there's a nodeId
   let newNodes;
