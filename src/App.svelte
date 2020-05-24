@@ -50,7 +50,7 @@
       copyNodes[i].doc.getRoot()
     );
     copyNodes[i].doc = newTree;
-    newTree.setEntryByRow(j, currentNodeEntryText);
+    newTree.setEntry(j, currentNodeEntryText);
     return {
       nodes: copyNodes,
       nodeCursorColId: currentCursorColId
@@ -81,10 +81,10 @@
     let colId = ctxt.nodeCursorColId;
 
     if (colId > 0) {
-      let currEntry = currentNode.doc.getEntryByRow(ctxt.nodeCursorEntryId);
+      let currEntry = currentNode.doc.getEntry(ctxt.nodeCursorEntryId);
       let newEntry =
         currEntry.substring(0, colId - 1) + currEntry.substring(colId);
-      currentNode.doc.setEntryByRow(ctxt.nodeCursorEntryId, newEntry);
+      currentNode.doc.setEntry(ctxt.nodeCursorEntryId, newEntry);
 
       currentCursorColId = colId - 1;
       return {
@@ -96,7 +96,7 @@
     // col is zero, so we merge adjacent entries
     let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
     let entryId = ctxt.nodeCursorEntryId;
-    if (entryId > 0) {
+    if (currTree.hasEntryAbove(entryId)) {
       let prevEntryId = currTree.getEntryIdAbove(entryId)
 
       let newNodes;
@@ -104,12 +104,13 @@
       let nodeId = ctxt.currentNodeId;
       let currNode = newNodes[nodeId];
 
-      let prevRowOrigEntryLen = currNode.doc.getEntryByRow(prevEntryId).length;
+      let prevRowOrigEntryLen = currNode.doc.getEntry(prevEntryId).length;
 
       currentNode.doc = new FlowyTree(
         currNode.doc.getEntries(),
         currNode.doc.getRoot()
       );
+
       let currEntry = currNode.doc.getEntry(entryId);
       currNode.doc.deleteAt(entryId);
       currNode.doc.setEntry(
