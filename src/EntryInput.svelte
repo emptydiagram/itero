@@ -24,7 +24,10 @@
 
     if (theInput) {
       // take focus if id equals current row id
-      if (entryId === nodeCursorEntryId && document.activeElement !== theInput) {
+      if (
+        entryId === nodeCursorEntryId &&
+        document.activeElement !== theInput
+      ) {
         theInput.focus();
       }
       // select all classes entry-input
