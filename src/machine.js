@@ -137,25 +137,25 @@ let goDownAction = assign(ctxt => {
 });
 
 let splitEntryAction = assign(ctxt => {
-  let entryId = ctxt.nodeCursorEntryId;
-
-  // only update nodes if there's a nodeId
-  let newNodes;
-  newNodes = { ...ctxt.nodes };
   let nodeId = ctxt.currentNodeId;
-  let currNode = newNodes[nodeId];
-  let currEntry = currNode.doc.getEntry(entryId);
-
+  let entryId = ctxt.nodeCursorEntryId;
   let colId = ctxt.nodeCursorColId;
+
+  // TODO: only update nodes if there's a nodeId (is this possible?)
+  let newNodes = { ...ctxt.nodes };
+  let currNode = newNodes[nodeId];
+  let currTree = currNode.doc;
+  let currEntry = currTree.getEntry(entryId);
+
   console.log(" Splitting '" + currEntry + "' at colId = ", colId);
   let updatedCurrEntry = currEntry.substring(0, colId);
   let newEntry = currEntry.substring(colId, currEntry.length);
 
-  let newTree = new FlowyTree(currNode.doc.getEntries(), currNode.doc.getRoot());
+  let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
   currNode.doc = newTree;
 
   newTree.setEntry(entryId, updatedCurrEntry);
-  let parentId = currNode.doc.getParentId(entryId);
+  let parentId = currTree.getParentId(entryId);
   let newId = newTree.insertEntryBelow(entryId, parentId, newEntry);
 
   return {
@@ -165,6 +165,29 @@ let splitEntryAction = assign(ctxt => {
   };
 });
 
+let indentAction = assign(ctxt => {
+  let entryId = ctxt.nodeCursorEntryId;
+  let nodeId = ctxt.currentNodeId;
+
+  // TODO:
+  //  1. check if LinkedListItem can be indented
+  //  2. if so, get LinkedListItem for entryId in nodeId, and make it a child of its previous sibling
+  let newNodes = { ...ctxt.nodes };
+  let currTree = newNodes[nodeId].doc;
+
+  let currItem = currTree.getEntryItem(entryId);
+  if (currTree.hasPrevSibling(entryId)) {
+    console.log(`~~.~~&  [${entryId}] has prev sibling`);
+    // TODO:
+    // 1. detach existing node entryId from parentId
+    // 2. append to last child of prev sibling
+    let prevNode = currTree.getPrevSiblingNode(entryId);
+    currItem.detach();
+    prevNode.appendChildItem(currItem);
+    let parentId = prevNode.getId();
+    currItem.value.setParentId(parentId);
+  }
+});
 
 
 
@@ -223,6 +246,9 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
           },
           ENTRY_BACKSPACE: {
             actions: backspaceAction,
+          },
+          INDENT: {
+            actions: indentAction,
           },
           SAVE_NODE_ENTRY: {
             actions: saveNodeEntryAction,
