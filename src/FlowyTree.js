@@ -156,8 +156,8 @@ export default class FlowyTree {
 
     let newNode = new LinkedListItem(new FlowyTreeNode(newId, parentId));
     //let prevNode = this.root.getChildren().get(index - 1);
-    let prevNode = this.entryItems[entryId].value;
-    prevNode.append(newNode);
+    let prevItem = this.entryItems[entryId];
+    prevItem.append(newNode);
 
     this.entryItems[newId] = newNode;
   }
