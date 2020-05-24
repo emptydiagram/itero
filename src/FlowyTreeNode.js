@@ -7,13 +7,18 @@ export default class FlowyTreeNode {
 
     // LinkedList<FlowyTreeNode>
     this.children = children || new LinkedList();
-
-    // Map<Int, LinkedList.Item>
-    console.log("FTN, (id, pid) = ", id, parentId, " this.children = ", this.children);
   }
 
   getId() {
     return this.id;
+  }
+
+  hasParent() {
+    return this.parentId === 0 || this.parentId;
+  }
+
+  getParentId() {
+    return this.parentId;
   }
 
   hasChildren() {
