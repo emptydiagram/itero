@@ -141,6 +141,8 @@ let goDownAction = assign(ctxt => {
 
 let splitEntryAction = assign(ctxt => {
   let entryId = ctxt.nodeCursorEntryId;
+  let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
+  let hasEntryBelow = currTree.hasEntryBelow(ctxt.nodeCursorEntryId);
 
   // only update nodes if there's a nodeId
   let newNodes;
