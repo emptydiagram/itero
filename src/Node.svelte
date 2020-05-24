@@ -1,5 +1,5 @@
 <script>
-  export let entries, flowyTreeNode, nodeCursorRowId, nodeCursorColId;
+  export let tree, flowyTreeNode, nodeCursorEntryId, nodeCursorColId;
   export let handleSaveNodeEntry,
     handleSaveFullCursor,
     handleGoUp,
@@ -11,8 +11,6 @@
   import EntryInput from "./EntryInput.svelte";
   import Node from "./Node.svelte";
 
-  $: atFirstRow = nodeCursorRowId === 0;
-  $: atLastRow = nodeCursorRowId === Object.keys(entries).length - 1;
   $: childNodeArray = flowyTreeNode.getChildNodeArray();
 </script>
 
@@ -25,11 +23,11 @@
 {#if flowyTreeNode.getId() !== null}
   <EntryInput
     entryId={flowyTreeNode.getId()}
-    entryValue={entries[flowyTreeNode.getId()]}
-    {nodeCursorRowId}
+    entryValue={tree.getEntry(flowyTreeNode.getId())}
+    {nodeCursorEntryId}
     {nodeCursorColId}
-    {atFirstRow}
-    {atLastRow}
+    isEntryAbove={tree.hasEntryAbove(flowyTreeNode.getId())}
+    isEntryBelow={tree.hasEntryBelow(flowyTreeNode.getId())}
     {handleSaveNodeEntry}
     {handleSaveFullCursor}
     {handleGoUp}
@@ -44,9 +42,9 @@
     {#each childNodeArray as child, i}
       <li>
         <Node
-          {entries}
+          {tree}
           flowyTreeNode={child.value}
-          {nodeCursorRowId}
+          {nodeCursorEntryId}
           {nodeCursorColId}
           {handleSaveNodeEntry}
           {handleSaveFullCursor}

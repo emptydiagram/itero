@@ -1,8 +1,8 @@
 <script>
-  export let entries,
+  export let tree,
     flowyTreeNode,
     nodeTitle,
-    nodeCursorRowId,
+    nodeCursorEntryId,
     nodeCursorColId,
     nodeIsEditingName;
   export let handleStartEditingNodeName,
@@ -99,9 +99,9 @@
   {/if}
 
   <Node
-    {entries}
+    {tree}
     {flowyTreeNode}
-    {nodeCursorRowId}
+    {nodeCursorEntryId}
     {nodeCursorColId}
     {handleSaveNodeEntry}
     {handleSaveFullCursor}
