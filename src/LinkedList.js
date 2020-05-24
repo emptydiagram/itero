@@ -7,7 +7,6 @@ inherits(LinkedListItem, List.Item);
 LinkedList.Item = LinkedListItem;
 
 export function LinkedList() {
-    console.log(" ++ LinkedList, arguments = ", arguments)
     List.apply(this, arguments);
 }
 

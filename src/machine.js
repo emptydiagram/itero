@@ -23,11 +23,12 @@ function treeObjToNode(treeObj, parentId) {
   // a linked list of (LinkedListItems of) FlowyTreeNodes, one for each child in treeObj
   let nodesList = new LinkedList(...nodesArray);
 
-  return new FlowyTreeNode(currId, parentId || null, nodesList);
+  parentId = parentId === 0 ? parentId : (parentId || null);
+  return new FlowyTreeNode(currId, parentId, nodesList);
 }
 
 function makeTree(entries, treeObj) {
-  let theRoot = treeObjToNode(treeObj);
+  let theRoot = treeObjToNode(treeObj, null);
   return new FlowyTree(entries, theRoot);
 }
 
