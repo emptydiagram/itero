@@ -54,7 +54,7 @@ export default class FlowyTree {
   // true iff it has a next sibling or if an ancestor has a next sibling
   hasEntryBelow(entryId) {
     console.log("_____:: hasEntryBelow, (entryId, item) = ", entryId, this.entryItems[entryId]);
-    return this.entryItems[entryId].next !== null || entryAncestorHasNextSibling(entryId);
+    return this.entryItems[entryId].next !== null || this.entryAncestorHasNextSibling(entryId);
   }
 
   getEntryIdBelow(entryId) {
@@ -84,30 +84,44 @@ export default class FlowyTree {
     return this.entries[entryId];
   }
 
+  setEntry(entryId, value) {
+    this.entries[entryId] = value;
+  }
+
   setEntryByRow(index, value) {
     let entryId = this.root.getChildren().get(index).value.getId();
     this.entries[entryId] = value;
   }
 
-  insertAt(index, newEntry) {
+  getParentId(entryId) {
+    return this.entryItems[entryId].value.parentId;
+  }
+
+  // TODO
+  insertEntryBelow(entryId, parentId, newEntry) {
+    /*
     let n = this.root.getChildren().size;
     if (index > n) {
       throw `insertAt: index ${index} is too large, there are only ${n} items`
     }
+    */
 
     let existingIds = Object.keys(this.entries).map(id => parseInt(id));
     let newId = Math.max(...existingIds) + 1;
     this.entries[newId] = newEntry;
 
-    let newNode = new LinkedListItem(new FlowyTreeNode(newId, null));
-    let prevNode = this.root.getChildren().get(index - 1);
+    let newNode = new LinkedListItem(new FlowyTreeNode(newId, parentId));
+    //let prevNode = this.root.getChildren().get(index - 1);
+    let prevNode = this.entryItems[entryId].value;
     prevNode.append(newNode);
+
+    this.entryItems[newId] = newNode;
   }
 
-  deleteAt(index) {
-    let node = this.root.getChildren().get(index);
-    delete this.entries[node.value.getId()];
-    node.detach();
+  deleteAt(entryId) {
+    let item = this.root.entryItems[entryId];
+    delete this.entries[entryId];
+    item.detach();
   }
 
   size() {

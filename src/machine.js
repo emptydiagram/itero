@@ -75,7 +75,6 @@ function generateTestContext() {
       }
     },
     displayNodes: [1, 2, 4],
-    nodeCursorRowId: 0,
     nodeCursorEntryId: null,
     nodeCursorColId: 0,
   };
@@ -100,10 +99,10 @@ let createNodeAction = assign(ctxt => {
   let newDisplayNodes = [...ctxt.displayNodes];
   newDisplayNodes.push(newId);
 
+  // TODO
   let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
   return {
     currentNodeId: newId,
-    nodeCursorRowId: 0,
     nodeCursorEntryId: null,
     nodeCursorColId: 0,
     nodeTitle: 'New document',
@@ -157,14 +156,13 @@ let splitEntryAction = assign(ctxt => {
   let newTree = new FlowyTree(currNode.doc.getEntries(), currNode.doc.getRoot());
   currNode.doc = newTree;
 
-  newTree.setEntryByRow(rowId, updatedCurrEntry);
-  newTree.insertAt(rowId + 1, newEntry);
+  newTree.setEntry(entryId, updatedCurrEntry);
+  newTree.insertEntryBelow(entryId, currNode.doc.getParentId(entryId), newEntry);
 
-  let newEntryId = hasEntryBelow ? currTree.getEntryIdBelow(ctxt.nodeCursorEntryId) : ctxt.nodeCursorEntryId;
+  let newEntryId = hasEntryBelow ? currNode.doc.getEntryIdBelow(ctxt.nodeCursorEntryId) : ctxt.nodeCursorEntryId;
 
   return {
-    nodeCursorRowId: rowId + 1,
-    nodeCursorEntryId: null,
+    nodeCursorEntryId: newEntryId,
     nodeCursorColId: 0,
     nodes: newNodes,
   };
