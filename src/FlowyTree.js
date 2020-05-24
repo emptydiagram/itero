@@ -40,7 +40,6 @@ export default class FlowyTree {
   }
 
   hasEntryAbove(entryId) {
-    console.log("_____:: hasEntryAbove, (entryId, item) = ", entryId, this.entryItems[entryId]);
     return this.entryItems[entryId].prev !== null || this.entryItems[entryId].value.parentId !== null;
   }
 
@@ -53,6 +52,21 @@ export default class FlowyTree {
     return curr;
   }
 
+  getNextSiblingOfFirstAncestor(node) {
+    // while there's a parent
+    //   check if parent node has a next sibling
+    //   if yes, return it
+    // return null
+    let currId = node.getId();
+    while (this.entryItems[currId].value.hasParent()) {
+      currId = this.entryItems[currId].value.getParentId();
+      if (this.entryItems[currId].next) {
+        return this.entryItems[currId].next.value;
+      }
+    }
+    return null;
+  }
+
   getEntryIdAbove(entryId) {
     if (this.entryItems[entryId].prev !== null) {
       let prevNode = this.entryItems[entryId].prev.value;
@@ -63,10 +77,10 @@ export default class FlowyTree {
     return this.entryItems[entryId].value.parentId;
   }
 
-  // true iff it has a next sibling or if an ancestor has a next sibling
+  // true iff it has a child or next sibling or if an ancestor has a next sibling
   hasEntryBelow(entryId) {
-    console.log("_____:: hasEntryBelow, (entryId, item) = ", entryId, this.entryItems[entryId]);
-    return this.entryItems[entryId].next !== null || this.entryAncestorHasNextSibling(entryId);
+    let entryItem = this.entryItems[entryId];
+    return entryItem.value.getChildren().size > 0 || entryItem.next !== null || this.entryAncestorHasNextSibling(entryId);
   }
 
   getEntryIdBelow(entryId) {
@@ -80,18 +94,29 @@ export default class FlowyTree {
     if (this.entryItems[entryId].next !== null) {
       return this.entryItems[entryId].next.value.getId();
     }
-    // TODO: there's no child and no next sibling, find first ancestor with a next sibling
-    let parentId = this.entryItems[entryId].value.parentId;
-    return this.entryItems[parentId].next;
+    // there's no child and no next sibling, find first ancestor with a next sibling
+    return this.getNextSiblingOfFirstAncestor(this.entryItems[entryId].value).getId();
   }
 
+
   entryAncestorHasNextSibling(entryId) {
-    if (!this.entryItems[entryId].value.parentId) {
+    let node = this.entryItems[entryId].value;
+    if (node.parentId === null) {
       return false;
     }
-    let parentId = this.entryItems[entryId].value.parentId;
-    // TODO: traverse all ancestors (in order) to search for an ancestor with a next sibling
-    return this.entryItems[parentId].next !== null;
+
+    // while there's a parent
+    //   check if parent node has a next sibling
+    //   if yes, return true
+    // return false
+    let currId = node.getId();
+    while (this.entryItems[currId].value.parentId !== null) {
+      currId = this.entryItems[currId].value.parentId;
+      if (this.entryItems[currId].next) {
+        return true;
+      }
+    }
+    return false;
   }
 
   getEntry(entryId) {
