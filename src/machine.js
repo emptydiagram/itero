@@ -132,7 +132,6 @@ let goDownAction = assign(ctxt => {
   let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
   let hasEntryBelow = currTree.hasEntryBelow(ctxt.nodeCursorEntryId);
 
-
   let newEntryId = hasEntryBelow ? currTree.getEntryIdBelow(ctxt.nodeCursorEntryId) : ctxt.nodeCursorEntryId;
   return {
     nodeCursorEntryId: newEntryId,

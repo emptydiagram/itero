@@ -29,9 +29,7 @@
       }
       // select all classes entry-input
       if (entryId === nodeCursorEntryId) {
-        console.log(" # current selectionStart = ", theInput.selectionStart);
         theInput.setSelectionRange(nodeCursorColId, nodeCursorColId);
-        console.log(" # now selectionStart = ", theInput.selectionStart);
       }
     }
   });

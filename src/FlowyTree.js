@@ -40,7 +40,8 @@ export default class FlowyTree {
   }
 
   hasEntryAbove(entryId) {
-    return this.entryItems[entryId].prev !== null || this.entryItems[entryId].value.parentId !== null;
+    return this.entryItems[entryId].prev !== null
+      || this.entryItems[entryId].value.getParentId() !== null;
   }
 
 
@@ -125,17 +126,7 @@ export default class FlowyTree {
     return this.entries[entryId];
   }
 
-  getEntryByRow(index) {
-    let entryId = this.root.getChildren().get(index).value.getId();
-    return this.entries[entryId];
-  }
-
   setEntry(entryId, value) {
-    this.entries[entryId] = value;
-  }
-
-  setEntryByRow(index, value) {
-    let entryId = this.root.getChildren().get(index).value.getId();
     this.entries[entryId] = value;
   }
 
@@ -159,7 +150,7 @@ export default class FlowyTree {
   }
 
   deleteAt(entryId) {
-    let item = this.root.entryItems[entryId];
+    let item = this.entryItems[entryId];
     delete this.entries[entryId];
     item.detach();
   }
