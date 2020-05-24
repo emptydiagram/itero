@@ -9,7 +9,7 @@
   let currentHashId;
   let currentNodeNameTextEntry;
   let currentNodeEntryText;
-  let currentCursorRowId;
+  let currentCursorEntryId;
   let currentCursorColId;
 
   function isObject(obj) {
@@ -19,10 +19,10 @@
   let navigateToNodeAction = assign(ctxt => {
     let nodeId = currentHashId;
     let node = ctxt.nodes[nodeId];
-    let initRowId = node.doc.size() - 1;
+    let initEntryId = node.doc.size() - 1;
     return {
       currentNodeId: nodeId,
-      nodeCursorRowId: initRowId,
+      nodeCursorEntryId: initEntryId,
       nodeTitle: node.name
     };
   });
@@ -43,7 +43,7 @@
   let saveNodeEntryAction = assign(ctxt => {
     let copyNodes = { ...ctxt.nodes };
     let i = ctxt.currentNodeId;
-    let j = ctxt.nodeCursorRowId;
+    let j = ctxt.nodeCursorEntryId;
     copyNodes[i] = { ...ctxt.nodes[i] };
     let newTree = new FlowyTree(
       copyNodes[i].doc.getEntries(),
@@ -60,7 +60,7 @@
   // the action of SAVE_FULL_CURSOR
   let saveFullCursorAction = assign(_ctxt => {
     return {
-      nodeCursorRowId: currentCursorRowId,
+      nodeCursorEntryId: currentCursorEntryId,
       nodeCursorColId: currentCursorColId
     };
   });
@@ -81,10 +81,10 @@
     let colId = ctxt.nodeCursorColId;
 
     if (colId > 0) {
-      let currEntry = currentNode.doc.getEntryByRow(ctxt.nodeCursorRowId);
+      let currEntry = currentNode.doc.getEntryByRow(ctxt.nodeCursorEntryId);
       let newEntry =
         currEntry.substring(0, colId - 1) + currEntry.substring(colId);
-      currentNode.doc.setEntryByRow(ctxt.nodeCursorRowId, newEntry);
+      currentNode.doc.setEntryByRow(ctxt.nodeCursorEntryId, newEntry);
 
       currentCursorColId = colId - 1;
       return {
@@ -94,32 +94,33 @@
     }
 
     // col is zero, so we merge adjacent entries
-    let rowId = ctxt.nodeCursorRowId;
-    if (rowId > 0) {
-      let prevRowId = rowId - 1;
+    let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
+    let entryId = ctxt.nodeCursorEntryId;
+    if (entryId > 0) {
+      let prevEntryId = currTree.getEntryIdAbove(entryId)
 
       let newNodes;
       newNodes = { ...ctxt.nodes };
       let nodeId = ctxt.currentNodeId;
       let currNode = newNodes[nodeId];
 
-      let prevRowOrigEntryLen = currNode.doc.getEntryByRow(prevRowId).length;
+      let prevRowOrigEntryLen = currNode.doc.getEntryByRow(prevEntryId).length;
 
       currentNode.doc = new FlowyTree(
         currNode.doc.getEntries(),
         currNode.doc.getRoot()
       );
-      let currEntry = currNode.doc.getEntryByRow(rowId);
-      currNode.doc.deleteAt(rowId);
-      currNode.doc.setEntryByRow(
-        prevRowId,
-        currNode.doc.getEntryByRow(prevRowId) + currEntry
+      let currEntry = currNode.doc.getEntry(entryId);
+      currNode.doc.deleteAt(entryId);
+      currNode.doc.setEntry(
+        prevEntryId,
+        currNode.doc.getEntry(prevEntryId) + currEntry
       );
 
       // NOTE: we *set* currentCursorColId here.
       currentCursorColId = prevRowOrigEntryLen;
       return {
-        nodeCursorRowId: prevRowId,
+        nodeCursorEntryId: prevEntryId,
         nodeCursorColId: prevRowOrigEntryLen,
         nodes: newNodes
       };
@@ -213,8 +214,8 @@
     flowikiService.send("SAVE_NODE_ENTRY");
   }
 
-  function handleSaveFullCursor(rowId, colId) {
-    currentCursorRowId = rowId;
+  function handleSaveFullCursor(entryId, colId) {
+    currentCursorEntryId = entryId;
     currentCursorColId = colId;
     flowikiService.send("SAVE_FULL_CURSOR");
   }
@@ -243,19 +244,14 @@
     return machineState.context.nodes[id];
   });
 
-  $: currentNodeRoot =
+  $: currentTree =
     machineState.context.currentNodeId !== null
       ? machineState.context.nodes[
           machineState.context.currentNodeId
-        ].doc.getRoot()
+        ].doc
       : null;
 
-  $: currentNodeEntries =
-    machineState.context.currentNodeId !== null
-      ? machineState.context.nodes[
-          machineState.context.currentNodeId
-        ].doc.getEntries()
-      : null;
+  $: currentTreeRoot = currentTree && currentTree.getRoot() || null;
 
   $: nodeIsEditingName = (() => {
     let curr = machineState.value.flowiki;
@@ -297,9 +293,9 @@
     &gt;
   </header>
   <Document
-    entries={currentNodeEntries}
-    flowyTreeNode={currentNodeRoot}
-    nodeCursorRowId={machineState.context.nodeCursorRowId}
+    tree={currentTree}
+    flowyTreeNode={currentTreeRoot}
+    nodeCursorEntryId={machineState.context.nodeCursorEntryId}
     nodeCursorColId={machineState.context.nodeCursorColId}
     nodeTitle={machineState.context.nodeTitle}
     {nodeIsEditingName}
