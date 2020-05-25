@@ -19,11 +19,11 @@
   let navigateToNodeAction = assign(ctxt => {
     let nodeId = currentHashId;
     let node = ctxt.nodes[nodeId];
-    let initEntryId = node.doc.size() - 1;
+    let initEntryId = node.tree.size() - 1;
     return {
       currentNodeId: nodeId,
       nodeCursorEntryId: initEntryId,
-      nodeTitle: node.name
+      docTitle: node.name
     };
   });
 
@@ -36,7 +36,7 @@
 
     return {
       nodes: copyNodes,
-      nodeTitle: currentNodeNameTextEntry
+      docTitle: currentNodeNameTextEntry
     };
   });
 
@@ -46,10 +46,10 @@
     let j = ctxt.nodeCursorEntryId;
     copyNodes[i] = { ...ctxt.nodes[i] };
     let newTree = new FlowyTree(
-      copyNodes[i].doc.getEntries(),
-      copyNodes[i].doc.getRoot()
+      copyNodes[i].tree.getEntries(),
+      copyNodes[i].tree.getRoot()
     );
-    copyNodes[i].doc = newTree;
+    copyNodes[i].tree = newTree;
     newTree.setEntry(j, currentNodeEntryText);
     return {
       nodes: copyNodes,
@@ -74,17 +74,17 @@
   let backspaceAction = assign(ctxt => {
     let copyNodes = { ...ctxt.nodes };
     let currentNode = copyNodes[ctxt.currentNodeId];
-    currentNode.doc = new FlowyTree(
-      currentNode.doc.getEntries(),
-      currentNode.doc.getRoot()
+    currentNode.tree = new FlowyTree(
+      currentNode.tree.getEntries(),
+      currentNode.tree.getRoot()
     );
     let colId = ctxt.nodeCursorColId;
 
     if (colId > 0) {
-      let currEntry = currentNode.doc.getEntry(ctxt.nodeCursorEntryId);
+      let currEntry = currentNode.tree.getEntry(ctxt.nodeCursorEntryId);
       let newEntry =
         currEntry.substring(0, colId - 1) + currEntry.substring(colId);
-      currentNode.doc.setEntry(ctxt.nodeCursorEntryId, newEntry);
+      currentNode.tree.setEntry(ctxt.nodeCursorEntryId, newEntry);
 
       currentCursorColId = colId - 1;
       return {
@@ -94,7 +94,7 @@
     }
 
     // col is zero, so we merge adjacent entries
-    let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
+    let currTree = ctxt.nodes[ctxt.currentNodeId].tree;
     let entryId = ctxt.nodeCursorEntryId;
     if (currTree.hasEntryAbove(entryId)) {
       let prevEntryId = currTree.getEntryIdAbove(entryId);
@@ -104,18 +104,18 @@
       let nodeId = ctxt.currentNodeId;
       let currNode = newNodes[nodeId];
 
-      let prevRowOrigEntryLen = currNode.doc.getEntry(prevEntryId).length;
+      let prevRowOrigEntryLen = currNode.tree.getEntry(prevEntryId).length;
 
-      currentNode.doc = new FlowyTree(
-        currNode.doc.getEntries(),
-        currNode.doc.getRoot()
+      currentNode.tree = new FlowyTree(
+        currNode.tree.getEntries(),
+        currNode.tree.getRoot()
       );
 
-      let currEntry = currNode.doc.getEntry(entryId);
-      currNode.doc.deleteAt(entryId);
-      currNode.doc.setEntry(
+      let currEntry = currNode.tree.getEntry(entryId);
+      currNode.tree.deleteAt(entryId);
+      currNode.tree.setEntry(
         prevEntryId,
-        currNode.doc.getEntry(prevEntryId) + currEntry
+        currNode.tree.getEntry(prevEntryId) + currEntry
       );
 
       // NOTE: we *set* currentCursorColId here.
@@ -253,7 +253,7 @@
 
   $: currentTree =
     machineState.context.currentNodeId !== null
-      ? machineState.context.nodes[machineState.context.currentNodeId].doc
+      ? machineState.context.nodes[machineState.context.currentNodeId].tree
       : null;
 
   $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
@@ -263,7 +263,7 @@
     if (!isObject(curr)) {
       return nodeIsEditingName;
     }
-    return curr.node.nodeTitle === "editing";
+    return curr.node.docTitle === "editing";
   })();
 </script>
 
@@ -302,7 +302,7 @@
     flowyTreeNode={currentTreeRoot}
     nodeCursorEntryId={machineState.context.nodeCursorEntryId}
     nodeCursorColId={machineState.context.nodeCursorColId}
-    nodeTitle={machineState.context.nodeTitle}
+    docTitle={machineState.context.docTitle}
     {nodeIsEditingName}
     {handleStartEditingNodeName}
     {handleCancelEditingNodeName}

@@ -32,22 +32,22 @@ function generateTestContext() {
   ];
   return {
     currentNodeId: null,
-    nodeTitle: '',
+    docTitle: '',
     nodes: {
       '1': {
         id: 1,
         name: 'some letters',
-        doc: makeTree(...entries[0]),
+        tree: makeTree(...entries[0]),
       },
       '2': {
         id: 2,
         name: 'some numbers',
-        doc: makeTree(...entries[1]),
+        tree: makeTree(...entries[1]),
       },
       '4': {
         id: 4,
         name: 'some greek letters',
-        doc: makeTree(...entries[2]),
+        tree: makeTree(...entries[2]),
       }
     },
     displayNodes: [1, 2, 4],
@@ -69,7 +69,7 @@ let createNodeAction = assign(ctxt => {
   copyNodes[newId] = {
     id: newId,
     name: newNodeName,
-    doc: newTree,
+    tree: newTree,
   };
 
   let newDisplayNodes = [...ctxt.displayNodes];
@@ -79,7 +79,7 @@ let createNodeAction = assign(ctxt => {
     currentNodeId: newId,
     nodeCursorEntryId: null,
     nodeCursorColId: 0,
-    nodeTitle: 'New document',
+    docTitle: 'New document',
     nodes: copyNodes,
     displayNodes: newDisplayNodes,
   };
@@ -90,7 +90,7 @@ let goUpAction = assign(ctxt => {
   // TODO: use currentNodeId to get current flowy tree. use current tree to
   //   a) check if current entry can go up (is the top-most entry in the document)
   //   b) if not, get the entry id of the entry immediately above
-  let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
+  let currTree = ctxt.nodes[ctxt.currentNodeId].tree;
   let hasEntryAbove = currTree.hasEntryAbove(ctxt.nodeCursorEntryId);
 
 
@@ -102,7 +102,7 @@ let goUpAction = assign(ctxt => {
 
 let goDownAction = assign(ctxt => {
   // TODO
-  let currTree = ctxt.nodes[ctxt.currentNodeId].doc;
+  let currTree = ctxt.nodes[ctxt.currentNodeId].tree;
   let hasEntryBelow = currTree.hasEntryBelow(ctxt.nodeCursorEntryId);
 
   let newEntryId = hasEntryBelow ? currTree.getEntryIdBelow(ctxt.nodeCursorEntryId) : ctxt.nodeCursorEntryId;
@@ -119,7 +119,7 @@ let splitEntryAction = assign(ctxt => {
   // TODO: only update nodes if there's a nodeId (is this possible?)
   let newNodes = { ...ctxt.nodes };
   let currNode = newNodes[nodeId];
-  let currTree = currNode.doc;
+  let currTree = currNode.tree;
   let currEntry = currTree.getEntry(entryId);
 
   console.log(" Splitting '" + currEntry + "' at colId = ", colId);
@@ -127,7 +127,7 @@ let splitEntryAction = assign(ctxt => {
   let updatedCurrEntry = currEntry.substring(colId, currEntry.length);
 
   let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-  currNode.doc = newTree;
+  currNode.tree = newTree;
 
   newTree.setEntry(entryId, updatedCurrEntry);
   let parentId = currTree.getParentId(entryId);
@@ -146,7 +146,7 @@ let indentAction = assign(ctxt => {
   //  1. check if LinkedListItem can be indented
   //  2. if so, get LinkedListItem for entryId in nodeId, and make it a child of its previous sibling
   let newNodes = { ...ctxt.nodes };
-  let currTree = newNodes[nodeId].doc;
+  let currTree = newNodes[nodeId].tree;
 
   let currItem = currTree.getEntryItem(entryId);
   if (currTree.hasPrevSibling(entryId)) {
@@ -169,7 +169,7 @@ let dedentAction = assign(ctxt => {
   //  1. check if LinkedListItem can be dedented
   //  2. if so, get LinkedListItem for entryId in nodeId, and make it the next sibling of parent
   let newNodes = { ...ctxt.nodes };
-  let currTree = newNodes[nodeId].doc;
+  let currTree = newNodes[nodeId].tree;
 
   let currItem = currTree.getEntryItem(entryId);
   if (currItem.value.hasParent()) {
@@ -190,7 +190,7 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
 
   const nodeStates = {
     states: {
-      nodeTitle: {
+      docTitle: {
         on: {},
         initial: 'displaying',
         states: {
@@ -223,7 +223,7 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
       top: {
         on: {
           INIT_CREATE_NODE: {
-            target: ['node.nodeTitle.editing'],
+            target: ['node.docTitle.editing'],
             actions: createNodeAction,
           },
         },
