@@ -31,9 +31,9 @@ function generateTestContext() {
     ],
   ];
   return {
-    currentNodeId: null,
+    currentDocId: null,
     docTitle: '',
-    nodes: {
+    documents: {
       '1': {
         id: 1,
         name: 'some letters',
@@ -50,76 +50,76 @@ function generateTestContext() {
         tree: makeTree(...entries[2]),
       }
     },
-    displayNodes: [1, 2, 4],
-    nodeCursorEntryId: null,
-    nodeCursorColId: 0,
+    displayDocs: [1, 2, 4],
+    docCursorEntryId: null,
+    docCursorColId: 0,
   };
 }
 
 
-let createNodeAction = assign(ctxt => {
-  let copyNodes = { ...ctxt.nodes };
-  let existingIds = Object.keys(copyNodes).map(id => parseInt(id));
+let createDocAction = assign(ctxt => {
+  let copyDocs = { ...ctxt.documents };
+  let existingIds = Object.keys(copyDocs).map(id => parseInt(id));
   let maxId = Math.max(...existingIds);
   let newId = maxId + 1
   let initEntryText = 'TODO';
   let newTree = makeTree({ 0: initEntryText }, { root: [0] });
-  let newNodeName = 'New document'
+  let newDocName = 'New document'
 
-  copyNodes[newId] = {
+  copyDocs[newId] = {
     id: newId,
-    name: newNodeName,
+    name: newDocName,
     tree: newTree,
   };
 
-  let newDisplayNodes = [...ctxt.displayNodes];
-  newDisplayNodes.push(newId);
+  let newDisplayDocs = [...ctxt.displayDocs];
+  newDisplayDocs.push(newId);
 
   return {
-    currentNodeId: newId,
-    nodeCursorEntryId: null,
-    nodeCursorColId: 0,
+    currentDocId: newId,
+    docCursorEntryId: null,
+    docCursorColId: 0,
     docTitle: 'New document',
-    nodes: copyNodes,
-    displayNodes: newDisplayNodes,
+    documents: copyDocs,
+    displayDocs: newDisplayDocs,
   };
 });
 
 
 let goUpAction = assign(ctxt => {
-  // TODO: use currentNodeId to get current flowy tree. use current tree to
+  // TODO: use currentDocId to get current flowy tree. use current tree to
   //   a) check if current entry can go up (is the top-most entry in the document)
   //   b) if not, get the entry id of the entry immediately above
-  let currTree = ctxt.nodes[ctxt.currentNodeId].tree;
-  let hasEntryAbove = currTree.hasEntryAbove(ctxt.nodeCursorEntryId);
+  let currTree = ctxt.documents[ctxt.currentDocId].tree;
+  let hasEntryAbove = currTree.hasEntryAbove(ctxt.docCursorEntryId);
 
 
-  let newEntryId = hasEntryAbove ? currTree.getEntryIdAbove(ctxt.nodeCursorEntryId) : ctxt.nodeCursorEntryId;
+  let newEntryId = hasEntryAbove ? currTree.getEntryIdAbove(ctxt.docCursorEntryId) : ctxt.docCursorEntryId;
   return {
-    nodeCursorEntryId: newEntryId,
+    docCursorEntryId: newEntryId,
   };
 });
 
 let goDownAction = assign(ctxt => {
   // TODO
-  let currTree = ctxt.nodes[ctxt.currentNodeId].tree;
-  let hasEntryBelow = currTree.hasEntryBelow(ctxt.nodeCursorEntryId);
+  let currTree = ctxt.documents[ctxt.currentDocId].tree;
+  let hasEntryBelow = currTree.hasEntryBelow(ctxt.docCursorEntryId);
 
-  let newEntryId = hasEntryBelow ? currTree.getEntryIdBelow(ctxt.nodeCursorEntryId) : ctxt.nodeCursorEntryId;
+  let newEntryId = hasEntryBelow ? currTree.getEntryIdBelow(ctxt.docCursorEntryId) : ctxt.docCursorEntryId;
   return {
-    nodeCursorEntryId: newEntryId,
+    docCursorEntryId: newEntryId,
   };
 });
 
 let splitEntryAction = assign(ctxt => {
-  let nodeId = ctxt.currentNodeId;
-  let entryId = ctxt.nodeCursorEntryId;
-  let colId = ctxt.nodeCursorColId;
+  let docId = ctxt.currentDocId;
+  let entryId = ctxt.docCursorEntryId;
+  let colId = ctxt.docCursorColId;
 
-  // TODO: only update nodes if there's a nodeId (is this possible?)
-  let newNodes = { ...ctxt.nodes };
-  let currNode = newNodes[nodeId];
-  let currTree = currNode.tree;
+  // TODO: only update documents if there's a docId (is this possible?)
+  let newDocs = { ...ctxt.documents };
+  let currDoc = newDocs[docId];
+  let currTree = currDoc.tree;
   let currEntry = currTree.getEntry(entryId);
 
   console.log(" Splitting '" + currEntry + "' at colId = ", colId);
@@ -127,26 +127,26 @@ let splitEntryAction = assign(ctxt => {
   let updatedCurrEntry = currEntry.substring(colId, currEntry.length);
 
   let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-  currNode.tree = newTree;
+  currDoc.tree = newTree;
 
   newTree.setEntry(entryId, updatedCurrEntry);
   let parentId = currTree.getParentId(entryId);
   newTree.insertEntryAbove(entryId, parentId, newEntry);
 
   return {
-    nodeCursorColId: 0,
-    nodes: newNodes,
+    docCursorColId: 0,
+    documents: newDocs,
   };
 });
 
 let indentAction = assign(ctxt => {
-  let entryId = ctxt.nodeCursorEntryId;
-  let nodeId = ctxt.currentNodeId;
+  let entryId = ctxt.docCursorEntryId;
+  let docId = ctxt.currentDocId;
 
   //  1. check if LinkedListItem can be indented
-  //  2. if so, get LinkedListItem for entryId in nodeId, and make it a child of its previous sibling
-  let newNodes = { ...ctxt.nodes };
-  let currTree = newNodes[nodeId].tree;
+  //  2. if so, get LinkedListItem for entryId in docId, and make it a child of its previous sibling
+  let newDocs = { ...ctxt.documents };
+  let currTree = newDocs[docId].tree;
 
   let currItem = currTree.getEntryItem(entryId);
   if (currTree.hasPrevSibling(entryId)) {
@@ -158,18 +158,18 @@ let indentAction = assign(ctxt => {
   }
 
   return {
-    nodes: newNodes
+    documents: newDocs
   }
 });
 
 let dedentAction = assign(ctxt => {
-  let entryId = ctxt.nodeCursorEntryId;
-  let nodeId = ctxt.currentNodeId;
+  let entryId = ctxt.docCursorEntryId;
+  let docId = ctxt.currentDocId;
 
   //  1. check if LinkedListItem can be dedented
-  //  2. if so, get LinkedListItem for entryId in nodeId, and make it the next sibling of parent
-  let newNodes = { ...ctxt.nodes };
-  let currTree = newNodes[nodeId].tree;
+  //  2. if so, get LinkedListItem for entryId in docId, and make it the next sibling of parent
+  let newDocs = { ...ctxt.documents };
+  let currTree = newDocs[docId].tree;
 
   let currItem = currTree.getEntryItem(entryId);
   if (currItem.value.hasParent()) {
@@ -181,14 +181,14 @@ let dedentAction = assign(ctxt => {
   }
 
   return {
-    nodes: newNodes
+    documents: newDocs
   }
 });
 
 
-export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction) => {
+export default (navigateToDocAction, saveDocNameAction, saveDocEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction) => {
 
-  const nodeStates = {
+  const docStates = {
     states: {
       docTitle: {
         on: {},
@@ -196,9 +196,9 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
         states: {
           editing: {
             on: {
-              SAVE_NODE_NAME: {
+              SAVE_DOC_NAME: {
                 target: 'displaying',
-                actions: saveNodeNameAction,
+                actions: saveDocNameAction,
               },
               CANCEL_EDITING_NAME: {
                 target: 'displaying',
@@ -222,13 +222,13 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
     states: {
       top: {
         on: {
-          INIT_CREATE_NODE: {
-            target: ['node.docTitle.editing'],
-            actions: createNodeAction,
+          CREATE_DOC: {
+            target: ['document.docTitle.editing'],
+            actions: createDocAction,
           },
         },
       },
-      node: {
+      document: {
         on: {
           UP: {
             actions: goUpAction
@@ -248,8 +248,8 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
           DEDENT: {
             actions: dedentAction,
           },
-          SAVE_NODE_ENTRY: {
-            actions: saveNodeEntryAction,
+          SAVE_DOC_ENTRY: {
+            actions: saveDocEntryAction,
           },
           SAVE_FULL_CURSOR: {
             actions: saveFullCursorAction,
@@ -259,7 +259,7 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
           }
         },
         type: 'parallel',
-        ...nodeStates
+        ...docStates
       }
     }
   };
@@ -272,8 +272,8 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
       flowiki: {
         on: {
           NAVIGATE: {
-            target: 'flowiki.node',
-            actions: navigateToNodeAction,
+            target: 'flowiki.document',
+            actions: navigateToDocAction,
           },
           GO_HOME: {
             target: 'flowiki.top',
