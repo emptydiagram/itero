@@ -128,6 +128,15 @@
     }
   });
 
+  let dataStore = new dataStore();
+
+  function saveNodes(nodes) {
+    let serializedNodes = nodes;
+    dataStore.set('innecto-nodes', serializedNodes)
+
+  }
+
+
   /*** service and state ***/
 
   let machine = createMachine(
@@ -141,6 +150,7 @@
   let machineState = machine.initialState;
 
   const flowikiService = interpret(machine);
+
   flowikiService.onTransition(state => {
     console.log("-------------------");
     console.log(
@@ -150,6 +160,8 @@
       state.value
     );
     machineState = state;
+
+    // TODO: save context.nodes in local storage?
   });
   flowikiService.start();
 

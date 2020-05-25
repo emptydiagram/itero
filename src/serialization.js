@@ -22,3 +22,7 @@ export function treeObjToNode(treeObj, parentId) {
     parentId = parentId === 0 ? parentId : (parentId || null);
     return new FlowyTreeNode(currId, parentId, nodesList);
 }
+
+export function nodeToTreeObj(node) {
+    throw 'not yet implemented'
+}
