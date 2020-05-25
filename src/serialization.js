@@ -27,7 +27,7 @@ export function nodeToTreeObj(node) {
   if (node.hasChildren()) {
     let rootKey = node.getId() == null ? 'root' : ''+node.getId();
     let result = {};
-    result[rootKey] = node.getChildNodeArray().map(item => nodeToTreeObj(item));
+    result[rootKey] = node.getChildNodeArray().map(item => nodeToTreeObj(item.value));
     return result;
   }
   return node.getId();
