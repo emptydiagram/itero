@@ -65,7 +65,6 @@
       ev.preventDefault();
 
       if (ev.shiftKey) {
-        console.log( "TODO: do something on shift tab");
         handleDedent();
       } else {
         handleIndent();

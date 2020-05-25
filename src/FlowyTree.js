@@ -138,8 +138,7 @@ export default class FlowyTree {
     return this.entryItems[entryId].value.parentId;
   }
 
-  // returns: the id of the new entry (the one just inserted)
-  insertEntryBelow(entryId, parentId, newEntry) {
+  insertEntryAbove(entryId, parentId, newEntry) {
     let existingIds = Object.keys(this.entries).map(id => parseInt(id));
     let newId = Math.max(...existingIds) + 1;
     this.entries[newId] = newEntry;
@@ -147,11 +146,12 @@ export default class FlowyTree {
     let newNode = new LinkedListItem(new FlowyTreeNode(newId, parentId));
     //let prevNode = this.root.getChildren().get(index - 1);
     let prevItem = this.entryItems[entryId];
-    prevItem.append(newNode);
+    prevItem.prepend(newNode);
 
     this.entryItems[newId] = newNode;
-    return newId;
   }
+
+  // returns: the id of the new entry (the one just inserted)
 
   deleteAt(entryId) {
     let item = this.entryItems[entryId];
