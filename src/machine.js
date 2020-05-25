@@ -1,31 +1,6 @@
 import { Machine, assign } from 'xstate';
 import FlowyTree from './FlowyTree.js';
-import FlowyTreeNode from './FlowyTreeNode.js';
-import { LinkedListItem, LinkedList } from './LinkedList.js';
-
-function isObject(obj) {
-  return obj === Object(obj);
-}
-
-// impl full handling of treeObj
-//
-// returns: a FlowyTreeNode which corresponds to the specification in treeObj
-function treeObjToNode(treeObj, parentId) {
-  let rootKey = Object.keys(treeObj)[0];
-  let currNode = treeObj[rootKey];
-  let currId = rootKey === "root" ? null : parseInt(rootKey);
-  let nodesArray = Array.from(
-    currNode,
-    child => new LinkedListItem(
-      isObject(child)
-        ? treeObjToNode(child, currId)
-        : new FlowyTreeNode(child, currId)));
-  // a linked list of (LinkedListItems of) FlowyTreeNodes, one for each child in treeObj
-  let nodesList = new LinkedList(...nodesArray);
-
-  parentId = parentId === 0 ? parentId : (parentId || null);
-  return new FlowyTreeNode(currId, parentId, nodesList);
-}
+import { treeObjToNode } from './serialization.js';
 
 function makeTree(entries, treeObj) {
   let theRoot = treeObjToNode(treeObj, null);
