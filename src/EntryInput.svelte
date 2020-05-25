@@ -11,6 +11,7 @@
     handleEntryBackspace,
     handleSplitEntry,
     handleIndent,
+    handleDedent,
     handleSaveCursorColId;
 
   import { afterUpdate, tick } from "svelte";
@@ -65,7 +66,7 @@
 
       if (ev.shiftKey) {
         console.log( "TODO: do something on shift tab");
-        // TODO
+        handleDedent();
       } else {
         handleIndent();
       }
