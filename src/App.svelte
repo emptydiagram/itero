@@ -4,7 +4,9 @@
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
   import FlowyTree from "./FlowyTree.js";
+  import DataStore from "./DataStore.js";
   import createMachine from "./machine.js";
+  import { nodeToTreeObj } from "./serialization.js";
 
   let currentHashId;
   let currentDocNameTextEntry;
@@ -128,14 +130,20 @@
     }
   });
 
-  let dataStore = new dataStore();
+  let dataStore = new DataStore();
 
-  function saveNodes(nodes) {
-    let serializedNodes = nodes;
-    dataStore.set('innecto-nodes', serializedNodes)
-
+  function documentToSerializationObject(doc) {
+    return doc;
   }
 
+  // documents: Map<EntryId, Document>
+  // where type Document = {id: EntryId, name: String, tree: FlowyTree }
+  function saveDocuments(documents) {
+    let serDocs = Object.values(documents).map(doc =>
+      documentToSerializationObject(doc)
+    );
+    dataStore.set("innecto-docs", serDocs);
+  }
 
   /*** service and state ***/
 
@@ -161,7 +169,7 @@
     );
     machineState = state;
 
-    // TODO: save context.nodes in local storage?
+    // TODO: save context.documents in local storage?
   });
   flowikiService.start();
 
