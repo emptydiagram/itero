@@ -21,7 +21,7 @@
   let navigateToDocAction = assign(ctxt => {
     let docId = currentHashId;
     let doc = ctxt.documents[docId];
-    let initEntryId = doc.tree.size() - 1;
+    let initEntryId = doc.tree.size - 1;
     return {
       currentDocId: docId,
       docCursorEntryId: initEntryId,
@@ -132,17 +132,27 @@
 
   let dataStore = new DataStore();
 
+  function treeToSerializationObject(tree) {
+    return {
+      entries: tree.getEntries(),
+      node: nodeToTreeObj(tree.getRoot())
+    };
+  }
+
   function documentToSerializationObject(doc) {
-    return doc;
+    let newDoc = { ...doc };
+    newDoc.tree = treeToSerializationObject(newDoc.tree);
+    return newDoc;
   }
 
   // documents: Map<EntryId, Document>
   // where type Document = {id: EntryId, name: String, tree: FlowyTree }
   function saveDocuments(documents) {
-    let serDocs = Object.values(documents).map(doc =>
-      documentToSerializationObject(doc)
-    );
-    dataStore.set("innecto-docs", serDocs);
+    let serDocs = {};
+    Object.entries(documents).forEach(([entryId, doc]) => {
+      serDocs[entryId] = documentToSerializationObject(doc);
+    });
+    dataStore.set("innecto-docs", JSON.stringify(serDocs));
   }
 
   /*** service and state ***/
@@ -170,6 +180,7 @@
     machineState = state;
 
     // TODO: save context.documents in local storage?
+    saveDocuments(state.context.documents);
   });
   flowikiService.start();
 
