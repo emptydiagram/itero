@@ -241,6 +241,9 @@
   function handleIndent() {
     flowikiService.send("INDENT");
   }
+  function handleDedent() {
+    flowikiService.send("DEDENT");
+  }
 
   $: isAtTop = machineState.value.flowiki === "top";
 
@@ -308,6 +311,7 @@
     {handleSplitEntry}
     {handleEntryBackspace}
     {handleIndent}
+    {handleDedent}
     {handleSaveCursorColId}
     {handleSaveNodeName}
     {handleSaveNodeEntry}

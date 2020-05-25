@@ -11,7 +11,8 @@
     handleGoDown,
     handleEntryBackspace,
     handleSplitEntry,
-    handleIndent;
+    handleIndent,
+    handleDedent;
   export let handleStartEditingNodeName,
     handleCancelEditingNodeName,
     handleSaveNodeName,
@@ -111,5 +112,6 @@
     {handleSplitEntry}
     {handleEntryBackspace}
     {handleIndent}
+    {handleDedent}
     {handleSaveCursorColId} />
 </div>
