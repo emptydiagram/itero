@@ -1,6 +1,6 @@
 {
   "name": "innecto",
-  "version": "0.0.10",
+  "version": "0.0.11-dev",
   "devDependencies": {
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.1",
