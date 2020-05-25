@@ -148,18 +148,17 @@ let splitEntryAction = assign(ctxt => {
   let currEntry = currTree.getEntry(entryId);
 
   console.log(" Splitting '" + currEntry + "' at colId = ", colId);
-  let updatedCurrEntry = currEntry.substring(0, colId);
-  let newEntry = currEntry.substring(colId, currEntry.length);
+  let newEntry = currEntry.substring(0, colId);
+  let updatedCurrEntry = currEntry.substring(colId, currEntry.length);
 
   let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
   currNode.doc = newTree;
 
   newTree.setEntry(entryId, updatedCurrEntry);
   let parentId = currTree.getParentId(entryId);
-  let newId = newTree.insertEntryBelow(entryId, parentId, newEntry);
+  newTree.insertEntryAbove(entryId, parentId, newEntry);
 
   return {
-    nodeCursorEntryId: newId,
     nodeCursorColId: 0,
     nodes: newNodes,
   };
