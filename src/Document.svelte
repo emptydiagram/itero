@@ -1,7 +1,7 @@
 <script>
   export let tree,
     flowyTreeNode,
-    nodeTitle,
+    docTitle,
     nodeCursorEntryId,
     nodeCursorColId,
     nodeIsEditingName;
@@ -19,17 +19,17 @@
     handleSaveCursorColId;
   import Node from "./Node.svelte";
 
-  let nodeTitleText = nodeTitle;
+  let docTitleText = docTitle;
 
-  $: handleSaveName = () => handleSaveNodeName(nodeTitleText);
+  $: handleSaveName = () => handleSaveNodeName(docTitleText);
 
   $: handleEditingCancel = () => {
-    nodeTitleText = nodeTitle;
+    docTitleText = docTitle;
     handleCancelEditingNodeName();
   };
 
   $: handleStartEditing = () => {
-    nodeTitleText = nodeTitle;
+    docTitleText = docTitle;
     handleStartEditingNodeName();
   };
 </script>
@@ -86,7 +86,7 @@
       <input
         type="text"
         id="node-name-input"
-        bind:value={nodeTitleText}
+        bind:value={docTitleText}
         placeholder="Document name" />
       <span class="node-name-edit-action" on:click={handleSaveName}>save</span>
       <span class="node-name-edit-action" on:click={handleEditingCancel}>
@@ -95,7 +95,7 @@
     </div>
   {:else}
     <div id="node-name">
-      <span id="node-name-display">{nodeTitle}</span>
+      <span id="node-name-display">{docTitle}</span>
       <span id="node-name-edit" on:click={handleStartEditing}>edit</span>
     </div>
   {/if}
