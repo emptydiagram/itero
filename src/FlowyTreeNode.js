@@ -26,7 +26,7 @@ export default class FlowyTreeNode {
   }
 
   hasChildren() {
-    return this.children.size;
+    return this.children.size > 0;
   }
 
   getChildren() {
@@ -43,6 +43,10 @@ export default class FlowyTreeNode {
   }
 
   getLastChildNode() {
-    return this.children.tail.value;
+    // a quirk of the linked list library we use is that when the list has 1
+    // element, tail = null
+    return this.children.size > 1
+      ? this.children.tail.value
+      : this.children.head.value;
   }
 }

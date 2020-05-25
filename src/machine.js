@@ -181,6 +181,10 @@ let indentAction = assign(ctxt => {
     let parentId = prevNode.getId();
     currItem.value.setParentId(parentId);
   }
+
+  return {
+    nodes: newNodes
+  }
 });
 
 let dedentAction = assign(ctxt => {
@@ -199,6 +203,10 @@ let dedentAction = assign(ctxt => {
     parentItem.append(currItem);
     let parentParentId = parentItem.value.getParentId();
     currItem.value.setParentId(parentParentId);
+  }
+
+  return {
+    nodes: newNodes
   }
 });
 
