@@ -169,7 +169,6 @@ let indentAction = assign(ctxt => {
   let entryId = ctxt.nodeCursorEntryId;
   let nodeId = ctxt.currentNodeId;
 
-  // TODO:
   //  1. check if LinkedListItem can be indented
   //  2. if so, get LinkedListItem for entryId in nodeId, and make it a child of its previous sibling
   let newNodes = { ...ctxt.nodes };
@@ -177,10 +176,6 @@ let indentAction = assign(ctxt => {
 
   let currItem = currTree.getEntryItem(entryId);
   if (currTree.hasPrevSibling(entryId)) {
-    console.log(`~~.~~&  [${entryId}] has prev sibling`);
-    // TODO:
-    // 1. detach existing node entryId from parentId
-    // 2. append to last child of prev sibling
     let prevNode = currTree.getPrevSiblingNode(entryId);
     currItem.detach();
     prevNode.appendChildItem(currItem);
@@ -189,6 +184,24 @@ let indentAction = assign(ctxt => {
   }
 });
 
+let dedentAction = assign(ctxt => {
+  let entryId = ctxt.nodeCursorEntryId;
+  let nodeId = ctxt.currentNodeId;
+
+  //  1. check if LinkedListItem can be dedented
+  //  2. if so, get LinkedListItem for entryId in nodeId, and make it the next sibling of parent
+  let newNodes = { ...ctxt.nodes };
+  let currTree = newNodes[nodeId].doc;
+
+  let currItem = currTree.getEntryItem(entryId);
+  if (currItem.value.hasParent()) {
+    let parentItem = currTree.getEntryItem(currItem.value.getParentId());
+    currItem.detach();
+    parentItem.append(currItem);
+    let parentParentId = parentItem.value.getParentId();
+    currItem.value.setParentId(parentParentId);
+  }
+});
 
 
 export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction) => {
@@ -249,6 +262,9 @@ export default (navigateToNodeAction, saveNodeNameAction, saveNodeEntryAction, s
           },
           INDENT: {
             actions: indentAction,
+          },
+          DEDENT: {
+            actions: dedentAction,
           },
           SAVE_NODE_ENTRY: {
             actions: saveNodeEntryAction,
