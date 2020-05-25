@@ -1,11 +1,11 @@
 <script>
   export let entryId,
     entryValue,
-    nodeCursorEntryId,
-    nodeCursorColId,
+    docCursorEntryId,
+    docCursorColId,
     isEntryAbove,
     isEntryBelow;
-  export let handleSaveNodeEntry, handleSaveFullCursor;
+  export let handleSaveDocEntry, handleSaveFullCursor;
   export let handleGoUp,
     handleGoDown,
     handleEntryBackspace,
@@ -27,14 +27,14 @@
     if (theInput) {
       // take focus if id equals current row id
       if (
-        entryId === nodeCursorEntryId &&
+        entryId === docCursorEntryId &&
         document.activeElement !== theInput
       ) {
         theInput.focus();
       }
       // select all classes entry-input
-      if (entryId === nodeCursorEntryId) {
-        theInput.setSelectionRange(nodeCursorColId, nodeCursorColId);
+      if (entryId === docCursorEntryId) {
+        theInput.setSelectionRange(docCursorColId, docCursorColId);
       }
     }
   });
@@ -98,13 +98,13 @@
       return;
     }
     await tick();
-    this.selectionStart = nodeCursorColId;
-    this.selectionEnd = nodeCursorColId;
+    this.selectionStart = docCursorColId;
+    this.selectionEnd = docCursorColId;
   }
 
   $: handleEntryInputClick = (index, ev) => {
     let colId = ev.target.selectionStart;
-    if (nodeCursorEntryId !== index || nodeCursorColId != colId) {
+    if (docCursorEntryId !== index || docCursorColId != colId) {
       handleSaveFullCursor(index, colId);
     }
   };
@@ -112,7 +112,7 @@
   $: handleInput = ev => {
     let colId = ev.target.selectionStart;
     let entryText = ev.target.value;
-    handleSaveNodeEntry(entryText, colId);
+    handleSaveDocEntry(entryText, colId);
   };
 </script>
 
@@ -131,7 +131,7 @@
 <input
   type="text"
   class="entry-input"
-  class:highlighted={entryId === nodeCursorEntryId}
+  class:highlighted={entryId === docCursorEntryId}
   value={entryValue}
   bind:this={theInput}
   on:input={handleInput}

@@ -2,10 +2,10 @@
   export let tree,
     flowyTreeNode,
     docTitle,
-    nodeCursorEntryId,
-    nodeCursorColId,
-    nodeIsEditingName;
-  export let handleSaveNodeEntry,
+    docCursorEntryId,
+    docCursorColId,
+    docIsEditingName;
+  export let handleSaveDocEntry,
     handleSaveFullCursor,
     handleGoUp,
     handleGoDown,
@@ -13,56 +13,56 @@
     handleSplitEntry,
     handleIndent,
     handleDedent;
-  export let handleStartEditingNodeName,
-    handleCancelEditingNodeName,
-    handleSaveNodeName,
+  export let handleStartEditingDocName,
+    handleCancelEditingDocName,
+    handleSaveDocName,
     handleSaveCursorColId;
   import Node from "./Node.svelte";
 
   let docTitleText = docTitle;
 
-  $: handleSaveName = () => handleSaveNodeName(docTitleText);
+  $: handleSaveName = () => handleSaveDocName(docTitleText);
 
   $: handleEditingCancel = () => {
     docTitleText = docTitle;
-    handleCancelEditingNodeName();
+    handleCancelEditingDocName();
   };
 
   $: handleStartEditing = () => {
     docTitleText = docTitle;
-    handleStartEditingNodeName();
+    handleStartEditingDocName();
   };
 </script>
 
 <style>
-  .node-name-edit-action {
+  .doc-name-edit-action {
     cursor: pointer;
     text-decoration: underline;
   }
-  .node-name-edit-action:active {
+  .doc-name-edit-action:active {
     color: rgb(0, 80, 160);
   }
 
-  #node-name {
+  #doc-name {
     margin: 0.2em 0;
   }
 
-  #node-name-display {
+  #doc-name-display {
     font-size: 1.2em;
     font-weight: bold;
   }
-  #node-name-edit {
+  #doc-name-edit {
     margin-left: 1em;
     margin-top: 0.5em;
     display: inline-block;
     font-size: 0.75em;
     cursor: pointer;
   }
-  #node-name-edit:hover {
+  #doc-name-edit:hover {
     text-decoration: underline;
   }
 
-  #node-name-input {
+  #doc-name-input {
     margin: 0;
     padding: 0.2em 0;
     border: 0;
@@ -81,31 +81,31 @@
 </style>
 
 <div id="document">
-  {#if nodeIsEditingName}
+  {#if docIsEditingName}
     <div>
       <input
         type="text"
-        id="node-name-input"
+        id="doc-name-input"
         bind:value={docTitleText}
         placeholder="Document name" />
-      <span class="node-name-edit-action" on:click={handleSaveName}>save</span>
-      <span class="node-name-edit-action" on:click={handleEditingCancel}>
+      <span class="doc-name-edit-action" on:click={handleSaveName}>save</span>
+      <span class="doc-name-edit-action" on:click={handleEditingCancel}>
         cancel
       </span>
     </div>
   {:else}
-    <div id="node-name">
-      <span id="node-name-display">{docTitle}</span>
-      <span id="node-name-edit" on:click={handleStartEditing}>edit</span>
+    <div id="doc-name">
+      <span id="doc-name-display">{docTitle}</span>
+      <span id="doc-name-edit" on:click={handleStartEditing}>edit</span>
     </div>
   {/if}
 
   <Node
     {tree}
     {flowyTreeNode}
-    {nodeCursorEntryId}
-    {nodeCursorColId}
-    {handleSaveNodeEntry}
+    {docCursorEntryId}
+    {docCursorColId}
+    {handleSaveDocEntry}
     {handleSaveFullCursor}
     {handleGoUp}
     {handleGoDown}

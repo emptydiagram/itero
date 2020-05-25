@@ -1,6 +1,6 @@
 <script>
-  export let tree, flowyTreeNode, nodeCursorEntryId, nodeCursorColId;
-  export let handleSaveNodeEntry,
+  export let tree, flowyTreeNode, docCursorEntryId, docCursorColId;
+  export let handleSaveDocEntry,
     handleSaveFullCursor,
     handleGoUp,
     handleGoDown,
@@ -26,11 +26,11 @@
   <EntryInput
     entryId={flowyTreeNode.getId()}
     entryValue={tree.getEntry(flowyTreeNode.getId())}
-    {nodeCursorEntryId}
-    {nodeCursorColId}
+    {docCursorEntryId}
+    {docCursorColId}
     isEntryAbove={tree.hasEntryAbove(flowyTreeNode.getId())}
     isEntryBelow={tree.hasEntryBelow(flowyTreeNode.getId())}
-    {handleSaveNodeEntry}
+    {handleSaveDocEntry}
     {handleSaveFullCursor}
     {handleGoUp}
     {handleGoDown}
@@ -48,9 +48,9 @@
         <Node
           {tree}
           flowyTreeNode={child.value}
-          {nodeCursorEntryId}
-          {nodeCursorColId}
-          {handleSaveNodeEntry}
+          {docCursorEntryId}
+          {docCursorColId}
+          {handleSaveDocEntry}
           {handleSaveFullCursor}
           {handleGoUp}
           {handleGoDown}

@@ -7,8 +7,8 @@
   import createMachine from "./machine.js";
 
   let currentHashId;
-  let currentNodeNameTextEntry;
-  let currentNodeEntryText;
+  let currentDocNameTextEntry;
+  let currentDocEntryText;
   let currentCursorEntryId;
   let currentCursorColId;
 
@@ -16,114 +16,114 @@
     return obj === Object(obj);
   }
 
-  let navigateToNodeAction = assign(ctxt => {
-    let nodeId = currentHashId;
-    let node = ctxt.nodes[nodeId];
-    let initEntryId = node.tree.size() - 1;
+  let navigateToDocAction = assign(ctxt => {
+    let docId = currentHashId;
+    let doc = ctxt.documents[docId];
+    let initEntryId = doc.tree.size() - 1;
     return {
-      currentNodeId: nodeId,
-      nodeCursorEntryId: initEntryId,
-      docTitle: node.name
+      currentDocId: docId,
+      docCursorEntryId: initEntryId,
+      docTitle: doc.name
     };
   });
 
-  let saveNodeNameAction = assign(ctxt => {
-    let copyNodes = { ...ctxt.nodes };
+  let saveDocNameAction = assign(ctxt => {
+    let copyDocs = { ...ctxt.documents };
 
-    let i = ctxt.currentNodeId;
-    copyNodes[i] = { ...ctxt.nodes[i] };
-    copyNodes[i].name = currentNodeNameTextEntry;
+    let i = ctxt.currentDocId;
+    copyDocs[i] = { ...ctxt.documents[i] };
+    copyDocs[i].name = currentDocNameTextEntry;
 
     return {
-      nodes: copyNodes,
-      docTitle: currentNodeNameTextEntry
+      documents: copyDocs,
+      docTitle: currentDocNameTextEntry
     };
   });
 
-  let saveNodeEntryAction = assign(ctxt => {
-    let copyNodes = { ...ctxt.nodes };
-    let i = ctxt.currentNodeId;
-    let j = ctxt.nodeCursorEntryId;
-    copyNodes[i] = { ...ctxt.nodes[i] };
+  let saveDocEntryAction = assign(ctxt => {
+    let copyDocs = { ...ctxt.documents };
+    let i = ctxt.currentDocId;
+    let j = ctxt.docCursorEntryId;
+    copyDocs[i] = { ...ctxt.documents[i] };
     let newTree = new FlowyTree(
-      copyNodes[i].tree.getEntries(),
-      copyNodes[i].tree.getRoot()
+      copyDocs[i].tree.getEntries(),
+      copyDocs[i].tree.getRoot()
     );
-    copyNodes[i].tree = newTree;
-    newTree.setEntry(j, currentNodeEntryText);
+    copyDocs[i].tree = newTree;
+    newTree.setEntry(j, currentDocEntryText);
     return {
-      nodes: copyNodes,
-      nodeCursorColId: currentCursorColId
+      documents: copyDocs,
+      docCursorColId: currentCursorColId
     };
   });
 
   // the action of SAVE_FULL_CURSOR
   let saveFullCursorAction = assign(_ctxt => {
     return {
-      nodeCursorEntryId: currentCursorEntryId,
-      nodeCursorColId: currentCursorColId
+      docCursorEntryId: currentCursorEntryId,
+      docCursorColId: currentCursorColId
     };
   });
 
   let saveCursorColIdAction = assign(_ctxt => {
     return {
-      nodeCursorColId: currentCursorColId
+      docCursorColId: currentCursorColId
     };
   });
 
   let backspaceAction = assign(ctxt => {
-    let copyNodes = { ...ctxt.nodes };
-    let currentNode = copyNodes[ctxt.currentNodeId];
-    currentNode.tree = new FlowyTree(
-      currentNode.tree.getEntries(),
-      currentNode.tree.getRoot()
+    let copyDocs = { ...ctxt.documents };
+    let currentDoc = copyDocs[ctxt.currentDocId];
+    currentDoc.tree = new FlowyTree(
+      currentDoc.tree.getEntries(),
+      currentDoc.tree.getRoot()
     );
-    let colId = ctxt.nodeCursorColId;
+    let colId = ctxt.docCursorColId;
 
     if (colId > 0) {
-      let currEntry = currentNode.tree.getEntry(ctxt.nodeCursorEntryId);
+      let currEntry = currentDoc.tree.getEntry(ctxt.docCursorEntryId);
       let newEntry =
         currEntry.substring(0, colId - 1) + currEntry.substring(colId);
-      currentNode.tree.setEntry(ctxt.nodeCursorEntryId, newEntry);
+      currentDoc.tree.setEntry(ctxt.docCursorEntryId, newEntry);
 
       currentCursorColId = colId - 1;
       return {
-        nodeCursorColId: colId - 1,
-        nodes: copyNodes
+        docCursorColId: colId - 1,
+        documents: copyDocs
       };
     }
 
     // col is zero, so we merge adjacent entries
-    let currTree = ctxt.nodes[ctxt.currentNodeId].tree;
-    let entryId = ctxt.nodeCursorEntryId;
+    let currTree = ctxt.documents[ctxt.currentDocId].tree;
+    let entryId = ctxt.docCursorEntryId;
     if (currTree.hasEntryAbove(entryId)) {
       let prevEntryId = currTree.getEntryIdAbove(entryId);
 
-      let newNodes;
-      newNodes = { ...ctxt.nodes };
-      let nodeId = ctxt.currentNodeId;
-      let currNode = newNodes[nodeId];
+      let newDocs;
+      newDocs = { ...ctxt.documents };
+      let docId = ctxt.currentDocId;
+      let currDoc = newDocs[docId];
 
-      let prevRowOrigEntryLen = currNode.tree.getEntry(prevEntryId).length;
+      let prevRowOrigEntryLen = currDoc.tree.getEntry(prevEntryId).length;
 
-      currentNode.tree = new FlowyTree(
-        currNode.tree.getEntries(),
-        currNode.tree.getRoot()
+      currentDoc.tree = new FlowyTree(
+        currDoc.tree.getEntries(),
+        currDoc.tree.getRoot()
       );
 
-      let currEntry = currNode.tree.getEntry(entryId);
-      currNode.tree.deleteAt(entryId);
-      currNode.tree.setEntry(
+      let currEntry = currDoc.tree.getEntry(entryId);
+      currDoc.tree.deleteAt(entryId);
+      currDoc.tree.setEntry(
         prevEntryId,
-        currNode.tree.getEntry(prevEntryId) + currEntry
+        currDoc.tree.getEntry(prevEntryId) + currEntry
       );
 
       // NOTE: we *set* currentCursorColId here.
       currentCursorColId = prevRowOrigEntryLen;
       return {
-        nodeCursorEntryId: prevEntryId,
-        nodeCursorColId: prevRowOrigEntryLen,
-        nodes: newNodes
+        docCursorEntryId: prevEntryId,
+        docCursorColId: prevRowOrigEntryLen,
+        documents: newDocs
       };
     }
   });
@@ -131,9 +131,9 @@
   /*** service and state ***/
 
   let machine = createMachine(
-    navigateToNodeAction,
-    saveNodeNameAction,
-    saveNodeEntryAction,
+    navigateToDocAction,
+    saveDocNameAction,
+    saveDocEntryAction,
     saveFullCursorAction,
     saveCursorColIdAction,
     backspaceAction
@@ -162,7 +162,7 @@
       return;
     }
     if (newId === "create") {
-      flowikiService.send("INIT_CREATE_NODE");
+      flowikiService.send("CREATE_DOC");
       return;
     }
 
@@ -191,28 +191,28 @@
 
   /*** event handlers & some reactive variables ***/
 
-  function createNode() {
+  function createDoc() {
     // navigate to #/create
     history.push("/create");
   }
 
-  function handleStartEditingNodeName() {
+  function handleStartEditingDocName() {
     flowikiService.send("START_EDITING_NAME");
   }
 
-  function handleCancelEditingNodeName() {
+  function handleCancelEditingDocName() {
     flowikiService.send("CANCEL_EDITING_NAME");
   }
 
-  function handleSaveNodeName(nodeNameText) {
-    currentNodeNameTextEntry = nodeNameText;
-    flowikiService.send("SAVE_NODE_NAME");
+  function handleSaveDocName(docNameText) {
+    currentDocNameTextEntry = docNameText;
+    flowikiService.send("SAVE_DOC_NAME");
   }
 
-  function handleSaveNodeEntry(entryText, colId) {
-    currentNodeEntryText = entryText;
+  function handleSaveDocEntry(entryText, colId) {
+    currentDocEntryText = entryText;
     currentCursorColId = colId;
-    flowikiService.send("SAVE_NODE_ENTRY");
+    flowikiService.send("SAVE_DOC_ENTRY");
   }
 
   function handleSaveFullCursor(entryId, colId) {
@@ -247,23 +247,23 @@
 
   $: isAtTop = machineState.value.flowiki === "top";
 
-  $: displayNodes = machineState.context.displayNodes.map(id => {
-    return machineState.context.nodes[id];
+  $: displayDocs = machineState.context.displayDocs.map(id => {
+    return machineState.context.documents[id];
   });
 
   $: currentTree =
-    machineState.context.currentNodeId !== null
-      ? machineState.context.nodes[machineState.context.currentNodeId].tree
+    machineState.context.currentDocId !== null
+      ? machineState.context.documents[machineState.context.currentDocId].tree
       : null;
 
   $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
 
-  $: nodeIsEditingName = (() => {
+  $: docIsEditingName = (() => {
     let curr = machineState.value.flowiki;
     if (!isObject(curr)) {
-      return nodeIsEditingName;
+      return docIsEditingName;
     }
-    return curr.node.docTitle === "editing";
+    return curr.document.docTitle === "editing";
   })();
 </script>
 
@@ -289,7 +289,7 @@
   <header>
     <span>notes</span>
   </header>
-  <Top {displayNodes} {createNode} />
+  <Top {displayDocs} {createDoc} />
 {:else}
   <header>
     <span id="home-link">
@@ -300,12 +300,12 @@
   <Document
     tree={currentTree}
     flowyTreeNode={currentTreeRoot}
-    nodeCursorEntryId={machineState.context.nodeCursorEntryId}
-    nodeCursorColId={machineState.context.nodeCursorColId}
+    docCursorEntryId={machineState.context.docCursorEntryId}
+    docCursorColId={machineState.context.docCursorColId}
     docTitle={machineState.context.docTitle}
-    {nodeIsEditingName}
-    {handleStartEditingNodeName}
-    {handleCancelEditingNodeName}
+    {docIsEditingName}
+    {handleStartEditingDocName}
+    {handleCancelEditingDocName}
     {handleGoUp}
     {handleGoDown}
     {handleSplitEntry}
@@ -313,7 +313,7 @@
     {handleIndent}
     {handleDedent}
     {handleSaveCursorColId}
-    {handleSaveNodeName}
-    {handleSaveNodeEntry}
+    {handleSaveDocName}
+    {handleSaveDocEntry}
     {handleSaveFullCursor} />
 {/if}
