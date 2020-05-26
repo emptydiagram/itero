@@ -2,68 +2,14 @@ import { Machine, assign } from 'xstate';
 import FlowyTree from './FlowyTree.js';
 import { treeObjToNode } from './serialization.js';
 
-function makeTree(entries, treeObj) {
-  let theRoot = treeObjToNode(treeObj, null);
-  return new FlowyTree(entries, theRoot);
-}
-
-function generateTestContext() {
-  let entries = [
-    [
-      { 0: 'abc', 1: 'def', 2: 'ghi', 3: 'eEe EeE', 4: 'Ww Xx Yy Zz' },
-      { root: [{ 0: [1, 2] }, 3, 4] }
-    ],
-    [
-      { 0: '4', 1: 'five', 2: 'seventy', 3: '-1' },
-      { root: [2, 0, 3, 1] }
-    ],
-    [
-      { 0: 'alpha', 1: 'beta', 2: 'gamma', 3: 'delta' },
-      {
-        root: [
-          {
-            0: [
-              { 1: [2, 3] }
-            ]
-          }
-        ]
-      }
-    ],
-  ];
-  return {
-    currentDocId: null,
-    docTitle: '',
-    documents: {
-      '1': {
-        id: 1,
-        name: 'some letters',
-        tree: makeTree(...entries[0]),
-      },
-      '2': {
-        id: 2,
-        name: 'some numbers',
-        tree: makeTree(...entries[1]),
-      },
-      '4': {
-        id: 4,
-        name: 'some greek letters',
-        tree: makeTree(...entries[2]),
-      }
-    },
-    displayDocs: [1, 2, 4],
-    docCursorEntryId: null,
-    docCursorColId: 0,
-  };
-}
-
-
 let createDocAction = assign(ctxt => {
   let copyDocs = { ...ctxt.documents };
   let existingIds = Object.keys(copyDocs).map(id => parseInt(id));
   let maxId = Math.max(...existingIds);
   let newId = maxId + 1
   let initEntryText = 'TODO';
-  let newTree = makeTree({ 0: initEntryText }, { root: [0] });
+
+  let newTree = new FlowyTree({ 0: initEntryText }, treeObjToNode({ root: [0] }, null))
   let newDocName = 'New document'
 
   copyDocs[newId] = {
@@ -186,7 +132,7 @@ let dedentAction = assign(ctxt => {
 });
 
 
-export default (navigateToDocAction, saveDocNameAction, saveDocEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction) => {
+export default (initContext, navigateToDocAction, saveDocNameAction, saveDocEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction) => {
 
   const docStates = {
     states: {
@@ -267,7 +213,7 @@ export default (navigateToDocAction, saveDocNameAction, saveDocEntryAction, save
   return Machine({
     id: 'flowiki',
     initial: 'flowiki',
-    context: generateTestContext(),
+    context: initContext,
     states: {
       flowiki: {
         on: {
