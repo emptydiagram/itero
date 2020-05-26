@@ -15,7 +15,6 @@ export default class FlowyTree {
     let q = new Queue();
     let entryItems = {};
     let item;
-    console.log("## ## ## new FlowyTree, (entries, root) = ", entries, root);
     this.root.getChildNodeArray().forEach(it => q.add(it));
     while (!q.isEmpty()) {
       item = q.remove();
@@ -23,7 +22,6 @@ export default class FlowyTree {
       item.value.getChildNodeArray().forEach(it => q.add(it));
     }
 
-    console.log("## ## ## in new FlowyTree, entryItems = ", entryItems);
     this.entryItems = entryItems;
   }
 
