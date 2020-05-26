@@ -6,7 +6,7 @@
   import FlowyTree from "./FlowyTree.js";
   import DataStore from "./DataStore.js";
   import createMachine from "./machine.js";
-  import { DataManager, makeInitContext } from "./data.js";
+  import { DataManager, makeInitContextFromDocuments } from "./data.js";
 
   let currentHashId;
   let currentDocNameTextEntry;
@@ -133,11 +133,11 @@
 
   /*** service and state ***/
 
-  let dataStore = new DataStore();
-  let dataMgr = new DataManager(dataStore);
+  let dataMgr = new DataManager(new DataStore);
+  let initContext = makeInitContextFromDocuments(dataMgr.getDocuments());
 
   let machine = createMachine(
-    makeInitContext(),
+    initContext,
     navigateToDocAction,
     saveDocNameAction,
     saveDocEntryAction,
