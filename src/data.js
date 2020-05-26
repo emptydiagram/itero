@@ -24,6 +24,25 @@ export class DataManager {
     return newDoc;
   }
 
+  getDocuments() {
+    const val = this.dataStore.get("innecto-docs");
+    let docs;
+    if (val == null) {
+      docs = makeInitDocuments();
+      this.saveDocuments(docs);
+    } else {
+      let treeObjDocs = JSON.parse(val);
+      let deserDocs = {};
+      Object.entries(treeObjDocs).forEach(([entryId, doc]) => {
+        let newDoc = {...doc};
+        newDoc.tree = new FlowyTree(doc.tree.entries, treeObjToNode(doc.tree.node));
+        deserDocs[entryId] = newDoc;
+      });
+      docs = deserDocs;
+    }
+    return docs;
+  }
+
   // documents: Map<EntryId, Document>
   // where type Document = {id: EntryId, name: String, tree: FlowyTree }
   saveDocuments(documents) {
@@ -35,7 +54,18 @@ export class DataManager {
   }
 }
 
-export function makeInitContext() {
+export function makeInitContextFromDocuments(docs) {
+  return {
+    currentDocId: null,
+    docTitle: '',
+    documents: docs,
+    displayDocs: Object.keys(docs),
+    docCursorEntryId: null,
+    docCursorColId: 0,
+  };
+}
+
+function makeInitDocuments() {
   let entries = [
     [
       { 0: 'abc', 1: 'def', 2: 'ghi', 3: 'eEe EeE', 4: 'Ww Xx Yy Zz' },
@@ -59,27 +89,20 @@ export function makeInitContext() {
     ],
   ];
   return {
-    currentDocId: null,
-    docTitle: '',
-    documents: {
-      '1': {
-        id: 1,
-        name: 'some letters',
-        tree: makeTree(...entries[0]),
-      },
-      '2': {
-        id: 2,
-        name: 'some numbers',
-        tree: makeTree(...entries[1]),
-      },
-      '4': {
-        id: 4,
-        name: 'some greek letters',
-        tree: makeTree(...entries[2]),
-      }
+    '1': {
+      id: 1,
+      name: 'some letters',
+      tree: makeTree(...entries[0]),
     },
-    displayDocs: [1, 2, 4],
-    docCursorEntryId: null,
-    docCursorColId: 0,
+    '2': {
+      id: 2,
+      name: 'some numbers',
+      tree: makeTree(...entries[1]),
+    },
+    '4': {
+      id: 4,
+      name: 'some greek letters',
+      tree: makeTree(...entries[2]),
+    }
   };
 }
