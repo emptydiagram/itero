@@ -6,7 +6,7 @@
   import FlowyTree from "./FlowyTree.js";
   import DataStore from "./DataStore.js";
   import createMachine from "./machine.js";
-  import { nodeToTreeObj } from "./serialization.js";
+  import { DataManager, makeInitContext } from "./data.js";
 
   let currentHashId;
   let currentDocNameTextEntry;
@@ -130,34 +130,14 @@
     }
   });
 
-  let dataStore = new DataStore();
-
-  function treeToSerializationObject(tree) {
-    return {
-      entries: tree.getEntries(),
-      node: nodeToTreeObj(tree.getRoot())
-    };
-  }
-
-  function documentToSerializationObject(doc) {
-    let newDoc = { ...doc };
-    newDoc.tree = treeToSerializationObject(newDoc.tree);
-    return newDoc;
-  }
-
-  // documents: Map<EntryId, Document>
-  // where type Document = {id: EntryId, name: String, tree: FlowyTree }
-  function saveDocuments(documents) {
-    let serDocs = {};
-    Object.entries(documents).forEach(([entryId, doc]) => {
-      serDocs[entryId] = documentToSerializationObject(doc);
-    });
-    dataStore.set("innecto-docs", JSON.stringify(serDocs));
-  }
 
   /*** service and state ***/
 
+  let dataStore = new DataStore();
+  let dataMgr = new DataManager(dataStore);
+
   let machine = createMachine(
+    makeInitContext(),
     navigateToDocAction,
     saveDocNameAction,
     saveDocEntryAction,
@@ -180,7 +160,7 @@
     machineState = state;
 
     // TODO: save context.documents in local storage?
-    saveDocuments(state.context.documents);
+    dataMgr.saveDocuments(state.context.documents);
   });
   flowikiService.start();
 
