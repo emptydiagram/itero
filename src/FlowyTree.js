@@ -151,7 +151,7 @@ export default class FlowyTree {
 
   // returns: the id of the new entry (the one just inserted)
 
-  deleteAt(entryId) {
+  removeEntry(entryId) {
     let item = this.entryItems[entryId];
     delete this.entries[entryId];
     item.detach();
