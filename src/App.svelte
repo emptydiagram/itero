@@ -101,11 +101,9 @@
     if (currTree.hasEntryAbove(entryId)) {
       // get current id's previous sibling. if it has children, bail.
       let currItem = currTree.getEntryItem(entryId);
-      if (currItem.value.hasChildren()) {
-        let prevSiblingNode = currItem.prev.value;
-        if (prevSiblingNode.hasChildren()) {
-          return {};
-        }
+      let prevSiblingNode = currItem.prev.value;
+      if (prevSiblingNode.hasChildren()) {
+        return {};
       }
 
       let prevEntryId = currTree.getEntryIdAbove(entryId);
