@@ -99,6 +99,15 @@
     let currTree = ctxt.documents[ctxt.currentDocId].tree;
     let entryId = ctxt.docCursorEntryId;
     if (currTree.hasEntryAbove(entryId)) {
+      // get current id's previous sibling. if it has children, bail.
+      let currItem = currTree.getEntryItem(entryId);
+      if (currItem.value.hasChildren()) {
+        let prevSiblingNode = currItem.prev.value;
+        if (prevSiblingNode.hasChildren()) {
+          return {};
+        }
+      }
+
       let prevEntryId = currTree.getEntryIdAbove(entryId);
 
       let newDocs;
@@ -114,16 +123,16 @@
       );
 
       let currEntry = currDoc.tree.getEntry(entryId);
-      currDoc.tree.deleteAt(entryId);
       currDoc.tree.setEntry(
-        prevEntryId,
+        entryId,
         currDoc.tree.getEntry(prevEntryId) + currEntry
       );
+      currDoc.tree.removeEntry(prevEntryId);
 
       // NOTE: we *set* currentCursorColId here.
       currentCursorColId = prevRowOrigEntryLen;
       return {
-        docCursorEntryId: prevEntryId,
+        docCursorEntryId: entryId,
         docCursorColId: prevRowOrigEntryLen,
         documents: newDocs
       };
