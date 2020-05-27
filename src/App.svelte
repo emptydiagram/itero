@@ -300,19 +300,19 @@
       monospace;
   }
 
-  #home-link {
+  .home {
     font-size: 1.2em;
   }
 </style>
 
 {#if isAtTop}
   <header>
-    <span>notes</span>
+    <span class="home">🏠</span>
   </header>
   <Top {displayDocs} {createDoc} />
 {:else}
   <header>
-    <span id="home-link">
+    <span class="home">
       <a href="#/">🏠</a>
     </span>
     &gt;
