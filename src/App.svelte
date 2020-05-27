@@ -101,9 +101,11 @@
     if (currTree.hasEntryAbove(entryId)) {
       // get current id's previous sibling. if it has children, bail.
       let currItem = currTree.getEntryItem(entryId);
-      let prevSiblingNode = currItem.prev.value;
-      if (prevSiblingNode.hasChildren()) {
-        return {};
+      if (currItem.value.hasChildren()) {
+        let prevSiblingNode = currItem.prev.value;
+        if (prevSiblingNode.hasChildren()) {
+          return {};
+        }
       }
 
       let prevEntryId = currTree.getEntryIdAbove(entryId);
@@ -127,7 +129,7 @@
       // then delete this entry item and append the text to the parent's text
       // otherwise, since previous sibling has no children, we delete it and
       // prepend its text to current element
-      if (currItem.value.getParentId() === prevEntryId) {
+      if (currItem.value.getParentId() === prevEntryId || !currItem.value.hasChildren()) {
         currDoc.tree.setEntry(
           prevEntryId,
           prevRowOrigEntry + currEntry
