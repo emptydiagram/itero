@@ -115,7 +115,7 @@
       let docId = ctxt.currentDocId;
       let currDoc = newDocs[docId];
 
-      let prevRowOrigEntryLen = currDoc.tree.getEntry(prevEntryId).length;
+      let prevRowOrigEntry = currDoc.tree.getEntry(prevEntryId);
 
       currentDoc.tree = new FlowyTree(
         currDoc.tree.getEntries(),
@@ -123,17 +123,36 @@
       );
 
       let currEntry = currDoc.tree.getEntry(entryId);
-      currDoc.tree.setEntry(
-        entryId,
-        currDoc.tree.getEntry(prevEntryId) + currEntry
-      );
-      currDoc.tree.removeEntry(prevEntryId);
+
+      let newEntryId, newColId;
+      // if the entry above is the parent (i.e. the entry is the first child)
+      // then delete this entry item and append the text to the parent's text
+      // otherwise, since previous sibling has no children, we delete it and
+      // prepend its text to current element
+      if (currItem.value.getParentId() === prevEntryId) {
+        currDoc.tree.setEntry(
+          prevEntryId,
+          prevRowOrigEntry + currEntry
+        );
+        currDoc.tree.removeEntry(entryId);
+        newEntryId = prevEntryId;
+        newColId = prevRowOrigEntry.length;
+      } else {
+        currDoc.tree.setEntry(
+          entryId,
+          prevRowOrigEntry + currEntry
+        );
+        currDoc.tree.removeEntry(prevEntryId);
+        newEntryId = entryId;
+        newColId = prevRowOrigEntry.length;
+      }
+
 
       // NOTE: we *set* currentCursorColId here.
-      currentCursorColId = prevRowOrigEntryLen;
+      currentCursorColId = newColId;
       return {
-        docCursorEntryId: entryId,
-        docCursorColId: prevRowOrigEntryLen,
+        docCursorEntryId: newEntryId,
+        docCursorColId: newColId,
         documents: newDocs
       };
     }
