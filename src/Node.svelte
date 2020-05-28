@@ -25,7 +25,7 @@
 {#if flowyTreeNode.getId() !== null}
   <EntryInput
     entryId={flowyTreeNode.getId()}
-    entryValue={tree.getEntry(flowyTreeNode.getId())}
+    entryValue={tree.getEntryText(flowyTreeNode.getId())}
     {docCursorEntryId}
     {docCursorColId}
     isEntryAbove={tree.hasEntryAbove(flowyTreeNode.getId())}

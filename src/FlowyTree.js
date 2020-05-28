@@ -4,7 +4,7 @@ import Queue from "./Queue.js";
 
 // TODO: handle full trees
 export default class FlowyTree {
-  // entries: Map<EntryId, String>
+  // entries: Map<EntryId, Object>
   // root: FlowyTreeNode
   // entryItems: Map<EntryId, LinkedListItem<FlowyTreeNode>>
   constructor(entries, root) {
@@ -34,7 +34,7 @@ export default class FlowyTree {
   }
 
   getEntryTexts() {
-    return this.root.getChildren().toArray().map(item => this.entries[item.value.getId()])
+    return this.root.getChildren().toArray().map(item => this.entries[item.value.getId()].text)
   }
 
   hasEntryAbove(entryId) {
@@ -120,16 +120,16 @@ export default class FlowyTree {
     return false;
   }
 
-  getEntry(entryId) {
-    return this.entries[entryId];
+  getEntryText(entryId) {
+    return this.entries[entryId].text;
   }
 
   getEntryItem(entryId) {
     return this.entryItems[entryId];
   }
 
-  setEntry(entryId, value) {
-    this.entries[entryId] = value;
+  setEntryText(entryId, value) {
+    this.entries[entryId].text = value;
   }
 
   getParentId(entryId) {
@@ -139,7 +139,7 @@ export default class FlowyTree {
   insertEntryAbove(entryId, parentId, newEntry) {
     let existingIds = Object.keys(this.entries).map(id => parseInt(id));
     let newId = Math.max(...existingIds) + 1;
-    this.entries[newId] = newEntry;
+    this.setEntryText(newId, newEntry);
 
     let newNode = new LinkedListItem(new FlowyTreeNode(newId, parentId));
     //let prevNode = this.root.getChildren().get(index - 1);
