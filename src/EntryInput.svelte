@@ -74,13 +74,25 @@
 
     if (ev.key === "ArrowUp") {
       ev.preventDefault();
-      if (isEntryAbove) {
-        handleGoUp();
+
+      if (ev.ctrlKey) {
+        // TODO: collapse
+        console.log("TODO: check if entry is collapsed, if not, collapse it");
+      } else {
+        if (isEntryAbove) {
+          handleGoUp();
+        }
       }
     } else if (ev.key === "ArrowDown") {
       ev.preventDefault();
-      if (isEntryBelow) {
-        handleGoDown();
+
+      if (ev.ctrlKey) {
+        // TODO: expand
+        console.log("TODO: check if entry is expanded, if not, expand it");
+      } else {
+        if (isEntryBelow) {
+          handleGoDown();
+        }
       }
     } else if (ev.key === "Backspace") {
       ev.preventDefault();
