@@ -114,17 +114,30 @@ let splitEntryAction = assign(ctxt => {
   let currDoc = newDocs[docId];
   let currTree = currDoc.tree;
   let currEntryText = currTree.getEntryText(entryId);
-
-  console.log(" Splitting '" + currEntryText + "' at colId = ", colId);
-  let newEntry = currEntryText.substring(0, colId);
-  let updatedCurrEntry = currEntryText.substring(colId, currEntryText.length);
+  let parentId = currTree.getParentId(entryId);
 
   let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
   currDoc.tree = newTree;
 
+  // if at the end of a collapsed item, make a next sibling with empty text
+  if (currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED
+      && colId === currEntryText.length) {
+
+    let newId = newTree.insertEntryBelow(entryId, parentId, '');
+
+    return {
+      docCursorEntryId: newId,
+      docCursorColId: 0,
+      documents: newDocs,
+    }
+  }
+
+  console.log(" Splitting '" + currEntryText + "' at colId = ", colId);
+  let newEntryText = currEntryText.substring(0, colId);
+  let updatedCurrEntry = currEntryText.substring(colId, currEntryText.length);
+
   newTree.setEntryText(entryId, updatedCurrEntry);
-  let parentId = currTree.getParentId(entryId);
-  newTree.insertEntryAbove(entryId, parentId, newEntry);
+  newTree.insertEntryAbove(entryId, parentId, newEntryText);
 
   return {
     docCursorColId: 0,

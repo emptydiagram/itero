@@ -175,13 +175,27 @@ export default class FlowyTree {
     return this.entryItems[entryId].value.parentId;
   }
 
-  insertEntryAbove(entryId, parentId, newEntry) {
+  // returns: the id of the new entry
+  insertEntryBelow(entryId, parentId, newEntryText) {
+    // TODO: dedupe with insertEntryAbove
     let existingIds = Object.keys(this.entries).map(id => parseInt(id));
     let newId = Math.max(...existingIds) + 1;
-    this.setEntryText(newId, newEntry);
+    this.setEntryText(newId, newEntryText);
 
     let newNode = new LinkedListItem(new FlowyTreeNode(newId, parentId));
-    //let prevNode = this.root.getChildren().get(index - 1);
+    let prevItem = this.entryItems[entryId];
+    prevItem.append(newNode);
+
+    this.entryItems[newId] = newNode;
+    return newId;
+  }
+
+  insertEntryAbove(entryId, parentId, newEntryText) {
+    let existingIds = Object.keys(this.entries).map(id => parseInt(id));
+    let newId = Math.max(...existingIds) + 1;
+    this.setEntryText(newId, newEntryText);
+
+    let newNode = new LinkedListItem(new FlowyTreeNode(newId, parentId));
     let prevItem = this.entryItems[entryId];
     prevItem.prepend(newNode);
 
