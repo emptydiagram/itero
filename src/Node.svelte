@@ -13,7 +13,11 @@
   import EntryInput from "./EntryInput.svelte";
   import Node from "./Node.svelte";
 
-  $: childNodeArray = flowyTreeNode.getChildNodeArray();
+  $: currEntryId = flowyTreeNode.getId();
+
+  $: childItemArray = flowyTreeNode.getChildNodeArray();
+  $: currNodeHasChildren = childItemArray.length > 0;
+
 </script>
 
 <style>
@@ -22,14 +26,14 @@
   }
 </style>
 
-{#if flowyTreeNode.getId() !== null}
+{#if currEntryId !== null}
   <EntryInput
-    entryId={flowyTreeNode.getId()}
-    entryValue={tree.getEntryText(flowyTreeNode.getId())}
+    entryId={currEntryId}
+    entryValue={tree.getEntryText(currEntryId)}
     {docCursorEntryId}
     {docCursorColId}
-    isEntryAbove={tree.hasEntryAbove(flowyTreeNode.getId())}
-    isEntryBelow={tree.hasEntryBelow(flowyTreeNode.getId())}
+    isEntryAbove={tree.hasEntryAbove(currEntryId)}
+    isEntryBelow={tree.hasEntryBelow(currEntryId)}
     {handleSaveDocEntry}
     {handleSaveFullCursor}
     {handleGoUp}
@@ -41,9 +45,9 @@
     {handleSaveCursorColId} />
 {/if}
 
-{#if childNodeArray.length > 0}
+{#if currNodeHasChildren }
   <ul class="tree-node-list">
-    {#each childNodeArray as child, i}
+    {#each childItemArray as child, i}
       <li>
         <Node
           {tree}
