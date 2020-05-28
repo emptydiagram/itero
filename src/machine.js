@@ -41,18 +41,18 @@ let goUpAction = assign(ctxt => {
   let hasEntryAbove = currTree.hasEntryAbove(ctxt.docCursorEntryId);
 
 
-  let newEntryId = hasEntryAbove ? currTree.getEntryIdAbove(ctxt.docCursorEntryId) : ctxt.docCursorEntryId;
+  let newEntryId = hasEntryAbove ? currTree.getEntryIdAboveWithCollapse(ctxt.docCursorEntryId) : ctxt.docCursorEntryId;
   return {
     docCursorEntryId: newEntryId,
   };
 });
 
 let goDownAction = assign(ctxt => {
-  // TODO
   let currTree = ctxt.documents[ctxt.currentDocId].tree;
+  // TODO: take into account collapse
   let hasEntryBelow = currTree.hasEntryBelow(ctxt.docCursorEntryId);
 
-  let newEntryId = hasEntryBelow ? currTree.getEntryIdBelow(ctxt.docCursorEntryId) : ctxt.docCursorEntryId;
+  let newEntryId = hasEntryBelow ? currTree.getEntryIdBelowWithCollapse(ctxt.docCursorEntryId) : ctxt.docCursorEntryId;
   return {
     docCursorEntryId: newEntryId,
   };

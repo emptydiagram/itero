@@ -77,6 +77,25 @@ export default class FlowyTree {
     return this.entryItems[entryId].value.parentId;
   }
 
+  getEntryIdAboveWithCollapse(entryId) {
+    // TODO: find if the entry id above is the child of a collapsed node, and if so go to the last one
+    let provId = this.getEntryIdAbove(entryId);
+
+    // traverse ancestor chain, looking for earliest collapsed ancestor
+    let oldestId = null;
+    let currId = this.getEntryItem(provId).value.getParentId();
+
+    while (currId != null) {
+      // check if current is collapsed
+      if (this.getEntryDisplayState(currId) === EntryDisplayState.COLLAPSED) {
+        oldestId = currId;
+      }
+      currId = this.getEntryItem(currId).value.getParentId();
+    }
+
+    return oldestId == null ? provId : oldestId;
+  }
+
   // true iff it has a child or next sibling or if an ancestor has a next sibling
   hasEntryBelow(entryId) {
     let entryItem = this.entryItems[entryId];
@@ -85,11 +104,14 @@ export default class FlowyTree {
       || this.entryAncestorHasNextSibling(entryId);
   }
 
-  getEntryIdBelow(entryId) {
-    // return first child id, if it exists
-    let ch = this.entryItems[entryId].value.getChildren();
-    if (ch.size > 0) {
-      return ch.head.value.getId();
+  getEntryIdBelowWithCollapse(entryId) {
+    // if entry is collapsed ignore children
+    if (this.getEntryDisplayState(entryId) !== EntryDisplayState.COLLAPSED) {
+      // return first child id, if it exists
+      let ch = this.entryItems[entryId].value.getChildren();
+      if (ch.size > 0) {
+        return ch.head.value.getId();
+      }
     }
 
     // get next sibling if it exists
@@ -97,7 +119,8 @@ export default class FlowyTree {
       return this.entryItems[entryId].next.value.getId();
     }
     // there's no child and no next sibling, find first ancestor with a next sibling
-    return this.getNextSiblingOfFirstAncestor(this.entryItems[entryId].value).getId();
+    let nextSib = this.getNextSiblingOfFirstAncestor(this.entryItems[entryId].value);
+    return nextSib ? nextSib.getId() : null;
   }
 
 
@@ -182,7 +205,6 @@ export default class FlowyTree {
   }
 
   getPrevSiblingNode(entryId) {
-    console.log(` #**# getPrevSiblingNode, entryId = ${entryId}`);
     return this.entryItems[entryId].prev.value;
   }
 }

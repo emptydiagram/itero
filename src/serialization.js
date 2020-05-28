@@ -51,11 +51,6 @@ export function serializeEntries(entries) {
   let entriesObj = { ...entries };
   Object.entries(entriesObj).map(([id, entry]) => {
     entry = { ...entry };
-    if (entry.displayState === EntryDisplayState.COLLAPSED) {
-      console.log("   ~~ serialize, id = ", id, " COLLAPSED");
-    } else if (entry.displayState === EntryDisplayState.COLLAPSED) {
-      console.log("   ~~ serialize, id = ", id, " EXPANDED");
-    }
     entry.displayState = entry.displayState === EntryDisplayState.COLLAPSED
       ? 'COLLAPSED'
       : 'EXPANDED';
