@@ -274,6 +274,9 @@
   function handleEntryBackspace() {
     flowikiService.send("ENTRY_BACKSPACE");
   }
+  function handleCollapseEntry() {
+    flowikiService.send("COLLAPSE_ENTRY");
+  }
   function handleExpandEntry() {
     flowikiService.send("EXPAND_ENTRY");
   }
@@ -350,6 +353,7 @@
     {handleCancelEditingDocName}
     {handleGoUp}
     {handleGoDown}
+    {handleCollapseEntry}
     {handleExpandEntry}
     {handleSplitEntry}
     {handleEntryBackspace}
