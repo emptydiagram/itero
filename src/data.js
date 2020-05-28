@@ -6,8 +6,6 @@ export const EntryDisplayState = Object.freeze({
     EXPANDED: Symbol("Colors.EXPANDED"),
 });
 
-console.log(EntryDisplayState, EntryDisplayState.COLLAPSED);
-
 function makeTree(entries, treeObj) {
   let theRoot = treeObjToNode(treeObj, null);
   return new FlowyTree(entries, theRoot);
