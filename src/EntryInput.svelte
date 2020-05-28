@@ -9,6 +9,7 @@
   export let handleGoUp,
     handleGoDown,
     handleEntryBackspace,
+    handleExpandEntry,
     handleSplitEntry,
     handleIndent,
     handleDedent,
@@ -88,6 +89,7 @@
 
       if (ev.ctrlKey) {
         // TODO: expand
+        handleExpandEntry();
         console.log("TODO: check if entry is expanded, if not, expand it");
       } else {
         if (isEntryBelow) {
