@@ -5,15 +5,17 @@
     docCursorColId,
     isEntryAbove,
     isEntryBelow;
-  export let handleSaveDocEntry, handleSaveFullCursor;
   export let handleGoUp,
     handleGoDown,
     handleEntryBackspace,
+    handleCollapseEntry,
     handleExpandEntry,
     handleSplitEntry,
     handleIndent,
     handleDedent,
-    handleSaveCursorColId;
+    handleSaveCursorColId,
+    handleSaveDocEntry,
+    handleSaveFullCursor;
 
   import { afterUpdate, tick } from "svelte";
 
@@ -77,8 +79,8 @@
       ev.preventDefault();
 
       if (ev.ctrlKey) {
-        // TODO: collapse
-        console.log("TODO: check if entry is collapsed, if not, collapse it");
+        // TODO: Guard?
+        handleCollapseEntry();
       } else {
         if (isEntryAbove) {
           handleGoUp();
@@ -88,9 +90,8 @@
       ev.preventDefault();
 
       if (ev.ctrlKey) {
-        // TODO: expand
+        // TODO: Guard?
         handleExpandEntry();
-        console.log("TODO: check if entry is expanded, if not, expand it");
       } else {
         if (isEntryBelow) {
           handleGoDown();

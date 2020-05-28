@@ -4,6 +4,7 @@
     handleSaveFullCursor,
     handleGoUp,
     handleGoDown,
+    handleCollapseEntry,
     handleExpandEntry,
     handleSplitEntry,
     handleEntryBackspace,
@@ -52,6 +53,7 @@
     {handleSaveFullCursor}
     {handleGoUp}
     {handleGoDown}
+    {handleCollapseEntry}
     {handleExpandEntry}
     {handleSplitEntry}
     {handleEntryBackspace}
@@ -73,6 +75,7 @@
           {handleSaveFullCursor}
           {handleGoUp}
           {handleGoDown}
+          {handleCollapseEntry}
           {handleExpandEntry}
           {handleSplitEntry}
           {handleEntryBackspace}
