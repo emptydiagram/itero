@@ -68,15 +68,31 @@ export function makeInitContextFromDocuments(docs) {
 function makeInitDocuments() {
   let entries = [
     [
-      { 0: 'abc', 1: 'def', 2: 'ghi', 3: 'eEe EeE', 4: 'Ww Xx Yy Zz' },
+      {
+        0: { text: 'abc' },
+        1: { text: 'def' },
+        2: { text: 'ghi' },
+        3: { text: 'eEe EeE' },
+        4: { text: 'Ww Xx Yy Zz' }
+      },
       { root: [{ 0: [1, 2] }, 3, 4] }
     ],
     [
-      { 0: '4', 1: 'five', 2: 'seventy', 3: '-1' },
+      {
+        0: { text: '4' },
+        1: { text: 'five' },
+        2: { text: 'seventy' },
+        3: { text: '-1' },
+      },
       { root: [2, 0, 3, 1] }
     ],
     [
-      { 0: 'alpha', 1: 'beta', 2: 'gamma', 3: 'delta' },
+      {
+        0: { text: 'alpha' },
+        1: { text: 'beta' },
+        2: { text: 'gamma' },
+        3: { text: 'delta' },
+      },
       {
         root: [
           {
