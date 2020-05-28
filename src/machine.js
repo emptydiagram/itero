@@ -9,7 +9,7 @@ let createDocAction = assign(ctxt => {
   let newId = maxId + 1
   let initEntryText = 'TODO';
 
-  let newTree = new FlowyTree({ 0: initEntryText }, treeObjToNode({ root: [0] }, null))
+  let newTree = new FlowyTree({ 0: {text: initEntryText} }, treeObjToNode({ root: [0] }, null))
   let newDocName = 'New document'
 
   copyDocs[newId] = {
@@ -66,16 +66,16 @@ let splitEntryAction = assign(ctxt => {
   let newDocs = { ...ctxt.documents };
   let currDoc = newDocs[docId];
   let currTree = currDoc.tree;
-  let currEntry = currTree.getEntry(entryId);
+  let currEntryText = currTree.getEntryText(entryId);
 
-  console.log(" Splitting '" + currEntry + "' at colId = ", colId);
-  let newEntry = currEntry.substring(0, colId);
-  let updatedCurrEntry = currEntry.substring(colId, currEntry.length);
+  console.log(" Splitting '" + currEntryText + "' at colId = ", colId);
+  let newEntry = currEntryText.substring(0, colId);
+  let updatedCurrEntry = currEntryText.substring(colId, currEntryText.length);
 
   let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
   currDoc.tree = newTree;
 
-  newTree.setEntry(entryId, updatedCurrEntry);
+  newTree.setEntryText(entryId, updatedCurrEntry);
   let parentId = currTree.getParentId(entryId);
   newTree.insertEntryAbove(entryId, parentId, newEntry);
 

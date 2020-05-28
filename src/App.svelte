@@ -52,7 +52,7 @@
       copyDocs[i].tree.getRoot()
     );
     copyDocs[i].tree = newTree;
-    newTree.setEntry(j, currentDocEntryText);
+    newTree.setEntryText(j, currentDocEntryText);
     return {
       documents: copyDocs,
       docCursorColId: currentCursorColId
@@ -83,10 +83,10 @@
     let colId = ctxt.docCursorColId;
 
     if (colId > 0) {
-      let currEntry = currentDoc.tree.getEntry(ctxt.docCursorEntryId);
+      let currEntryText = currentDoc.tree.getEntryText(ctxt.docCursorEntryId);
       let newEntry =
-        currEntry.substring(0, colId - 1) + currEntry.substring(colId);
-      currentDoc.tree.setEntry(ctxt.docCursorEntryId, newEntry);
+        currEntryText.substring(0, colId - 1) + currEntryText.substring(colId);
+      currentDoc.tree.setEntryText(ctxt.docCursorEntryId, newEntry);
 
       currentCursorColId = colId - 1;
       return {
@@ -115,14 +115,14 @@
       let docId = ctxt.currentDocId;
       let currDoc = newDocs[docId];
 
-      let prevRowOrigEntry = currDoc.tree.getEntry(prevEntryId);
+      let prevRowOrigEntryText = currDoc.tree.getEntryText(prevEntryId);
 
       currentDoc.tree = new FlowyTree(
         currDoc.tree.getEntries(),
         currDoc.tree.getRoot()
       );
 
-      let currEntry = currDoc.tree.getEntry(entryId);
+      let currEntryText = currDoc.tree.getEntryText(entryId);
 
       let newEntryId, newColId;
       // if the entry above is the parent (i.e. the entry is the first child)
@@ -130,21 +130,21 @@
       // otherwise, since previous sibling has no children, we delete it and
       // prepend its text to current element
       if (currItem.value.getParentId() === prevEntryId || !currItem.value.hasChildren()) {
-        currDoc.tree.setEntry(
+        currDoc.tree.setEntryText(
           prevEntryId,
-          prevRowOrigEntry + currEntry
+          prevRowOrigEntryText + currEntryText
         );
         currDoc.tree.removeEntry(entryId);
         newEntryId = prevEntryId;
-        newColId = prevRowOrigEntry.length;
+        newColId = prevRowOrigEntryText.length;
       } else {
-        currDoc.tree.setEntry(
+        currDoc.tree.setEntryText(
           entryId,
-          prevRowOrigEntry + currEntry
+          prevRowOrigEntryText + currEntryText
         );
         currDoc.tree.removeEntry(prevEntryId);
         newEntryId = entryId;
-        newColId = prevRowOrigEntry.length;
+        newColId = prevRowOrigEntryText.length;
       }
 
 
