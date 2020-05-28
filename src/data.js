@@ -1,5 +1,12 @@
-import { nodeToTreeObj, treeObjToNode } from "./serialization.js";
+import { nodeToTreeObj, treeObjToNode, deserializeEntries, serializeEntries } from "./serialization.js";
 import FlowyTree from "./FlowyTree.js";
+
+export const EntryDisplayState = Object.freeze({
+    COLLAPSED: Symbol("Colors.COLLAPSED"),
+    EXPANDED: Symbol("Colors.EXPANDED"),
+});
+
+console.log(EntryDisplayState, EntryDisplayState.COLLAPSED);
 
 function makeTree(entries, treeObj) {
   let theRoot = treeObjToNode(treeObj, null);
@@ -13,7 +20,7 @@ export class DataManager {
 
   treeToSerializationObject(tree) {
     return {
-      entries: tree.getEntries(),
+      entries: serializeEntries(tree.getEntries()),
       node: nodeToTreeObj(tree.getRoot())
     };
   }
@@ -35,7 +42,7 @@ export class DataManager {
       let deserDocs = {};
       Object.entries(treeObjDocs).forEach(([entryId, doc]) => {
         let newDoc = {...doc};
-        newDoc.tree = new FlowyTree(doc.tree.entries, treeObjToNode(doc.tree.node));
+        newDoc.tree = new FlowyTree(deserializeEntries(doc.tree.entries), treeObjToNode(doc.tree.node));
         deserDocs[entryId] = newDoc;
       });
       docs = deserDocs;
@@ -69,7 +76,7 @@ function makeInitDocuments() {
   let entries = [
     [
       {
-        0: { text: 'abc' },
+        0: { text: 'abc', displayState: EntryDisplayState.COLLAPSED },
         1: { text: 'def' },
         2: { text: 'ghi' },
         3: { text: 'eEe EeE' },

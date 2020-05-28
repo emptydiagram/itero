@@ -1,5 +1,6 @@
 import { LinkedList, LinkedListItem } from './LinkedList.js';
 import FlowyTreeNode from './FlowyTreeNode.js';
+import { EntryDisplayState } from './data.js';
 
 function isObject(obj) {
   return obj === Object(obj);
@@ -31,4 +32,35 @@ export function nodeToTreeObj(node) {
     return result;
   }
   return node.getId();
+}
+
+export function deserializeEntries(entriesObj) {
+  let entries = { ...entriesObj };
+  Object.entries(entries).map(([id, entry]) => {
+    entry = { ...entry };
+    entry.displayState = entry.displayState === 'COLLAPSED'
+      ? EntryDisplayState.COLLAPSED
+      : EntryDisplayState.EXPANDED;
+    entries[id] = entry;
+  });
+  console.log("deserializeEntries, new entries = ", entries);
+  return entries;
+}
+
+export function serializeEntries(entries) {
+  let entriesObj = { ...entries };
+  Object.entries(entriesObj).map(([id, entry]) => {
+    entry = { ...entry };
+    if (entry.displayState === EntryDisplayState.COLLAPSED) {
+      console.log("   ~~ serialize, id = ", id, " COLLAPSED");
+    } else if (entry.displayState === EntryDisplayState.COLLAPSED) {
+      console.log("   ~~ serialize, id = ", id, " EXPANDED");
+    }
+    entry.displayState = entry.displayState === EntryDisplayState.COLLAPSED
+      ? 'COLLAPSED'
+      : 'EXPANDED';
+    entriesObj[id] = entry;
+  });
+  console.log("serializeEntries, new entries = ", entriesObj);
+  return entriesObj;
 }
