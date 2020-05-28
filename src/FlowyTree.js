@@ -1,6 +1,7 @@
 import { LinkedListItem } from "./LinkedList.js";
 import FlowyTreeNode from './FlowyTreeNode.js'
 import Queue from "./Queue.js";
+import { EntryDisplayState } from "./data.js";
 
 // TODO: handle full trees
 export default class FlowyTree {
@@ -124,11 +125,19 @@ export default class FlowyTree {
     return this.entries[entryId].text;
   }
 
+  getEntryDisplayState(entryId) {
+    let val = (this.entries[entryId] != null) && this.entries[entryId].displayState || EntryDisplayState.EXPANDED;
+    return val;
+  }
+
   getEntryItem(entryId) {
     return this.entryItems[entryId];
   }
 
   setEntryText(entryId, value) {
+    if (this.entries[entryId] == null) {
+      this.entries[entryId] = {};
+    }
     this.entries[entryId].text = value;
   }
 
