@@ -141,6 +141,13 @@ export default class FlowyTree {
     this.entries[entryId].text = value;
   }
 
+  setEntryDisplayState(entryId, newState) {
+    if (this.entries[entryId] == null) {
+      this.entries[entryId] = {};
+    }
+    this.entries[entryId].displayState = newState;
+  }
+
   getParentId(entryId) {
     return this.entryItems[entryId].value.parentId;
   }

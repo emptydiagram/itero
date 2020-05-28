@@ -1,6 +1,7 @@
 import { Machine, assign } from 'xstate';
 import FlowyTree from './FlowyTree.js';
 import { treeObjToNode } from './serialization.js';
+import { EntryDisplayState } from "./data.js";
 
 let createDocAction = assign(ctxt => {
   let copyDocs = { ...ctxt.documents };
@@ -55,6 +56,28 @@ let goDownAction = assign(ctxt => {
   return {
     docCursorEntryId: newEntryId,
   };
+});
+
+let expandEntryAction = assign(ctxt => {
+  // check if display state is collapsed, and, if so, expand
+  let docId = ctxt.currentDocId;
+  let entryId = ctxt.docCursorEntryId;
+
+  let newDocs = { ...ctxt.documents };
+  let currDoc = newDocs[docId];
+  let currTree = currDoc.tree;
+
+  if (currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED) {
+    let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
+    currDoc.tree = newTree;
+    newTree.setEntryDisplayState(entryId, EntryDisplayState.EXPANDED)
+
+    return {
+      documents: newDocs,
+    };
+  }
+
+  return {};
 });
 
 let splitEntryAction = assign(ctxt => {
@@ -181,6 +204,9 @@ export default (initContext, navigateToDocAction, saveDocNameAction, saveDocEntr
           },
           DOWN: {
             actions: goDownAction
+          },
+          EXPAND_ENTRY: {
+            actions: expandEntryAction,
           },
           SPLIT_ENTRY: {
             actions: splitEntryAction,
