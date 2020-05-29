@@ -12,9 +12,13 @@
     handleDedent,
     handleSaveCursorColId;
 
+  import Icon from 'svelte-awesome';
+  import { faCircle } from '@fortawesome/free-solid-svg-icons';
+
   import EntryInput from "./EntryInput.svelte";
   import Node from "./Node.svelte";
   import { EntryDisplayState } from "./data.js";
+
 
   function nodeIsCollapsed(node) {
     return node.hasChildren()
@@ -33,38 +37,57 @@
 
 <style>
   .tree-node-list {
+    display: block;
     padding-left: 1.8em;
+    list-style-type: none;
   }
 
   .tree-node-list li {
-    list-style-type: disc;
+    display: flex;
+    flex-direction: column;
   }
 
   .tree-node-list li.collapsed {
     color: deepskyblue;
   }
 
+  .entry-display {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .fa-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 0.5em;
+  }
 </style>
 
 {#if currEntryId !== null}
-  <EntryInput
-    entryId={currEntryId}
-    entryValue={tree.getEntryText(currEntryId)}
-    {docCursorEntryId}
-    {docCursorColId}
-    isEntryAbove={tree.hasEntryAbove(currEntryId)}
-    isEntryBelow={tree.hasEntryBelow(currEntryId)}
-    {handleSaveDocEntry}
-    {handleSaveFullCursor}
-    {handleGoUp}
-    {handleGoDown}
-    {handleCollapseEntry}
-    {handleExpandEntry}
-    {handleSplitEntry}
-    {handleEntryBackspace}
-    {handleIndent}
-    {handleDedent}
-    {handleSaveCursorColId} />
+  <div class="entry-display">
+    <span class="fa-icon">
+      <Icon data={faCircle} scale="0.6" />
+    </span>
+    <EntryInput
+      entryId={currEntryId}
+      entryValue={tree.getEntryText(currEntryId)}
+      {docCursorEntryId}
+      {docCursorColId}
+      isEntryAbove={tree.hasEntryAbove(currEntryId)}
+      isEntryBelow={tree.hasEntryBelow(currEntryId)}
+      {handleSaveDocEntry}
+      {handleSaveFullCursor}
+      {handleGoUp}
+      {handleGoDown}
+      {handleCollapseEntry}
+      {handleExpandEntry}
+      {handleSplitEntry}
+      {handleEntryBackspace}
+      {handleIndent}
+      {handleDedent}
+      {handleSaveCursorColId} />
+  </div>
 {/if}
 
 {#if currNodeHasChildren && !isCollapsed}
