@@ -34,7 +34,7 @@ let createDocAction = assign(ctxt => {
 
 
 let goUpAction = assign(ctxt => {
-  // TODO: use currentDocId to get current flowy tree. use current tree to
+  // use currentDocId to get current flowy tree. use current tree to
   //   a) check if current entry can go up (is the top-most entry in the document)
   //   b) if not, get the entry id of the entry immediately above
   let currTree = ctxt.documents[ctxt.currentDocId].tree;

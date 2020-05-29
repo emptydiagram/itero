@@ -98,24 +98,25 @@
     // col is zero, so we merge adjacent entries
     let currTree = ctxt.documents[ctxt.currentDocId].tree;
     let entryId = ctxt.docCursorEntryId;
+
+    // cases where backspacing @ col 0 is a no-op
+    //  - if curr entry has no entry above (no parent, no previous sibling)
+    //  - if current has children + previous sibling, and previous sibling has children
+    //  - if current has children + no previous sibling
     if (currTree.hasEntryAbove(entryId)) {
-      // get current id's previous sibling. if it has children, bail.
+
       let currItem = currTree.getEntryItem(entryId);
-      if (currItem.value.hasChildren()) {
-        let prevSiblingNode = currItem.prev.value;
-        if (prevSiblingNode.hasChildren()) {
-          return {};
-        }
+      let prevItem = currItem.prev;
+      if (currItem.value.hasChildren() && (prevItem == null || prevItem.value.hasChildren())) {
+        return {};
       }
 
-      let prevEntryId = currTree.getEntryIdAbove(entryId);
 
       let newDocs;
       newDocs = { ...ctxt.documents };
       let docId = ctxt.currentDocId;
       let currDoc = newDocs[docId];
 
-      let prevRowOrigEntryText = currDoc.tree.getEntryText(prevEntryId);
 
       currentDoc.tree = new FlowyTree(
         currDoc.tree.getEntries(),
@@ -125,11 +126,11 @@
       let currEntryText = currDoc.tree.getEntryText(entryId);
 
       let newEntryId, newColId;
-      // if the entry above is the parent (i.e. the entry is the first child)
-      // then delete this entry item and append the text to the parent's text
-      // otherwise, since previous sibling has no children, we delete it and
-      // prepend its text to current element
-      if (currItem.value.getParentId() === prevEntryId || !currItem.value.hasChildren()) {
+      if (!currItem.value.hasChildren()) {
+        // if current has no children, we delete current and append current's text
+        // to previous entry.
+        let prevEntryId = currTree.getEntryIdAboveWithCollapse(entryId);
+        let prevRowOrigEntryText = currDoc.tree.getEntryText(prevEntryId);
         currDoc.tree.setEntryText(
           prevEntryId,
           prevRowOrigEntryText + currEntryText
@@ -137,7 +138,15 @@
         currDoc.tree.removeEntry(entryId);
         newEntryId = prevEntryId;
         newColId = prevRowOrigEntryText.length;
+
       } else {
+        // otherwise, current has children, and so if we had (prevItem == null || prevItem.value.hasChildren()), then
+        // we would have aborted the backspace.
+        // thus we must either have (prevItem exists && has no children)
+        // so: delete previous, prepend its text to current element
+        let prevEntryId = currTree.getEntryIdAbove(entryId);
+        let prevRowOrigEntryText = currDoc.tree.getEntryText(prevEntryId);
+
         currDoc.tree.setEntryText(
           entryId,
           prevRowOrigEntryText + currEntryText
