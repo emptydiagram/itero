@@ -36,9 +36,14 @@
     padding-left: 1.8em;
   }
 
-  .collapsed {
-    color: pink;
+  .tree-node-list li {
+    list-style-type: disc;
   }
+
+  .tree-node-list li.collapsed {
+    color: deepskyblue;
+  }
+
 </style>
 
 {#if currEntryId !== null}
