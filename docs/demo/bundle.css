@@ -1,11 +1,12 @@
+.fa-icon.svelte-1dof0an{display:inline-block;fill:currentColor}.fa-flip-horizontal.svelte-1dof0an{transform:scale(-1, 1)}.fa-flip-vertical.svelte-1dof0an{transform:scale(1, -1)}.fa-spin.svelte-1dof0an{animation:svelte-1dof0an-fa-spin 1s 0s infinite linear}.fa-inverse.svelte-1dof0an{color:#fff}.fa-pulse.svelte-1dof0an{animation:svelte-1dof0an-fa-spin 1s infinite steps(8)}@keyframes svelte-1dof0an-fa-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 .entry-input.svelte-1kytzsf{margin:0;padding:0;border:0;width:100%}.highlighted.svelte-1kytzsf{background-color:#e6fcf1}
-.tree-node-list.svelte-j3w2vk{padding-left:1.8em}
-.node-name-edit-action.svelte-3rm0f3{cursor:pointer;text-decoration:underline}.node-name-edit-action.svelte-3rm0f3:active{color:rgb(0, 80, 160)}#node-name.svelte-3rm0f3{margin:0.2em 0}#node-name-display.svelte-3rm0f3{font-size:1.2em;font-weight:bold}#node-name-edit.svelte-3rm0f3{margin-left:1em;margin-top:0.5em;display:inline-block;font-size:0.75em;cursor:pointer}#node-name-edit.svelte-3rm0f3:hover{text-decoration:underline}#node-name-input.svelte-3rm0f3{margin:0;padding:0.2em 0;border:0;font-size:1.2em;font-weight:bold;background-color:#f7f7f2}#document.svelte-3rm0f3{font-family:Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console",
+.tree-node-list.svelte-xq1x5q.svelte-xq1x5q{display:block;padding-left:1.8em;list-style-type:none;border-left:1px dotted #999;margin-left:0.2em}.tree-node-list.svelte-xq1x5q li.svelte-xq1x5q{display:flex;flex-direction:column}.entry-display.svelte-xq1x5q.svelte-xq1x5q{display:flex;flex-direction:row}.fa-icon.svelte-xq1x5q.svelte-xq1x5q{display:inline-block;width:1em;height:1em;margin-right:0.5em}
+.doc-name-edit-action.svelte-1uefbb{cursor:pointer;text-decoration:underline}.doc-name-edit-action.svelte-1uefbb:active{color:rgb(0, 80, 160)}#doc-name.svelte-1uefbb{margin:0.2em 0}#doc-name-display.svelte-1uefbb{font-size:1.2em;font-weight:bold}#doc-name-edit.svelte-1uefbb{margin-left:1em;margin-top:0.5em;display:inline-block;font-size:0.75em;cursor:pointer}#doc-name-edit.svelte-1uefbb:hover{text-decoration:underline}#doc-name-input.svelte-1uefbb{margin:0;padding:0.2em 0;border:0;font-size:1.2em;font-weight:bold;background-color:#f7f7f2}#document.svelte-1uefbb{font-family:Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console",
       "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono",
       "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier,
       monospace;font-size:1em}
-#nodesList.svelte-1gtb6jh.svelte-1gtb6jh{border-top:1px solid #000;padding:0;list-style-type:none}#nodesList.svelte-1gtb6jh li.svelte-1gtb6jh{padding:0.5em 0;border-bottom:1px solid #000}
-header.svelte-1bgyieg{font-size:1.1em;font-weight:bold;margin-top:1.5em;border-bottom:2px solid #666;margin-bottom:0.3em;font-family:Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console",
+#docsList.svelte-55q5al.svelte-55q5al{border-top:1px solid #000;padding:0;list-style-type:none}#docsList.svelte-55q5al li.svelte-55q5al{padding:0.5em 0;border-bottom:1px solid #000}
+header.svelte-he5a9y{font-size:1.1em;font-weight:bold;margin-top:1.5em;border-bottom:2px solid #666;margin-bottom:0.3em;font-family:Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console",
       "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono",
       "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier,
-      monospace}#home-link.svelte-1bgyieg{font-size:1.2em}
+      monospace}.home.svelte-he5a9y{font-size:1.2em}
