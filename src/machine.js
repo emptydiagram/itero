@@ -132,7 +132,6 @@ let splitEntryAction = assign(ctxt => {
     }
   }
 
-  console.log(" Splitting '" + currEntryText + "' at colId = ", colId);
   let newEntryText = currEntryText.substring(0, colId);
   let updatedCurrEntry = currEntryText.substring(colId, currEntryText.length);
 
