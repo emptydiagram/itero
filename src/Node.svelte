@@ -66,9 +66,9 @@
   <div class="entry-display">
     <span class="fa-icon">
       {#if nodeIsCollapsed(flowyTreeNode)}
-        <Icon data={faPlus} scale="0.6" />
+        <Icon data={faPlus} scale="0.51" />
       {:else}
-        <Icon data={faCircle} scale="0.6" />
+        <Icon data={faCircle} scale="0.51" />
       {/if}
     </span>
     <EntryInput
