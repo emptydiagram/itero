@@ -13,7 +13,7 @@
     handleSaveCursorColId;
 
   import Icon from 'svelte-awesome';
-  import { faCircle } from '@fortawesome/free-solid-svg-icons';
+  import { faCircle,faPlus } from '@fortawesome/free-solid-svg-icons';
 
   import EntryInput from "./EntryInput.svelte";
   import Node from "./Node.svelte";
@@ -40,15 +40,13 @@
     display: block;
     padding-left: 1.8em;
     list-style-type: none;
+    border-left: 1px dotted #999;
+    margin-left: 0.2em;
   }
 
   .tree-node-list li {
     display: flex;
     flex-direction: column;
-  }
-
-  .tree-node-list li.collapsed {
-    color: deepskyblue;
   }
 
   .entry-display {
@@ -67,7 +65,11 @@
 {#if currEntryId !== null}
   <div class="entry-display">
     <span class="fa-icon">
-      <Icon data={faCircle} scale="0.6" />
+      {#if nodeIsCollapsed(flowyTreeNode)}
+        <Icon data={faPlus} scale="0.6" />
+      {:else}
+        <Icon data={faCircle} scale="0.6" />
+      {/if}
     </span>
     <EntryInput
       entryId={currEntryId}
@@ -93,7 +95,7 @@
 {#if currNodeHasChildren && !isCollapsed}
   <ul class="tree-node-list">
     {#each childItemArray as child, i}
-      <li class={nodeIsCollapsed(child.value) ? 'collapsed' : ''}>
+      <li>
         <Node
           {tree}
           flowyTreeNode={child.value}
