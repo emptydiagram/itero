@@ -43,7 +43,6 @@ export function deserializeEntries(entriesObj) {
       : EntryDisplayState.EXPANDED;
     entries[id] = entry;
   });
-  console.log("deserializeEntries, new entries = ", entries);
   return entries;
 }
 
@@ -56,6 +55,5 @@ export function serializeEntries(entries) {
       : 'EXPANDED';
     entriesObj[id] = entry;
   });
-  console.log("serializeEntries, new entries = ", entriesObj);
   return entriesObj;
 }
