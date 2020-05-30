@@ -11,6 +11,8 @@ function makeTree(entries, treeObj) {
   return new FlowyTree(entries, theRoot);
 }
 
+const LS_KEY = "itero-docs";
+
 export class DataManager {
   constructor(dataStore) {
     this.dataStore = dataStore;
@@ -30,7 +32,7 @@ export class DataManager {
   }
 
   getDocuments() {
-    const val = this.dataStore.get("innecto-docs");
+    const val = this.dataStore.get(LS_KEY);
     let docs;
     if (val == null) {
       docs = makeInitDocuments();
@@ -55,7 +57,7 @@ export class DataManager {
     Object.entries(documents).forEach(([entryId, doc]) => {
       serDocs[entryId] = this.documentToSerializationObject(doc);
     });
-    this.dataStore.set("innecto-docs", JSON.stringify(serDocs));
+    this.dataStore.set(LS_KEY, JSON.stringify(serDocs));
   }
 }
 
