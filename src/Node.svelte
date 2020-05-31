@@ -16,6 +16,7 @@
   import { faCircle,faPlus } from '@fortawesome/free-solid-svg-icons';
 
   import EntryInput from "./EntryInput.svelte";
+  import RenderedEntry from "./RenderedEntry.svelte";
   import Node from "./Node.svelte";
   import { EntryDisplayState } from "./data.js";
 
@@ -32,6 +33,8 @@
 
   $: isCollapsed = currNodeHasChildren
     && tree.getEntryDisplayState(currEntryId) == EntryDisplayState.COLLAPSED;
+
+  $: isCurrentEntry = currEntryId === docCursorEntryId;
 
 </script>
 
@@ -71,24 +74,30 @@
         <Icon data={faCircle} scale="0.51" />
       {/if}
     </span>
-    <EntryInput
-      entryId={currEntryId}
-      entryValue={tree.getEntryText(currEntryId)}
-      {docCursorEntryId}
-      {docCursorColId}
-      isEntryAbove={tree.hasEntryAbove(currEntryId)}
-      isEntryBelow={tree.hasEntryBelow(currEntryId)}
-      {handleSaveDocEntry}
-      {handleSaveFullCursor}
-      {handleGoUp}
-      {handleGoDown}
-      {handleCollapseEntry}
-      {handleExpandEntry}
-      {handleSplitEntry}
-      {handleEntryBackspace}
-      {handleIndent}
-      {handleDedent}
-      {handleSaveCursorColId} />
+    {#if isCurrentEntry}
+      <EntryInput
+        entryId={currEntryId}
+        entryValue={tree.getEntryText(currEntryId)}
+        {docCursorEntryId}
+        {docCursorColId}
+        isEntryAbove={tree.hasEntryAbove(currEntryId)}
+        isEntryBelow={tree.hasEntryBelow(currEntryId)}
+        {handleSaveDocEntry}
+        {handleSaveFullCursor}
+        {handleGoUp}
+        {handleGoDown}
+        {handleCollapseEntry}
+        {handleExpandEntry}
+        {handleSplitEntry}
+        {handleEntryBackspace}
+        {handleIndent}
+        {handleDedent}
+        {handleSaveCursorColId} />
+      {:else}
+        <RenderedEntry
+          entryText={tree.getEntryText(currEntryId)}
+          />
+      {/if}
   </div>
 {/if}
 
