@@ -26,6 +26,10 @@ export default class FlowyTree {
     this.entryItems = entryItems;
   }
 
+  getTopEntryId() {
+    return this.root.getChildren().head.value.getId();
+  }
+
   getEntries() {
     return this.entries;
   }
