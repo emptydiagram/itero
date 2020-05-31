@@ -21,7 +21,7 @@
   let navigateToDocAction = assign(ctxt => {
     let docId = currentHashId;
     let doc = ctxt.documents[docId];
-    let initEntryId = doc.tree.size - 1;
+    let initEntryId = doc.tree.getTopEntryId();
     return {
       currentDocId: docId,
       docCursorEntryId: initEntryId,
