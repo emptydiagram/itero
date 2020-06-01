@@ -18,29 +18,52 @@
     return currNode;
   }
 
+  // TODO: do a BFS on reNode.childNodes to find anchorNode.
+  function findColIdFromSelection(renderedEntryNode, sel) {
+    let anchorNode = sel.anchorNode.parentNode !== renderedEntryNode ? sel.anchorNode.parentNode : sel.anchorNode;
+    let childNodes = renderedEntryNode.childNodes;
+    let sumColId = 0;
+    for(var i = 0; i < childNodes.length; ++i) {
+      if (childNodes[i] === anchorNode) {
+        if (childNodes[i].nodeType === Node.TEXT_NODE) {
+          sumColId += sel.anchorOffset;
+        } else if (childNodes[i].nodeType === Node.ELEMENT_NODE) {
+          if (childNodes[i].localName === "strong") {
+            sumColId += sel.anchorOffset + 2;
+          }
+        } else {
+        }
+        break;
+      } else {
+        if (childNodes[i].nodeType === Node.TEXT_NODE) {
+          sumColId += childNodes[i].nodeValue.length;
+        } else if (childNodes[i].nodeType === Node.ELEMENT_NODE) {
+          if (childNodes[i].localName === "strong") {
+            // TODO
+            sumColId += childNodes[i].textContent.length + 4;
+          }
+        } else {
+        }
+      }
+    }
+    return sumColId;
+  }
+
   onMount(() => {
     document.addEventListener('selectionchange', (ev) => {
       let sel = document.getSelection();
-      console.log("selectchange, anchorNode = ", sel.anchorNode);
       const renderedEntryNode = findRenderedEntryParent(sel.anchorNode);
       if (renderedEntryNode == null) {
         return;
       }
       console.log("selectchange, reNode = ", renderedEntryNode);
-      /*
-      let parentNode = sel.anchorNode.parentNode;
-      console.log("selectchange, parentNode = ", parentNode);
-      console.log("selectchange, parentNode.parentNode = ", parentNode.parentNode);
-      console.log("selectchange, parentNode.parentNode.parentNode = ", parentNode.parentNode.parentNode);
-      console.log("selectchange, parentNode.parentNode.parentNode.parentNode = ", parentNode.parentNode.parentNode.parentNode);
-      console.log("selectchange, parentNode.parentNode.parentNode.parentNode.parentNode = ", parentNode.parentNode.parentNode.parentNode.parentNode);
-      console.log("selectchange, parentNode.parentNode.parentNode.parentNode.parentNode.parentNode = ", parentNode.parentNode.parentNode.parentNode.parentNode.parentNode);
-      */
 
       // TODO: find the index of anchorNode within parentNode.childNodes
       // given 1) rendered-entry childNodes, 2) the anchorNode, 3) the anchorOffset
       // return the column id corresponding to the click position
-      let newColId = sel.anchorOffset;
+
+      let newColId = findColIdFromSelection(renderedEntryNode, sel);
+      console.log("found col id, newColId = ", newColId);
 
       console.log("selectchange, data-entryId = ", renderedEntryNode.dataset.entryId);
       let newEntryId = parseInt(renderedEntryNode.dataset.entryId);
