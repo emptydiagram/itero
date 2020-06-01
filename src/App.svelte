@@ -1,5 +1,6 @@
 <script>
   import { createHashHistory } from "history";
+  import { onMount } from "svelte";
   import { assign, interpret } from "xstate";
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
@@ -7,6 +8,57 @@
   import DataStore from "./DataStore.js";
   import createMachine from "./machine.js";
   import { DataManager, makeInitContextFromDocuments } from "./data.js";
+
+  function findRenderedEntryParent(initNode) {
+    let currNode = initNode;
+    while (currNode != null
+        && !(currNode.className != null && currNode.className.includes("rendered-entry"))) {
+      currNode = currNode.parentNode;
+    }
+    return currNode;
+  }
+
+  onMount(() => {
+    document.addEventListener('selectionchange', (ev) => {
+      let sel = document.getSelection();
+      console.log("selectchange, anchorNode = ", sel.anchorNode);
+      const renderedEntryNode = findRenderedEntryParent(sel.anchorNode);
+      if (renderedEntryNode == null) {
+        return;
+      }
+      console.log("selectchange, reNode = ", renderedEntryNode);
+      /*
+      let parentNode = sel.anchorNode.parentNode;
+      console.log("selectchange, parentNode = ", parentNode);
+      console.log("selectchange, parentNode.parentNode = ", parentNode.parentNode);
+      console.log("selectchange, parentNode.parentNode.parentNode = ", parentNode.parentNode.parentNode);
+      console.log("selectchange, parentNode.parentNode.parentNode.parentNode = ", parentNode.parentNode.parentNode.parentNode);
+      console.log("selectchange, parentNode.parentNode.parentNode.parentNode.parentNode = ", parentNode.parentNode.parentNode.parentNode.parentNode);
+      console.log("selectchange, parentNode.parentNode.parentNode.parentNode.parentNode.parentNode = ", parentNode.parentNode.parentNode.parentNode.parentNode.parentNode);
+      */
+
+      // TODO: find the index of anchorNode within parentNode.childNodes
+      // given 1) rendered-entry childNodes, 2) the anchorNode, 3) the anchorOffset
+      // return the column id corresponding to the click position
+      let newColId = sel.anchorOffset;
+
+      console.log("selectchange, data-entryId = ", renderedEntryNode.dataset.entryId);
+      let newEntryId = parseInt(renderedEntryNode.dataset.entryId);
+      console.log("selectchange, anchorOffset = ", sel.anchorOffset)
+      handleSaveFullCursor(newEntryId, newColId);
+      /*
+      let theSpan = document.getElementById("the-span");
+      if (theSpan && sel.anchorNode === theSpan.firstChild) {
+        selStart = sel.anchorOffset;
+        isEditing = true;
+        isToggling = true;
+      } else {
+        console.log("skipping OSC");
+      }
+      */
+    });
+
+  });
 
   let currentHashId;
   let currentDocNameTextEntry;
