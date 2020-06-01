@@ -95,6 +95,7 @@
         {handleSaveCursorColId} />
       {:else}
         <RenderedEntry
+          entryId={currEntryId}
           entryText={tree.getEntryText(currEntryId)}
           />
       {/if}

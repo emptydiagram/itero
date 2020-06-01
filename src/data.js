@@ -80,7 +80,7 @@ function makeInitDocuments() {
         1: { text: 'def' },
         2: { text: 'ghi' },
         3: { text: 'eEe EeE' },
-        4: { text: 'Ww Xx Yy Zz' }
+        4: { text: 'Ww **Xx Yy** Zz' }
       },
       { root: [{ 0: [1, 2] }, 3, 4] }
     ],
