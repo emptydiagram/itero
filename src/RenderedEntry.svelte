@@ -1,5 +1,6 @@
 <script>
-  export let entryText;
+  export let entryId,
+    entryText;
 
   import { MarkupParser } from "./markup/MarkupParser.js";
 
@@ -9,15 +10,14 @@
     if (theSpan) {
       try {
         let result = MarkupParser.Text.tryParse(entryText);
-        console.log("parse result = ", result);
         theSpan.innerHTML = result;
       } catch (err) {
         console.log("err parsing: ", err);
-        theSpan.innerHTML = "ERROR";
+        theSpan.innerHTML = entryText;
       }
     }
   };
 </script>
 
-<div bind:this={theSpan}>
+<div class="rendered-entry" bind:this={theSpan} data-entry-id={entryId}>
 </div>
