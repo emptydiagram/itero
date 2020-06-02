@@ -16,7 +16,7 @@
         theSpan.innerHTML = entryText;
       }
     }
-  };
+  }
 </script>
 
 <div class="rendered-entry" bind:this={theSpan} data-entry-id={entryId}>
