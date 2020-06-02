@@ -2,10 +2,12 @@
   "name": "itero",
   "version": "0.0.12-dev",
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.10.1",
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.1",
     "eslint": "^7.1.0",
     "eslint-plugin-svelte3": "^2.7.3",
+    "jest": "^26.0.1",
     "mini-css-extract-plugin": "^0.6.0",
     "serve": "^11.3.1",
     "style-loader": "^0.23.1",
@@ -17,7 +19,8 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
-    "dev": "webpack-dev-server --content-base public"
+    "dev": "webpack-dev-server --content-base public",
+    "test": "cross-env NODE_ENV=test jest"
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
