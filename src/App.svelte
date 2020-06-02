@@ -41,6 +41,9 @@
           if (childNodes[i].localName === "strong") {
             // TODO
             sumColId += childNodes[i].textContent.length + 4;
+          } else if (childNodes[i].localName === "a") {
+            let hrefLen = childNodes[i].getAttribute("href").length;
+            sumColId += childNodes[i].textContent.length + hrefLen + 4;
           }
         } else {
         }
