@@ -35,13 +35,34 @@ export const MarkupParser = Parsimmon.createLanguage({
       .skip(r.StrongDelimiter)
       .map(result => "<strong>" + result.join('') + "</strong>");
   },
+  StandardLink: function(r) {
+    return Parsimmon.seqMap(
+      Parsimmon.string("["),
+      r.ValueInsideStandardLinkName.many(),
+      Parsimmon.string("]"),
+      Parsimmon.string("("),
+      Parsimmon.notFollowedBy(Parsimmon.string(")")).then(r.Char).many(),
+      Parsimmon.string(")"),
+      function(_a, b, _c, _d, e, _f) {
+        return `<a href="${e.join('')}">${b.join('')}</a>`;
+      }
+    );
+  },
+  ValueInsideStandardLinkName: function (r) {
+    return Parsimmon.alt(
+      r.EscapedPunctuation,
+      r.Strong,
+      Parsimmon.notFollowedBy(Parsimmon.string("]")).then(r.Char)
+    )
+  },
   ValueInsideStrong: function (r) {
     return Parsimmon.alt(
       r.EscapedPunctuation,
+      r.StandardLink,
       r.CharInsideStrong);
   },
   Value: function (r) {
-    return Parsimmon.alt(r.EscapedPunctuation, r.Strong, r.Char);
+    return Parsimmon.alt(r.EscapedPunctuation, r.Strong, r.StandardLink, r.Char);
   },
   Text: function (r) {
     return r.Value.many().map(res => res.join(''));
