@@ -53,7 +53,7 @@
   }
 
   onMount(() => {
-    document.addEventListener('selectionchange', (ev) => {
+    document.addEventListener('selectionchange', () => {
       let sel = document.getSelection();
       const renderedEntryNode = findRenderedEntryParent(sel.anchorNode);
       if (renderedEntryNode == null) {
