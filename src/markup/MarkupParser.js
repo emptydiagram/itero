@@ -26,14 +26,26 @@ export const MarkupParser = Parsimmon.createLanguage({
   CharInsideStrong: function (r) {
     return Parsimmon.notFollowedBy(r.StrongDelimiter).then(r.Char);
   },
+  CharInsideEmphasis: function (r) {
+    return Parsimmon.notFollowedBy(r.EmphasisDelimiter).then(r.Char);
+  },
   StrongDelimiter: function () {
     return Parsimmon.string('**');
+  },
+  EmphasisDelimiter: function () {
+    return Parsimmon.string('__');
   },
   Strong: function (r) {
     return r.StrongDelimiter.notFollowedBy(Parsimmon.whitespace)
       .then(r.ValueInsideStrong.many())
       .skip(r.StrongDelimiter)
       .map(result => "<strong>" + result.join('') + "</strong>");
+  },
+  Emphasis: function (r) {
+    return r.EmphasisDelimiter.notFollowedBy(Parsimmon.whitespace)
+      .then(r.ValueInsideEmphasis.many())
+      .skip(r.EmphasisDelimiter)
+      .map(result => "<em>" + result.join('') + "</em>");
   },
   StandardLink: function(r) {
     return Parsimmon.seqMap(
@@ -52,17 +64,31 @@ export const MarkupParser = Parsimmon.createLanguage({
     return Parsimmon.alt(
       r.EscapedPunctuation,
       r.Strong,
+      r.Emphasis,
       Parsimmon.notFollowedBy(Parsimmon.string("]")).then(r.Char)
     )
+  },
+  ValueInsideEmphasis: function (r) {
+    return Parsimmon.alt(
+      r.EscapedPunctuation,
+      r.Strong,
+      r.StandardLink,
+      r.CharInsideEmphasis);
   },
   ValueInsideStrong: function (r) {
     return Parsimmon.alt(
       r.EscapedPunctuation,
+      r.Emphasis,
       r.StandardLink,
       r.CharInsideStrong);
   },
   Value: function (r) {
-    return Parsimmon.alt(r.EscapedPunctuation, r.Strong, r.StandardLink, r.Char);
+    return Parsimmon.alt(
+      r.EscapedPunctuation,
+      r.Strong,
+      r.Emphasis,
+      r.StandardLink,
+      r.Char);
   },
   Text: function (r) {
     return r.Value.many().map(res => res.join(''));

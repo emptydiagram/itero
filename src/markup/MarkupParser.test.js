@@ -34,6 +34,20 @@ test('Parses >', () => {
 });
 
 
+test('Parses __ foo bar__', () => {
+    const input = "__ foo bar__"
+    expect(IteroParser.Text.tryParse(input)).toBe("__ foo bar__");
+});
+
+test('Parses __foo bar__', () => {
+    const input = "__foo bar__"
+    expect(IteroParser.Text.tryParse(input)).toBe("<em>foo bar</em>");
+});
+
+test('Parses backslash before emph', () => {
+    const input = "\\\\__foo bar__"
+    expect(IteroParser.Text.tryParse(input)).toBe("\\<em>foo bar</em>");
+});
 
 // leading whitespace after opening ** delimiter
 // Example 378 from CommonMark 0.29 spec
@@ -78,4 +92,14 @@ test('Parses a bolded link', () => {
 test('Parses a linked bold text', () => {
     const input = "my [**example**](www.example.com)";
     expect(IteroParser.Text.tryParse(input)).toBe("my <a href=\"www.example.com\"><strong>example</strong></a>");
+});
+
+test('Parses __**foo bar**__', () => {
+    const input = "__**foo bar**__"
+    expect(IteroParser.Text.tryParse(input)).toBe("<em><strong>foo bar</strong></em>");
+});
+
+test('Parses **__foo bar__**', () => {
+    const input = "**__foo bar__**"
+    expect(IteroParser.Text.tryParse(input)).toBe("<strong><em>foo bar</em></strong>");
 });

@@ -39,7 +39,7 @@ export function findChildNodeSerializedCursorPosFromSelection(n, sel, pos) {
     }
   }
 
-  if (n.localName === "strong") {
+  if (n.localName === "strong" || n.localName === "em") {
     pos += 2;
   } else if (n.localName === "a") {
     pos += 1;
@@ -55,7 +55,7 @@ export function findChildNodeSerializedCursorPosFromSelection(n, sel, pos) {
     pos = result.pos;
   }
 
-  if (n.localName === "strong") {
+  if (n.localName === "strong" || n.localName === "em") {
     pos += 2;
   } else if (n.localName === "a") {
     // TODO
