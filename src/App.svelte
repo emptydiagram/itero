@@ -8,6 +8,7 @@
   import DataStore from "./DataStore.js";
   import createMachine from "./machine.js";
   import { DataManager, makeInitContextFromDocuments } from "./data.js";
+  import { findChildNodeSerializedCursorPosFromSelection } from "./markup/util.js";
 
   function findRenderedEntryParent(initNode) {
     let currNode = initNode;
@@ -16,40 +17,6 @@
       currNode = currNode.parentNode;
     }
     return currNode;
-  }
-
-  // TODO: do a BFS on reNode.childNodes to find anchorNode.
-  function findColIdFromSelection(renderedEntryNode, sel) {
-    let anchorNode = sel.anchorNode.parentNode !== renderedEntryNode ? sel.anchorNode.parentNode : sel.anchorNode;
-    let childNodes = renderedEntryNode.childNodes;
-    let sumColId = 0;
-    for(var i = 0; i < childNodes.length; ++i) {
-      if (childNodes[i] === anchorNode) {
-        if (childNodes[i].nodeType === Node.TEXT_NODE) {
-          sumColId += sel.anchorOffset;
-        } else if (childNodes[i].nodeType === Node.ELEMENT_NODE) {
-          if (childNodes[i].localName === "strong") {
-            sumColId += sel.anchorOffset + 2;
-          }
-        } else {
-        }
-        break;
-      } else {
-        if (childNodes[i].nodeType === Node.TEXT_NODE) {
-          sumColId += childNodes[i].nodeValue.length;
-        } else if (childNodes[i].nodeType === Node.ELEMENT_NODE) {
-          if (childNodes[i].localName === "strong") {
-            // TODO
-            sumColId += childNodes[i].textContent.length + 4;
-          } else if (childNodes[i].localName === "a") {
-            let hrefLen = childNodes[i].getAttribute("href").length;
-            sumColId += childNodes[i].textContent.length + hrefLen + 4;
-          }
-        } else {
-        }
-      }
-    }
-    return sumColId;
   }
 
   onMount(() => {
@@ -61,11 +28,8 @@
       }
       console.log("selectchange, reNode = ", renderedEntryNode);
 
-      // TODO: find the index of anchorNode within parentNode.childNodes
-      // given 1) rendered-entry childNodes, 2) the anchorNode, 3) the anchorOffset
-      // return the column id corresponding to the click position
-
-      let newColId = findColIdFromSelection(renderedEntryNode, sel);
+      let colResult = findChildNodeSerializedCursorPosFromSelection(renderedEntryNode, sel, 0);
+      let newColId = colResult.pos;
       console.log("found col id, newColId = ", newColId);
 
       console.log("selectchange, data-entryId = ", renderedEntryNode.dataset.entryId);
