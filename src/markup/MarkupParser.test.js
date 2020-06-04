@@ -94,6 +94,21 @@ test('Parses a linked bold text', () => {
     expect(IteroParser.Text.tryParse(input)).toBe("my <a href=\"www.example.com\"><strong>example</strong></a>");
 });
 
+test('Parses an emphasized link', () => {
+    const input = "my __[example](www.example.com)__";
+    expect(IteroParser.Text.tryParse(input)).toBe("my <em><a href=\"www.example.com\">example</a></em>");
+});
+
+test('Parses a linked emphasized text', () => {
+    const input = "my [__example__](www.example.com)";
+    expect(IteroParser.Text.tryParse(input)).toBe("my <a href=\"www.example.com\"><em>example</em></a>");
+});
+
+test('Parses a url', () => {
+    const input = "you can see it here: http://www.example.com";
+    expect(IteroParser.Text.tryParse(input)).toBe("you can see it here: <a data-markup-link-type=\"auto\" href=\"http://www.example.com\">http://www.example.com</a>");
+});
+
 test('Parses __**foo bar**__', () => {
     const input = "__**foo bar**__"
     expect(IteroParser.Text.tryParse(input)).toBe("<em><strong>foo bar</strong></em>");

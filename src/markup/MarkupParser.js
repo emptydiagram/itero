@@ -47,6 +47,10 @@ export const MarkupParser = Parsimmon.createLanguage({
       .skip(r.EmphasisDelimiter)
       .map(result => "<em>" + result.join('') + "</em>");
   },
+  AutoLink: function() {
+    return Parsimmon.regexp(/https?:\/\/((\w)+\.)*(\w)+/)
+      .map(s => `<a data-markup-link-type="auto" href="${s}">${s}</a>`);
+  },
   StandardLink: function(r) {
     return Parsimmon.seqMap(
       Parsimmon.string("["),
@@ -65,6 +69,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       r.EscapedPunctuation,
       r.Strong,
       r.Emphasis,
+      r.AutoLink,
       Parsimmon.notFollowedBy(Parsimmon.string("]")).then(r.Char)
     )
   },
@@ -73,6 +78,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       r.EscapedPunctuation,
       r.Strong,
       r.StandardLink,
+      r.AutoLink,
       r.CharInsideEmphasis);
   },
   ValueInsideStrong: function (r) {
@@ -80,6 +86,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       r.EscapedPunctuation,
       r.Emphasis,
       r.StandardLink,
+      r.AutoLink,
       r.CharInsideStrong);
   },
   Value: function (r) {
@@ -88,6 +95,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       r.Strong,
       r.Emphasis,
       r.StandardLink,
+      r.AutoLink,
       r.Char);
   },
   Text: function (r) {
