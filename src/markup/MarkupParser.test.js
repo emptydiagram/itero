@@ -109,6 +109,13 @@ test('Parses a url', () => {
     expect(IteroParser.Text.tryParse(input)).toBe("you can see it here: <a data-markup-link-type=\"auto\" href=\"http://www.example.com\">http://www.example.com</a>");
 });
 
+test('Parses Wiki random page', () => {
+    const url = "https://en.wikipedia.org/wiki/Special:Random";
+    const input = `ToTaLlY ${url} rAnDoM`;
+    expect(IteroParser.Text.tryParse(input)).toBe(`ToTaLlY <a data-markup-link-type=\"auto\" href=\"${url}\">${url}</a> rAnDoM`);
+});
+
+
 test('Parses __**foo bar**__', () => {
     const input = "__**foo bar**__"
     expect(IteroParser.Text.tryParse(input)).toBe("<em><strong>foo bar</strong></em>");
