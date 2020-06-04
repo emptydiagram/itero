@@ -71,6 +71,7 @@
     font-size: 1.2em;
     font-weight: bold;
     background-color: #f7f7f2;
+    width: calc(98% - 7em);
   }
 
   #document {
