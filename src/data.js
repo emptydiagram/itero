@@ -73,59 +73,55 @@ export function makeInitContextFromDocuments(docs) {
 }
 
 function makeInitDocuments() {
+  // 0: { text: 'this is a note taking app', displayState: EntryDisplayState.COLLAPSED },
   let entries = [
     [
       {
-        0: { text: 'abc', displayState: EntryDisplayState.COLLAPSED },
-        1: { text: 'def' },
-        2: { text: 'ghi' },
-        3: { text: 'eEe EeE' },
-        4: { text: 'Ww **Xx Yy** Zz' }
+        0: { text: 'this is a note taking app' },
+        1: { text: 'you can use it to write a list' },
+        2: { text: 'Arrow Up/Down to navigate up/down (😲)' },
+        3: { text: 'or clicking on the text with your mouse works too' },
+        4: { text: 'actually it\'s a nested list' },
+        5: { text: 'you can keep nesting' },
+        6: { text: 'items' },
+        7: { text: 'and items', displayState: EntryDisplayState.COLLAPSED },
+        8: { text: 'a n d i t e m s' },
+        9: { text: 'you can collapse parts of the tree. the plus icon (+) indicates a collapsed item' },
+        10: { text: '__collapse__: Ctrl + Up' },
+        11: { text: '__expand__: Ctrl + Down' },
+        12: { text: 'make **bold portions** of the text with double asterisks (\\*\\*), like so:' },
+        13: { text: 'my \\**bolded** text' },
+        14: { text: 'make __emphasis__ with double underscore:' },
+        15: { text: 'my \\__emphasized__ text' },
+        16: { text: 'make links in two ways' },
+        17: { text: 'just write a URL: https://en.wikipedia.org/wiki/Special:Random' },
+        18: { text: 'link name + URL: [random wiki page](https://en.wikipedia.org/wiki/Special:Random)' },
+        19: { text: 'type: \\[link name](www.example.com)' },
       },
-      { root: [{ 0: [1, 2] }, 3, 4] }
-    ],
-    [
-      {
-        0: { text: '4' },
-        1: { text: 'five' },
-        2: { text: 'seventy' },
-        3: { text: '-1' },
-      },
-      { root: [2, 0, 3, 1] }
-    ],
-    [
-      {
-        0: { text: 'alpha' },
-        1: { text: 'beta' },
-        2: { text: 'gamma' },
-        3: { text: 'delta' },
-      },
-      {
-        root: [
-          {
-            0: [
-              { 1: [2, 3] }
-            ]
-          }
-        ]
-      }
-    ],
+      { root: [
+        0,
+        1,
+        2,
+        3,
+        { 4: [
+          { 5: [
+            { 6: [
+              { 7: [8] }
+            ]}
+          ]},
+          { 9: [10, 11] }
+        ]},
+        { 12: [13] },
+        { 14: [15] },
+        { 16: [17, { 18: [19]}] }
+      ]}
+    ]
   ];
   return {
     '1': {
       id: 1,
-      name: 'some letters',
+      name: 'hello and what is this',
       tree: makeTree(...entries[0]),
     },
-    '2': {
-      id: 2,
-      name: 'some numbers',
-      tree: makeTree(...entries[1]),
-    },
-    '4': {
-      id: 4,
-      name: 'some greek letters',
-      tree: makeTree(...entries[2]),
-    }
   };
 }
