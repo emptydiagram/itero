@@ -48,7 +48,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       .map(result => "<em>" + result.join('') + "</em>");
   },
   AutoLink: function() {
-    return Parsimmon.regexp(/https?:\/\/((\w)+\.)*(\w)+/)
+    return Parsimmon.regexp(/https?:\/\/(\w+\.)*\w+(\/(\w|[-.~:])+)*\/?/)
       .map(s => `<a data-markup-link-type="auto" href="${s}">${s}</a>`);
   },
   StandardLink: function(r) {
