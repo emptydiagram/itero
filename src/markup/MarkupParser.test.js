@@ -112,7 +112,7 @@ test('Parses a url', () => {
 test('Parses Wiki random page', () => {
     const url = "https://en.wikipedia.org/wiki/Special:Random";
     const input = `ToTaLlY ${url} rAnDoM`;
-    expect(IteroParser.Text.tryParse(input)).toBe(`ToTaLlY <a data-markup-link-type=\"auto\" href=\"${url}\">${url}</a> rAnDoM`);
+    expect(IteroParser.Text.tryParse(input)).toBe(`ToTaLlY <a data-markup-link-type="auto" href="${url}">${url}</a> rAnDoM`);
 });
 
 
