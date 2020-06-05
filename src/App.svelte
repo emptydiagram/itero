@@ -23,9 +23,8 @@
     // Listen for changes to the current location.
     const _unlisten = history.listen((location, action) => {
       // location is an object like window.location
-      console.log(action, location.pathname, location.state);
-
-      if (location.pathname.startsWith("/")) {
+      // if it's a REPLACE, don't trigger a navigation event
+      if (action !== 'REPLACE' && location.pathname.startsWith("/")) {
         route(location.pathname);
       }
     });
@@ -36,11 +35,9 @@
       if (renderedEntryNode == null) {
         return;
       }
-      console.log("selectchange, reNode = ", renderedEntryNode);
 
       let colResult = findChildNodeSerializedCursorPosFromSelection(renderedEntryNode, sel, 0);
       let newColId = colResult.pos;
-      console.log("found col id, newColId = ", newColId);
 
       console.log("selectchange, data-entryId = ", renderedEntryNode.dataset.entryId);
       let newEntryId = parseInt(renderedEntryNode.dataset.entryId);
@@ -356,6 +353,10 @@
     }
     return curr.document.docTitle === "editing";
   })();
+
+  $: if (history.location.pathname === "/create" && typeof machineState.context.currentDocId === "number") {
+    history.replace(`/${machineState.context.currentDocId}`);
+  }
 </script>
 
 <style>
