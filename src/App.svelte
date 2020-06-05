@@ -20,6 +20,18 @@
   }
 
   onMount(() => {
+    // Listen for changes to the current location.
+    const _unlisten = history.listen((location, action) => {
+      // location is an object like window.location
+      console.log(action, location.pathname, location.state);
+
+      if (!location.pathname.startsWith("/")) {
+        return;
+      }
+
+      route(location.pathname);
+    });
+
     document.addEventListener('selectionchange', () => {
       let sel = document.getSelection();
       const renderedEntryNode = findRenderedEntryParent(sel.anchorNode);
@@ -36,16 +48,6 @@
       let newEntryId = parseInt(renderedEntryNode.dataset.entryId);
       console.log("selectchange, anchorOffset = ", sel.anchorOffset)
       handleSaveFullCursor(newEntryId, newColId);
-      /*
-      let theSpan = document.getElementById("the-span");
-      if (theSpan && sel.anchorNode === theSpan.firstChild) {
-        selStart = sel.anchorOffset;
-        isEditing = true;
-        isToggling = true;
-      } else {
-        console.log("skipping OSC");
-      }
-      */
     });
 
   });
@@ -55,6 +57,10 @@
   let currentDocEntryText;
   let currentCursorEntryId;
   let currentCursorColId;
+
+  const history = createHashHistory();
+
+
 
   function isObject(obj) {
     return obj === Object(obj);
@@ -264,20 +270,6 @@
       flowikiService.send("GO_HOME");
     }
   }
-
-  const history = createHashHistory();
-
-  // Listen for changes to the current location.
-  const _unlisten = history.listen((location, action) => {
-    // location is an object like window.location
-    console.log(action, location.pathname, location.state);
-
-    if (!location.pathname.startsWith("/")) {
-      return;
-    }
-
-    route(location.pathname);
-  });
 
   /*** event handlers & some reactive variables ***/
 
