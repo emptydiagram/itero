@@ -61,7 +61,6 @@
   const history = createHashHistory();
 
 
-
   function isObject(obj) {
     return obj === Object(obj);
   }
@@ -278,6 +277,22 @@
     history.push("/create");
   }
 
+  // from https://wiki.developer.mozilla.org/en-US/docs/Glossary/Base64$revision/1597964#The_Unicode_Problem
+  function b64EncodeUnicode(str) {
+      // first we use encodeURIComponent to get percent-encoded UTF-8,
+      // then we convert the percent encodings into raw bytes which
+      // can be fed into btoa.
+      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+          function toSolidBytes(match, p1) {
+              return String.fromCharCode('0x' + p1);
+      }));
+  }
+
+  function downloadData() {
+    let s = dataMgr.getDocumentsString();
+    location.assign("data:application/octet-stream;base64," + b64EncodeUnicode(s));
+  }
+
   function handleStartEditingDocName() {
     flowikiService.send("START_EDITING_NAME");
   }
@@ -411,3 +426,5 @@
     {handleSaveDocEntry}
     {handleSaveFullCursor} />
 {/if}
+
+<button on:click={downloadData}>export</button>

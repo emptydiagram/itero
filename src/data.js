@@ -31,6 +31,15 @@ export class DataManager {
     return newDoc;
   }
 
+  getDocumentsString() {
+    const val = this.dataStore.get(LS_KEY);
+    if (val == null) {
+      let docs = makeInitDocuments();
+      return this.saveDocuments(docs);
+    }
+    return val;
+  }
+
   getDocuments() {
     const val = this.dataStore.get(LS_KEY);
     let docs;
@@ -57,7 +66,9 @@ export class DataManager {
     Object.entries(documents).forEach(([entryId, doc]) => {
       serDocs[entryId] = this.documentToSerializationObject(doc);
     });
-    this.dataStore.set(LS_KEY, JSON.stringify(serDocs));
+    let ser = JSON.stringify(serDocs);
+    this.dataStore.set(LS_KEY, ser);
+    return ser;
   }
 }
 
