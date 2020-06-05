@@ -25,11 +25,9 @@
       // location is an object like window.location
       console.log(action, location.pathname, location.state);
 
-      if (!location.pathname.startsWith("/")) {
-        return;
+      if (location.pathname.startsWith("/")) {
+        route(location.pathname);
       }
-
-      route(location.pathname);
     });
 
     document.addEventListener('selectionchange', () => {
@@ -49,6 +47,11 @@
       console.log("selectchange, anchorOffset = ", sel.anchorOffset)
       handleSaveFullCursor(newEntryId, newColId);
     });
+
+    // handle initial navigation to a page
+    if (location.hash.startsWith("#/")) {
+      route(location.hash.substring(1));
+    }
 
   });
 
