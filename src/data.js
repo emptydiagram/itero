@@ -96,7 +96,7 @@ function makeInitDocuments() {
   let entries = [
       {
         0: { text: 'this is a note taking app' },
-        1: { text: 'you can use it to write a list' },
+        1: { text: 'you can use it to write a list. ¯\\\\_(ツ)_/¯' },
         2: { text: 'Arrow Up/Down to navigate up/down (😲)' },
         3: { text: 'or clicking on the text with your mouse works too' },
         4: { text: 'actually it\'s a nested list' },
