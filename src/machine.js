@@ -191,7 +191,8 @@ let dedentAction = assign(ctxt => {
 });
 
 
-export default (initContext, navigateToDocAction, saveDocNameAction, saveDocEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction) => {
+export default (initContext, navigateToDocAction, importDocsAction, saveDocNameAction,
+    saveDocEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction) => {
 
   const docStates = {
     states: {
@@ -288,6 +289,10 @@ export default (initContext, navigateToDocAction, saveDocNameAction, saveDocEntr
           },
           GO_HOME: {
             target: 'flowiki.top',
+          },
+          IMPORT_DOCS: {
+            target: 'flowiki.top',
+            actions: importDocsAction,
           }
         },
         ...flowikiStates

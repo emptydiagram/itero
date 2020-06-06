@@ -7,7 +7,7 @@
   import FlowyTree from "./FlowyTree.js";
   import DataStore from "./DataStore.js";
   import createMachine from "./machine.js";
-  import { DataManager, makeInitContextFromDocuments } from "./data.js";
+  import { DataManager, makeInitContextFromDocuments, makeDoc } from "./data.js";
   import { findChildNodeSerializedCursorPosFromSelection } from "./markup/util.js";
 
   function findRenderedEntryParent(initNode) {
@@ -57,6 +57,7 @@
   let currentDocEntryText;
   let currentCursorEntryId;
   let currentCursorColId;
+  let fileUploadObj;
 
   const history = createHashHistory();
 
@@ -74,6 +75,10 @@
       docCursorEntryId: initEntryId,
       docTitle: doc.name
     };
+  });
+
+  let importDocsAction = assign(_ctxt => {
+    return makeInitContextFromDocuments(fileUploadObj);
   });
 
   let saveDocNameAction = assign(ctxt => {
@@ -223,6 +228,7 @@
   let machine = createMachine(
     initContext,
     navigateToDocAction,
+    importDocsAction,
     saveDocNameAction,
     saveDocEntryAction,
     saveFullCursorAction,
@@ -291,6 +297,45 @@
   function downloadData() {
     let s = dataMgr.getDocumentsString();
     location.assign("data:application/octet-stream;base64," + b64EncodeUnicode(s));
+  }
+
+  function uploadData() {
+    let el = document.getElementById('import-docs');
+    el.click();
+  }
+
+  function handleDocsImport(ev) {
+    console.log(" ## handleDocsImport, ev = ", ev);
+    console.log(" ## handleDocsImport, this.files = ", this, this.files);
+    const filesList = this.files;
+    if (filesList.length > 1) {
+        // TODO: show error to UI?
+      console.log("TODO: multiple files uploaded. show an error message of some kind? is this even possible?");
+      return;
+    }
+
+    const file = filesList[0];
+    file.arrayBuffer().then(buffer => {
+      console.log(" ## handleDocsImport, the array buffer = ", buffer);
+      // TODO: detect the encoding and use Uint8Array / Uint16Array as appropriate
+      let docsStr = String.fromCharCode.apply(null, new Uint8Array(buffer));
+      console.log(" ## handleFIleUpload, docsStr = ", docsStr);
+      try {
+        let newFileUploadObj = JSON.parse(docsStr);
+
+        Object.entries(newFileUploadObj).forEach(([id, doc]) => {
+          newFileUploadObj[id] = makeDoc(doc.id, doc.name, doc.tree.entries, doc.tree.node);
+        })
+
+        // TODO: verify that it has the required fields in the object
+        // TODO: convert tree objects to FlowyTrees
+        fileUploadObj = newFileUploadObj;
+        flowikiService.send("IMPORT_DOCS");
+      } catch (err) {
+        // TODO: show error to UI
+        console.log("TODO: file is not a valid JSON object, err = ", err);
+      }
+    });
   }
 
   function handleStartEditingDocName() {
@@ -369,6 +414,10 @@
     return curr.document.docTitle === "editing";
   })();
 
+  $: if (isAtTop && history.location.pathname !== '/') {
+    history.replace('/');
+  }
+
   $: if (history.location.pathname === "/create" && typeof machineState.context.currentDocId === "number") {
     history.replace(`/${machineState.context.currentDocId}`);
   }
@@ -389,6 +438,18 @@
 
   .home {
     font-size: 1.2em;
+  }
+
+  #import-docs {
+    display: none;
+  }
+
+  #actions-bar {
+    margin-top: 2em;
+  }
+
+  #actions-bar > button {
+    font-size: 0.9em;
   }
 </style>
 
@@ -427,4 +488,10 @@
     {handleSaveFullCursor} />
 {/if}
 
-<button on:click={downloadData}>export</button>
+<div id="actions-bar">
+  <span>⇝</span>
+  <button on:click={downloadData}>export</button>
+
+  <button on:click={uploadData}>import</button>
+</div>
+<input id="import-docs" type="file" on:change={handleDocsImport} />

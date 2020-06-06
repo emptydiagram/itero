@@ -83,10 +83,17 @@ export function makeInitContextFromDocuments(docs) {
   };
 }
 
+export function makeDoc(id, name, entries, root) {
+  return {
+    id: id,
+    name: name,
+    tree: makeTree(entries, root),
+  };
+}
+
 function makeInitDocuments() {
   // 0: { text: 'this is a note taking app', displayState: EntryDisplayState.COLLAPSED },
   let entries = [
-    [
       {
         0: { text: 'this is a note taking app' },
         1: { text: 'you can use it to write a list' },
@@ -126,13 +133,8 @@ function makeInitDocuments() {
         { 14: [15] },
         { 16: [17, { 18: [19]}] }
       ]}
-    ]
   ];
   return {
-    '1': {
-      id: 1,
-      name: 'hello and what is this',
-      tree: makeTree(...entries[0]),
-    },
+    '1': makeDoc(1, 'hello and what is this', entries[0], entries[1])
   };
 }
