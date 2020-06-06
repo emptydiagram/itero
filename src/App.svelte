@@ -2,6 +2,8 @@
   import { createHashHistory } from "history";
   import { onMount } from "svelte";
   import { assign, interpret } from "xstate";
+  import Icon from 'svelte-awesome';
+  import { faHammer } from '@fortawesome/free-solid-svg-icons';
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
   import FlowyTree from "./FlowyTree.js";
@@ -489,7 +491,7 @@
 {/if}
 
 <div id="actions-bar">
-  <span>⇝</span>
+  <Icon data={faHammer} scale="1" />
   <button on:click={downloadData}>export</button>
 
   <button on:click={uploadData}>import</button>
