@@ -4,20 +4,20 @@
 
   import { MarkupParser } from "./markup/MarkupParser.js";
 
-  let theSpan;
+  let theDiv;
 
   $: {
-    if (theSpan) {
+    if (theDiv) {
       try {
         let result = MarkupParser.Text.tryParse(entryText);
-        theSpan.innerHTML = result;
+        theDiv.innerHTML = result;
       } catch (err) {
         console.log("err parsing: ", err);
-        theSpan.innerHTML = entryText;
+        theDiv.innerHTML = entryText;
       }
     }
   }
 </script>
 
-<div class="rendered-entry" bind:this={theSpan} data-entry-id={entryId}>
+<div class="rendered-entry" bind:this={theDiv} data-entry-id={entryId}>
 </div>
