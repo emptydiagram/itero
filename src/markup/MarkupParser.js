@@ -35,6 +35,12 @@ export const MarkupParser = Parsimmon.createLanguage({
   EmphasisDelimiter: function () {
     return Parsimmon.string('__');
   },
+  PageName: function(r) {
+    return Parsimmon.notFollowedBy(Parsimmon.string("]"))
+      .then(r.Char)
+      .many()
+      .map(result => result.join(''));
+  },
   Strong: function (r) {
     return r.StrongDelimiter.notFollowedBy(Parsimmon.whitespace)
       .then(r.ValueInsideStrong.many())
@@ -47,13 +53,19 @@ export const MarkupParser = Parsimmon.createLanguage({
       .skip(r.EmphasisDelimiter)
       .map(result => "<em>" + result.join('') + "</em>");
   },
+  InternalLink: function(r) {
+    return Parsimmon.string("[[")
+      .then(r.PageName)
+      .skip(Parsimmon.string("]]"))
+      .map(name => `<a href="#/page/${encodeURI(name)}">${name}</a>`);
+  },
   AutoLink: function() {
     return Parsimmon.regexp(/https?:\/\/(\w+\.)*\w+(\/(\w|[-.~:])+)*\/?/)
       .map(s => `<a data-markup-link-type="auto" href="${s}">${s}</a>`);
   },
   StandardLink: function(r) {
     return Parsimmon.seqMap(
-      Parsimmon.string("["),
+      Parsimmon.string("[").notFollowedBy(Parsimmon.string("[")),
       r.ValueInsideStandardLinkName.many(),
       Parsimmon.string("]"),
       Parsimmon.string("("),
@@ -64,12 +76,19 @@ export const MarkupParser = Parsimmon.createLanguage({
       }
     );
   },
+
+  Link: function(r) {
+    return Parsimmon.alt(
+      r.InternalLink,
+      r.StandardLink,
+      r.AutoLink,
+    );
+  },
   ValueInsideStandardLinkName: function (r) {
     return Parsimmon.alt(
       r.EscapedPunctuation,
       r.Strong,
       r.Emphasis,
-      r.AutoLink,
       Parsimmon.notFollowedBy(Parsimmon.string("]")).then(r.Char)
     )
   },
@@ -77,16 +96,14 @@ export const MarkupParser = Parsimmon.createLanguage({
     return Parsimmon.alt(
       r.EscapedPunctuation,
       r.Strong,
-      r.StandardLink,
-      r.AutoLink,
+      r.Link,
       r.CharInsideEmphasis);
   },
   ValueInsideStrong: function (r) {
     return Parsimmon.alt(
       r.EscapedPunctuation,
       r.Emphasis,
-      r.StandardLink,
-      r.AutoLink,
+      r.Link,
       r.CharInsideStrong);
   },
   Value: function (r) {
@@ -94,8 +111,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       r.EscapedPunctuation,
       r.Strong,
       r.Emphasis,
-      r.StandardLink,
-      r.AutoLink,
+      r.Link,
       r.Char);
   },
   Text: function (r) {
