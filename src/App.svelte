@@ -259,16 +259,33 @@
   /*** history ***/
 
   function route(pathname) {
-    let newId = pathname.substring(1);
-    if (newId === "") {
+    if (pathname === "/") {
       flowikiService.send("GO_HOME");
       return;
     }
-    if (newId === "create") {
+    if (pathname === "/create") {
       flowikiService.send("CREATE_DOC");
       return;
     }
+    if (pathname.startsWith("/page/")) {
+      let pageName = pathname.substring(6);
+      // TODO: build an index instead
+      let found = false;
+      Object.entries(machineState.context.documents).forEach(([id, doc]) => {
+        if (doc.name === pageName) {
+          found = true;
+          currentHashId = parseInt(id);
+          flowikiService.send("NAVIGATE");
+          history.replace(`/${id}`);
+        }
+      });
+      if(!found) {
+        history.go(-1);
+      }
+      return;
+    }
 
+    let newId = pathname.substring(1);
     let parseResult = parseInt(newId);
     if (!isNaN(parseResult)) {
       currentHashId = parseResult;

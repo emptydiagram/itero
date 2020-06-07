@@ -125,3 +125,10 @@ test('Parses **__foo bar__**', () => {
     const input = "**__foo bar__**"
     expect(IteroParser.Text.tryParse(input)).toBe("<strong><em>foo bar</em></strong>");
 });
+
+
+test('Parses internal link', () => {
+    const input = "as explained in [[dodecahedron earth]], the earth is neither flat nor round";
+    expect(IteroParser.Text.tryParse(input))
+    .toBe(`as explained in <a href="#/page/dodecahedron%20earth">dodecahedron earth</a>, the earth is neither flat nor round`);
+})
