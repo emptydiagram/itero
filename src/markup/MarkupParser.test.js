@@ -59,16 +59,12 @@ test('Parses ** foo bar**', () => {
 
 test('Parses **<content>** from beginning', () => {
     const input = "**foo bar**"
-    let result = IteroParser.Value.parse(input);
-    console.log(result);
     expect(IteroParser.Text.tryParse(input)).toBe("<strong>foo bar</strong>");
 });
 
 // Example 380 from CommonMark 0.29 spec
 test('Parses foo**bar**', () => {
     const input = "foo**bar**"
-    let result = IteroParser.Value.parse(input);
-    console.log(result);
     expect(IteroParser.Text.tryParse(input)).toBe("foo<strong>bar</strong>");
 });
 
@@ -130,5 +126,5 @@ test('Parses **__foo bar__**', () => {
 test('Parses internal link', () => {
     const input = "as explained in [[dodecahedron earth]], the earth is neither flat nor round";
     expect(IteroParser.Text.tryParse(input))
-    .toBe(`as explained in <a href="#/page/dodecahedron%20earth">dodecahedron earth</a>, the earth is neither flat nor round`);
+    .toBe(`as explained in <a data-markup-link-type="internal" href="#/page/dodecahedron%20earth">dodecahedron earth</a>, the earth is neither flat nor round`);
 })
