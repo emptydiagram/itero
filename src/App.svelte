@@ -41,9 +41,7 @@
       let colResult = findChildNodeSerializedCursorPosFromSelection(renderedEntryNode, sel, 0);
       let newColId = colResult.pos;
 
-      console.log("selectchange, data-entryId = ", renderedEntryNode.dataset.entryId);
       let newEntryId = parseInt(renderedEntryNode.dataset.entryId);
-      console.log("selectchange, anchorOffset = ", sel.anchorOffset)
       handleSaveFullCursor(newEntryId, newColId);
     });
 
