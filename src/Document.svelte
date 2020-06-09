@@ -19,7 +19,26 @@
     handleCancelEditingDocName,
     handleSaveDocName,
     handleSaveCursorColId;
+
+  import { afterUpdate } from 'svelte';
   import Node from "./Node.svelte";
+
+  let promise = Promise.resolve();  // Used to hold chain of typesetting calls
+
+  function typeset(code) {
+    promise = promise.then(() => {code(); return MathJax.typesetPromise()})
+                    .catch((err) => console.log('Typeset failed: ' + err.message));
+    return promise;
+  }
+
+  afterUpdate(() => {
+    // (re)-render mathjax
+    typeset(() => {
+      MathJax.texReset();
+      MathJax.typesetClear();
+    })
+  });
+
 
   let docTitleText = docTitle;
 

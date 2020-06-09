@@ -132,10 +132,10 @@ test('Parses internal link', () => {
 
 test('Test basic math', () => {
     const input = "let $x > 5$, then x is too big";
-    expect(IteroParser.Text.tryParse(input)).toBe(`let <span class="mathjax">x &gt; 5</span>, then x is too big`);
+    expect(IteroParser.Text.tryParse(input)).toBe(`let \\(x &gt; 5\\), then x is too big`);
 })
 
 test('Test math inside emphasis', () => {
     const input = "__recall that $\\mathbb{N}$ is infinite__";
-    expect(IteroParser.Text.tryParse(input)).toBe(`<em>recall that <span class="mathjax">\\mathbb{N}</span> is infinite</em>`);
+    expect(IteroParser.Text.tryParse(input)).toBe(`<em>recall that \\(\\mathbb{N}\\) is infinite</em>`);
 })

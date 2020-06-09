@@ -60,7 +60,7 @@ export const MarkupParser = Parsimmon.createLanguage({
     return r.InlineMathjaxDelimiter.notFollowedBy(Parsimmon.whitespace)
       .then(Parsimmon.notFollowedBy(r.InlineMathjaxDelimiter).then(r.Char).many())
       .skip(Parsimmon.notFollowedBy(Parsimmon.whitespace).then(r.InlineMathjaxDelimiter))
-      .map(result => "<span class=\"mathjax\">" + result.join('') + "</span>");
+      .map(result => "\\(" + result.join('') + "\\)");
   },
   InternalLink: function(r) {
     return Parsimmon.string("[[")
