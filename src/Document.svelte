@@ -22,6 +22,8 @@
 
   import { afterUpdate } from 'svelte';
   import Node from "./Node.svelte";
+  import Icon from 'svelte-awesome';
+  import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
   let promise = Promise.resolve();  // Used to hold chain of typesetting calls
 
@@ -76,9 +78,7 @@
   }
   #doc-name-edit {
     margin-left: 1em;
-    margin-top: 0.5em;
     display: inline-block;
-    font-size: 0.75em;
     cursor: pointer;
   }
   #doc-name-edit:hover {
@@ -120,7 +120,9 @@
   {:else}
     <div id="doc-name">
       <span id="doc-name-display">{docTitle}</span>
-      <span id="doc-name-edit" on:click={handleStartEditing}>edit</span>
+      <span id="doc-name-edit" on:click={handleStartEditing}>
+        <Icon data={faEdit} scale="0.91" />
+      </span>
     </div>
   {/if}
 
