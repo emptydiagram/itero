@@ -29,6 +29,9 @@ export const MarkupParser = Parsimmon.createLanguage({
   CharInsideEmphasis: function (r) {
     return Parsimmon.notFollowedBy(r.EmphasisDelimiter).then(r.Char);
   },
+  InlineMathjaxDelimiter: function () {
+    return Parsimmon.string('$');
+  },
   StrongDelimiter: function () {
     return Parsimmon.string('**');
   },
@@ -52,6 +55,12 @@ export const MarkupParser = Parsimmon.createLanguage({
       .then(r.ValueInsideEmphasis.many())
       .skip(r.EmphasisDelimiter)
       .map(result => "<em>" + result.join('') + "</em>");
+  },
+  InlineMathjax: function (r) {
+    return r.InlineMathjaxDelimiter.notFollowedBy(Parsimmon.whitespace)
+      .then(Parsimmon.notFollowedBy(r.InlineMathjaxDelimiter).then(r.Char).many())
+      .skip(Parsimmon.notFollowedBy(Parsimmon.whitespace).then(r.InlineMathjaxDelimiter))
+      .map(result => "<span class=\"mathjax\">" + result.join('') + "</span>");
   },
   InternalLink: function(r) {
     return Parsimmon.string("[[")
@@ -84,6 +93,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       r.AutoLink,
     );
   },
+  // TODO: mathjax inside name?
   ValueInsideStandardLinkName: function (r) {
     return Parsimmon.alt(
       r.EscapedPunctuation,
@@ -97,6 +107,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       r.EscapedPunctuation,
       r.Strong,
       r.Link,
+      r.InlineMathjax,
       r.CharInsideEmphasis);
   },
   ValueInsideStrong: function (r) {
@@ -104,6 +115,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       r.EscapedPunctuation,
       r.Emphasis,
       r.Link,
+      r.InlineMathjax,
       r.CharInsideStrong);
   },
   Value: function (r) {
@@ -112,6 +124,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       r.Strong,
       r.Emphasis,
       r.Link,
+      r.InlineMathjax,
       r.Char);
   },
   Text: function (r) {

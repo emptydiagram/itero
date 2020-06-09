@@ -128,3 +128,14 @@ test('Parses internal link', () => {
     expect(IteroParser.Text.tryParse(input))
     .toBe(`as explained in <a data-markup-link-type="internal" href="#/page/dodecahedron%20earth">dodecahedron earth</a>, the earth is neither flat nor round`);
 })
+
+
+test('Test basic math', () => {
+    const input = "let $x > 5$, then x is too big";
+    expect(IteroParser.Text.tryParse(input)).toBe(`let <span class="mathjax">x &gt; 5</span>, then x is too big`);
+})
+
+test('Test math inside emphasis', () => {
+    const input = "__recall that $\\mathbb{N}$ is infinite__";
+    expect(IteroParser.Text.tryParse(input)).toBe(`<em>recall that <span class="mathjax">\\mathbb{N}</span> is infinite</em>`);
+})
