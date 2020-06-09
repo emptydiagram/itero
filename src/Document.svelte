@@ -67,7 +67,7 @@
   }
 
   #doc-name {
-    margin: 0.2em 0;
+    margin: 0.2em 0 0 0;
   }
 
   #doc-name-display {
