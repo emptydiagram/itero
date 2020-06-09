@@ -57,7 +57,7 @@
     flex-direction: row;
   }
 
-  .fa-icon {
+  .icon-container {
     display: inline-block;
     width: 1em;
     height: 1em;
@@ -67,7 +67,7 @@
 
 {#if currEntryId !== null}
   <div class="entry-display">
-    <span class="fa-icon">
+    <span class="icon-container">
       {#if nodeIsCollapsed(flowyTreeNode)}
         <Icon data={faPlus} scale="0.51" />
       {:else}
