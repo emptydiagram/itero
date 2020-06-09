@@ -26,16 +26,18 @@
   let promise = Promise.resolve();  // Used to hold chain of typesetting calls
 
   function typeset(code) {
-    promise = promise.then(() => {code(); return MathJax.typesetPromise()})
-                    .catch((err) => console.log('Typeset failed: ' + err.message));
+    promise = promise.then(() => {
+      code();
+      return MathJax.typesetPromise(); // eslint-disable-line no-undef
+    }).catch((err) => console.log('Typeset failed: ' + err.message));
     return promise;
   }
 
   afterUpdate(() => {
     // (re)-render mathjax
     typeset(() => {
-      MathJax.texReset();
-      MathJax.typesetClear();
+      MathJax.texReset(); // eslint-disable-line no-undef
+      MathJax.typesetClear(); // eslint-disable-line no-undef
     })
   });
 
