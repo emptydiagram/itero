@@ -136,13 +136,16 @@
 
     if (colId > 0) {
       let currEntryText = currentDoc.tree.getEntryText(ctxt.docCursorEntryId);
+      let currTextLength = currEntryText.length;
+      // colId might be larger than the text length, so handle it
+      let actualColId = Math.min(colId, currTextLength);
       let newEntry =
-        currEntryText.substring(0, colId - 1) + currEntryText.substring(colId);
+        currEntryText.substring(0, actualColId - 1) + currEntryText.substring(actualColId);
       currentDoc.tree.setEntryText(ctxt.docCursorEntryId, newEntry);
 
-      currentCursorColId = colId - 1;
+      currentCursorColId = actualColId - 1;
       return {
-        docCursorColId: colId - 1,
+        docCursorColId: actualColId - 1,
         documents: copyDocs
       };
     }
