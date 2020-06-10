@@ -39,6 +39,12 @@ export function findChildNodeSerializedCursorPosFromSelection(n, sel, pos) {
     }
   }
 
+  if (n.localName === "mjx-container") {
+    // pos + 3 is a lower bound. to get the
+    // true length we'd need to know the size of the LaTeX substring
+    return { found: false, pos: pos + 2 + n.dataset.original.length}
+  }
+
   if (n.localName === "strong" || n.localName === "em") {
     pos += 2;
   } else if (n.localName === "a") {
