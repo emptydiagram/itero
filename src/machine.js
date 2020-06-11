@@ -58,52 +58,6 @@ let goDownAction = assign(ctxt => {
   };
 });
 
-let collapseEntryAction = assign(ctxt => {
-  // check if display state is collapsed, and, if so, expand
-  let docId = ctxt.currentDocId;
-  let entryId = ctxt.docCursorEntryId;
-
-  let newDocs = { ...ctxt.documents };
-  let currDoc = newDocs[docId];
-  let currTree = currDoc.tree;
-  let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
-
-  if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.EXPANDED) {
-    let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-    currDoc.tree = newTree;
-    newTree.setEntryDisplayState(entryId, EntryDisplayState.COLLAPSED)
-
-    return {
-      documents: newDocs,
-    };
-  }
-
-  return {};
-});
-
-let expandEntryAction = assign(ctxt => {
-  // check if display state is collapsed, and, if so, expand
-  let docId = ctxt.currentDocId;
-  let entryId = ctxt.docCursorEntryId;
-
-  let newDocs = { ...ctxt.documents };
-  let currDoc = newDocs[docId];
-  let currTree = currDoc.tree;
-  let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
-
-  if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED) {
-    let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-    currDoc.tree = newTree;
-    newTree.setEntryDisplayState(entryId, EntryDisplayState.EXPANDED)
-
-    return {
-      documents: newDocs,
-    };
-  }
-
-  return {};
-});
-
 let splitEntryAction = assign(ctxt => {
   let docId = ctxt.currentDocId;
   let entryId = ctxt.docCursorEntryId;
@@ -192,7 +146,8 @@ let dedentAction = assign(ctxt => {
 
 
 export default (initContext, navigateToDocAction, importDocsAction, saveDocNameAction,
-    saveDocEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction) => {
+    saveDocEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction,
+    collapseEntryAction, expandEntryAction) => {
 
   const docStates = {
     states: {
