@@ -1,7 +1,7 @@
 <script>
   import { createHashHistory } from "history";
   import { onMount } from "svelte";
-  import { assign, interpret } from "xstate";
+  import { assign } from "xstate";
   import Icon from 'svelte-awesome';
   import { faHammer } from '@fortawesome/free-solid-svg-icons';
   import Document from "./Document.svelte";
@@ -9,6 +9,7 @@
   import FlowyTree from "./FlowyTree.js";
   import DataStore from "./DataStore.js";
   import createMachine from "./machine.js";
+  import { useMachine } from "./useMachine.js";
   import { DataManager, makeInitContextFromDocuments, makeDoc } from "./data.js";
   import { findChildNodeSerializedCursorPosFromSelection } from "./markup/util.js";
 
@@ -238,45 +239,29 @@
     saveCursorColIdAction,
     backspaceAction
   );
-  let machineState = machine.initialState;
 
-  const flowikiService = interpret(machine);
-
-  flowikiService.onTransition(state => {
-    console.log("-------------------");
-    console.log(
-      "transitioning to context = ",
-      state.context,
-      ", state = ",
-      state.value
-    );
-    machineState = state;
-
-    // TODO: save context.documents in local storage?
-    dataMgr.saveDocuments(state.context.documents);
-  });
-  flowikiService.start();
+  const { state: machineState, send: machineSend } = useMachine(machine);
 
   /*** history ***/
 
   function route(pathname) {
     if (pathname === "/") {
-      flowikiService.send("GO_HOME");
+      machineSend("GO_HOME");
       return;
     }
     if (pathname === "/create") {
-      flowikiService.send("CREATE_DOC");
+      machineSend("CREATE_DOC");
       return;
     }
     if (pathname.startsWith("/page/")) {
       let pageName = pathname.substring(6);
       // TODO: build an index instead
       let found = false;
-      Object.entries(machineState.context.documents).forEach(([id, doc]) => {
+      Object.entries($machineState.context.documents).forEach(([id, doc]) => {
         if (doc.name === pageName) {
           found = true;
           currentHashId = parseInt(id);
-          flowikiService.send("NAVIGATE");
+          machineSend("NAVIGATE");
           history.replace(`/${id}`);
         }
       });
@@ -290,9 +275,9 @@
     let parseResult = parseInt(newId);
     if (!isNaN(parseResult)) {
       currentHashId = parseResult;
-      flowikiService.send("NAVIGATE");
+      machineSend("NAVIGATE");
     } else {
-      flowikiService.send("GO_HOME");
+      machineSend("GO_HOME");
     }
   }
 
@@ -350,7 +335,7 @@
         // TODO: verify that it has the required fields in the object
         // TODO: convert tree objects to FlowyTrees
         fileUploadObj = newFileUploadObj;
-        flowikiService.send("IMPORT_DOCS");
+        machineSend("IMPORT_DOCS");
       } catch (err) {
         // TODO: show error to UI
         console.log("TODO: file is not a valid JSON object, err = ", err);
@@ -359,75 +344,79 @@
   }
 
   function handleStartEditingDocName() {
-    flowikiService.send("START_EDITING_NAME");
+    machineSend("START_EDITING_NAME");
   }
 
   function handleCancelEditingDocName() {
-    flowikiService.send("CANCEL_EDITING_NAME");
+    machineSend("CANCEL_EDITING_NAME");
   }
 
   function handleSaveDocName(docNameText) {
     currentDocNameTextEntry = docNameText;
-    flowikiService.send("SAVE_DOC_NAME");
+    machineSend("SAVE_DOC_NAME");
   }
 
   function handleSaveDocEntry(entryText, colId) {
     currentDocEntryText = entryText;
     currentCursorColId = colId;
-    flowikiService.send("SAVE_DOC_ENTRY");
+    machineSend("SAVE_DOC_ENTRY");
   }
 
   function handleSaveFullCursor(entryId, colId) {
     currentCursorEntryId = entryId;
     currentCursorColId = colId;
-    flowikiService.send("SAVE_FULL_CURSOR");
+    machineSend("SAVE_FULL_CURSOR");
   }
 
   function handleSaveCursorColId(colId) {
     currentCursorColId = colId;
-    flowikiService.send("SAVE_CURSOR_COL_ID");
+    machineSend("SAVE_CURSOR_COL_ID");
   }
 
   function handleGoUp() {
-    flowikiService.send("UP");
+    machineSend("UP");
   }
   function handleGoDown() {
-    flowikiService.send("DOWN");
+    machineSend("DOWN");
   }
   function handleEntryBackspace() {
-    flowikiService.send("ENTRY_BACKSPACE");
+    machineSend("ENTRY_BACKSPACE");
   }
   function handleCollapseEntry() {
-    flowikiService.send("COLLAPSE_ENTRY");
+    machineSend("COLLAPSE_ENTRY");
   }
   function handleExpandEntry() {
-    flowikiService.send("EXPAND_ENTRY");
+    machineSend("EXPAND_ENTRY");
   }
   function handleSplitEntry() {
-    flowikiService.send("SPLIT_ENTRY");
+    machineSend("SPLIT_ENTRY");
   }
   function handleIndent() {
-    flowikiService.send("INDENT");
+    machineSend("INDENT");
   }
   function handleDedent() {
-    flowikiService.send("DEDENT");
+    machineSend("DEDENT");
   }
 
-  $: isAtTop = machineState.value.flowiki === "top";
+  // save the latest document
+  $: dataMgr.saveDocuments($machineState.context.documents);
 
-  $: displayDocs = machineState.context.displayDocs.map(id => {
-    return machineState.context.documents[id];
+  //$: isAtTop = machineState.value.flowiki === "top";
+  $: isAtTop = $machineState.matches("flowiki.top");
+
+  $: displayDocs = $machineState.context.displayDocs.map(id => {
+    return $machineState.context.documents[id];
   });
 
   $: currentTree =
-    machineState.context.currentDocId !== null
-      ? machineState.context.documents[machineState.context.currentDocId].tree
+    $machineState.context.currentDocId !== null
+      ? $machineState.context.documents[$machineState.context.currentDocId].tree
       : null;
 
   $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
 
   $: docIsEditingName = (() => {
-    let curr = machineState.value.flowiki;
+    let curr = $machineState.value.flowiki;
     if (!isObject(curr)) {
       return docIsEditingName;
     }
@@ -438,8 +427,8 @@
     history.replace('/');
   }
 
-  $: if (history.location.pathname === "/create" && typeof machineState.context.currentDocId === "number") {
-    history.replace(`/${machineState.context.currentDocId}`);
+  $: if (history.location.pathname === "/create" && typeof $machineState.context.currentDocId === "number") {
+    history.replace(`/${$machineState.context.currentDocId}`);
   }
 </script>
 
@@ -488,9 +477,9 @@
   <Document
     tree={currentTree}
     flowyTreeNode={currentTreeRoot}
-    docCursorEntryId={machineState.context.docCursorEntryId}
-    docCursorColId={machineState.context.docCursorColId}
-    docTitle={machineState.context.docTitle}
+    docCursorEntryId={$machineState.context.docCursorEntryId}
+    docCursorColId={$machineState.context.docCursorColId}
+    docTitle={$machineState.context.docTitle}
     {docIsEditingName}
     {handleStartEditingDocName}
     {handleCancelEditingDocName}

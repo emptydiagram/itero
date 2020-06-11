@@ -1,4 +1,3 @@
-
 // Background: This markup:
 //
 // ```
