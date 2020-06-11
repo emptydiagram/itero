@@ -80,7 +80,7 @@
 
       if (ev.ctrlKey) {
         // TODO: Guard?
-        handleCollapseEntry();
+        handleCollapseEntry(entryId);
       } else {
         if (isEntryAbove) {
           handleGoUp();
@@ -91,7 +91,7 @@
 
       if (ev.ctrlKey) {
         // TODO: Guard?
-        handleExpandEntry();
+        handleExpandEntry(entryId);
       } else {
         if (isEntryBelow) {
           handleGoDown();

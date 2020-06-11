@@ -28,10 +28,9 @@
 
   function handleToggle(entryId, isCollapsed) {
     if (isCollapsed) {
-      console.log("trying to expand");
-      handleExpandEntry();
+      handleExpandEntry(entryId);
     } else {
-      handleCollapseEntry();
+      handleCollapseEntry(entryId);
     }
   }
 

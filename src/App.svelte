@@ -5,14 +5,14 @@
   import Icon from 'svelte-awesome';
   import { faHammer } from '@fortawesome/free-solid-svg-icons';
 
-  import { nextDocCursorEntryId, nextDocCursorColId, nextDocName, nextDocEntryText } from "./stores.js";
+  import { nextDocCursorEntryId, nextDocCursorColId, nextDocName, nextDocEntryText, collapseExpandEntryId } from "./stores.js";
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
   import FlowyTree from "./FlowyTree.js";
   import DataStore from "./DataStore.js";
   import createMachine from "./machine.js";
   import { useMachine } from "./useMachine.js";
-  import { DataManager, makeInitContextFromDocuments, makeDoc } from "./data.js";
+  import { DataManager, makeInitContextFromDocuments, makeDoc, EntryDisplayState } from "./data.js";
   import { findChildNodeSerializedCursorPosFromSelection } from "./markup/util.js";
 
   function findRenderedEntryParent(initNode) {
@@ -222,6 +222,55 @@
   });
 
 
+  let collapseEntryAction = assign(ctxt => {
+    // check if display state is collapsed, and, if so, expand
+    let docId = ctxt.currentDocId;
+    let entryId = $collapseExpandEntryId;
+
+    let newDocs = { ...ctxt.documents };
+    let currDoc = newDocs[docId];
+    let currTree = currDoc.tree;
+    let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
+
+    if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.EXPANDED) {
+      let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
+      currDoc.tree = newTree;
+      newTree.setEntryDisplayState(entryId, EntryDisplayState.COLLAPSED)
+
+      return {
+        documents: newDocs,
+      };
+    }
+
+    return {};
+  });
+
+  let expandEntryAction = assign(ctxt => {
+    // check if display state is collapsed, and, if so, expand
+    let docId = ctxt.currentDocId;
+    let entryId = $collapseExpandEntryId;
+
+    let newDocs = { ...ctxt.documents };
+    let currDoc = newDocs[docId];
+    let currTree = currDoc.tree;
+    let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
+
+    if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED) {
+      let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
+      currDoc.tree = newTree;
+      newTree.setEntryDisplayState(entryId, EntryDisplayState.EXPANDED)
+
+      return {
+        documents: newDocs,
+      };
+    }
+
+    return {};
+  });
+
+
+
+
   /*** service and state ***/
 
   let dataMgr = new DataManager(new DataStore);
@@ -235,7 +284,9 @@
     saveDocEntryAction,
     saveFullCursorAction,
     saveCursorColIdAction,
-    backspaceAction
+    backspaceAction,
+    collapseEntryAction,
+    expandEntryAction
   );
 
   const { state: machineState, send: machineSend } = useMachine(machine);
@@ -380,10 +431,16 @@
   function handleEntryBackspace() {
     machineSend("ENTRY_BACKSPACE");
   }
-  function handleCollapseEntry() {
+  function handleCollapseEntry(entryId) {
+    if (entryId !== null) {
+      collapseExpandEntryId.set(entryId);
+    }
     machineSend("COLLAPSE_ENTRY");
   }
-  function handleExpandEntry() {
+  function handleExpandEntry(entryId) {
+    if (entryId !== null) {
+      collapseExpandEntryId.set(entryId);
+    }
     machineSend("EXPAND_ENTRY");
   }
   function handleSplitEntry() {
