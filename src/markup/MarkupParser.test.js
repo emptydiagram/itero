@@ -33,7 +33,6 @@ test('Parses >', () => {
     expect(IteroParser.Text.tryParse(input)).toBe("2 + 2 &gt; 5");
 });
 
-
 test('Parses __ foo bar__', () => {
     const input = "__ foo bar__"
     expect(IteroParser.Text.tryParse(input)).toBe("__ foo bar__");
@@ -55,7 +54,6 @@ test('Parses ** foo bar**', () => {
     const input = "** foo bar**"
     expect(IteroParser.Text.tryParse(input)).toBe("** foo bar**");
 });
-
 
 test('Parses **<content>** from beginning', () => {
     const input = "**foo bar**"
