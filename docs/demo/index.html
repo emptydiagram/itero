@@ -14,11 +14,22 @@
 <body>
   <script>
   MathJax = {
-    tex: { inlineMath: [['\\(', '\\)']] }
+    tex: { inlineMath: [['\\(', '\\)']] },
+    startup: {
+      ready: function () {
+        MathJax.startup.defaultReady();
+        // Add a post-filter to the output jax to add the extra attribute
+        MathJax.startup.output.postFilters.add((args) => {
+          const math = args.math, node = args.data;
+          const original = (math.math ? math.math :
+                            math.inputJax.processStrings ? '' : math.start.node.outerHTML);
+          node.setAttribute('data-original', original);
+        });
+      }
+    }
   };
   </script>
-	<script id="MathJax-script"
-		src="mathjax/tex-chtml.js"></script>
+	<script id="MathJax-script" src="mathjax/tex-chtml.js"></script>
 
 	<script src='bundle.js'></script>
 
