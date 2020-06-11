@@ -26,6 +26,15 @@
       && tree.getEntryDisplayState(node.getId()) === EntryDisplayState.COLLAPSED;
   }
 
+  function handleToggle(entryId, isCollapsed) {
+    if (isCollapsed) {
+      console.log("trying to expand");
+      handleExpandEntry();
+    } else {
+      handleCollapseEntry();
+    }
+  }
+
   $: currEntryId = flowyTreeNode.getId();
 
   $: childItemArray = flowyTreeNode.getChildNodeArray();
@@ -69,7 +78,7 @@
 
 {#if currEntryId !== null}
   <div class="entry-display">
-    <span class="icon-container">
+    <span class="icon-container" on:click={() => handleToggle(currEntryId, nodeIsCollapsed(flowyTreeNode))}>
       {#if nodeIsCollapsed(flowyTreeNode)}
         <Icon data={faPlus} scale="0.51" />
       {:else}
