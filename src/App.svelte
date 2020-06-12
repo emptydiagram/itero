@@ -4,6 +4,8 @@
   import { assign } from "xstate";
   import Icon from 'svelte-awesome';
   import { faHammer } from '@fortawesome/free-solid-svg-icons';
+
+  import { nextDocName } from "./stores.js";
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
   import FlowyTree from "./FlowyTree.js";
@@ -54,7 +56,6 @@
   });
 
   let currentHashId;
-  let currentDocNameTextEntry;
   let currentDocEntryText;
   let currentCursorEntryId;
   let currentCursorColId;
@@ -87,11 +88,11 @@
 
     let i = ctxt.currentDocId;
     copyDocs[i] = { ...ctxt.documents[i] };
-    copyDocs[i].name = currentDocNameTextEntry;
+    copyDocs[i].name = $nextDocName;
 
     return {
       documents: copyDocs,
-      docTitle: currentDocNameTextEntry
+      docTitle: $nextDocName
     };
   });
 
@@ -352,7 +353,7 @@
   }
 
   function handleSaveDocName(docNameText) {
-    currentDocNameTextEntry = docNameText;
+    nextDocName.set(docNameText);
     machineSend("SAVE_DOC_NAME");
   }
 
