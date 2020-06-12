@@ -5,7 +5,7 @@
   import Icon from 'svelte-awesome';
   import { faHammer } from '@fortawesome/free-solid-svg-icons';
 
-  import { nextDocName } from "./stores.js";
+  import { nextDocCursorEntryId, nextDocCursorColId, nextDocName, nextDocEntryText } from "./stores.js";
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
   import FlowyTree from "./FlowyTree.js";
@@ -56,9 +56,6 @@
   });
 
   let currentHashId;
-  let currentDocEntryText;
-  let currentCursorEntryId;
-  let currentCursorColId;
   let fileUploadObj;
 
   const history = createHashHistory();
@@ -106,24 +103,24 @@
       copyDocs[i].tree.getRoot()
     );
     copyDocs[i].tree = newTree;
-    newTree.setEntryText(j, currentDocEntryText);
+    newTree.setEntryText(j, $nextDocEntryText);
     return {
       documents: copyDocs,
-      docCursorColId: currentCursorColId
+      docCursorColId: $nextDocCursorColId
     };
   });
 
   // the action of SAVE_FULL_CURSOR
   let saveFullCursorAction = assign(_ctxt => {
     return {
-      docCursorEntryId: currentCursorEntryId,
-      docCursorColId: currentCursorColId
+      docCursorEntryId: $nextDocCursorEntryId,
+      docCursorColId: $nextDocCursorColId
     };
   });
 
   let saveCursorColIdAction = assign(_ctxt => {
     return {
-      docCursorColId: currentCursorColId
+      docCursorColId: $nextDocCursorColId
     };
   });
 
@@ -145,7 +142,7 @@
         currEntryText.substring(0, actualColId - 1) + currEntryText.substring(actualColId);
       currentDoc.tree.setEntryText(ctxt.docCursorEntryId, newEntry);
 
-      currentCursorColId = actualColId - 1;
+      nextDocCursorColId.set(actualColId - 1);
       return {
         docCursorColId: actualColId - 1,
         documents: copyDocs
@@ -215,7 +212,7 @@
 
 
       // NOTE: we *set* currentCursorColId here.
-      currentCursorColId = newColId;
+      nextDocCursorColId.set(newColId);
       return {
         docCursorEntryId: newEntryId,
         docCursorColId: newColId,
@@ -358,19 +355,19 @@
   }
 
   function handleSaveDocEntry(entryText, colId) {
-    currentDocEntryText = entryText;
-    currentCursorColId = colId;
+    nextDocEntryText.set(entryText);
+    nextDocCursorColId.set(colId);
     machineSend("SAVE_DOC_ENTRY");
   }
 
   function handleSaveFullCursor(entryId, colId) {
-    currentCursorEntryId = entryId;
-    currentCursorColId = colId;
+    nextDocCursorEntryId.set(entryId);
+    nextDocCursorColId.set(colId);
     machineSend("SAVE_FULL_CURSOR");
   }
 
   function handleSaveCursorColId(colId) {
-    currentCursorColId = colId;
+    nextDocCursorColId.set(colId);
     machineSend("SAVE_CURSOR_COL_ID");
   }
 
