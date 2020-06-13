@@ -478,10 +478,6 @@
     return curr.document.docTitle === "editing";
   })();
 
-  $: if (isAtTop && history.location.pathname !== '/') {
-    history.replace('/');
-  }
-
   $: if (history.location.pathname === "/create" && typeof $machineState.context.currentDocId === "number") {
     history.replace(`/${$machineState.context.currentDocId}`);
   }
