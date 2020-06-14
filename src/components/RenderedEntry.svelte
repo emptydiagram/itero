@@ -2,7 +2,7 @@
   export let entryId,
     entryText;
 
-  import { MarkupParser } from "./markup/MarkupParser.js";
+  import { MarkupParser } from "../markup/MarkupParser.js";
 
   let theDiv;
 
