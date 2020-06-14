@@ -1,15 +1,5 @@
 import { EntryDisplayState } from './data.js';
 
-export function nodeToTreeObj(node) {
-  if (node.hasChildren()) {
-    let rootKey = node.getId() == null ? 'root' : ''+node.getId();
-    let result = {};
-    result[rootKey] = node.getChildNodeArray().map(item => nodeToTreeObj(item.value));
-    return result;
-  }
-  return node.getId();
-}
-
 export function deserializeEntries(entriesObj) {
   let entries = { ...entriesObj };
   Object.entries(entries).map(([id, entry]) => {
