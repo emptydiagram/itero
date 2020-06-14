@@ -8,12 +8,12 @@
   import { nextDocCursorEntryId, nextDocCursorColId, nextDocName, nextDocEntryText, collapseExpandEntryId } from "./stores.js";
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
-  import FlowyTree from "./FlowyTree.js";
-  import DataStore from "./DataStore.js";
-  import createMachine from "./machine.js";
+  import FlowyTree from "../FlowyTree.js";
+  import DataStore from "../DataStore.js";
+  import createMachine from "../machine.js";
   import { useMachine } from "./useMachine.js";
-  import { DataManager, makeInitContextFromDocuments, makeDoc, EntryDisplayState } from "./data.js";
-  import { findChildNodeSerializedCursorPosFromSelection } from "./markup/util.js";
+  import { DataManager, makeInitContextFromDocuments, makeDoc, EntryDisplayState } from "../data.js";
+  import { findChildNodeSerializedCursorPosFromSelection } from "../markup/util.js";
 
   function findRenderedEntryParent(initNode) {
     let currNode = initNode;
