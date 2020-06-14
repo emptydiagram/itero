@@ -71,4 +71,15 @@ export default class FlowyTreeNode {
       ? this.children.tail.value
       : this.children.head.value;
   }
+
+  toTreeObj() {
+    if (this.hasChildren()) {
+      let rootKey = this.getId() == null ? 'root' : ''+this.getId();
+      let result = {};
+      result[rootKey] = this.getChildNodeArray().map(item => item.value.toTreeObj());
+      return result;
+    }
+    return this.getId();
+  }
+
 }
