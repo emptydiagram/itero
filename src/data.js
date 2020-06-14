@@ -1,4 +1,4 @@
-import { nodeToTreeObj, deserializeEntries, serializeEntries } from "./serialization.js";
+import { deserializeEntries, serializeEntries } from "./serialization.js";
 import FlowyTree from "./FlowyTree.js";
 import FlowyTreeNode from "./FlowyTreeNode.js";
 
@@ -22,7 +22,7 @@ export class DataManager {
   treeToSerializationObject(tree) {
     return {
       entries: serializeEntries(tree.getEntries()),
-      node: nodeToTreeObj(tree.getRoot())
+      node: tree.getRoot().toTreeObj()
     };
   }
 
