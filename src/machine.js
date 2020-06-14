@@ -1,6 +1,6 @@
 import { Machine, assign } from 'xstate';
 import FlowyTree from './FlowyTree.js';
-import { treeObjToNode } from './serialization.js';
+import FlowyTreeNode from './FlowyTreeNode.js';
 import { EntryDisplayState } from "./data.js";
 
 let createDocAction = assign(ctxt => {
@@ -10,7 +10,7 @@ let createDocAction = assign(ctxt => {
   let newId = maxId + 1
   let initEntryText = 'TODO';
 
-  let newTree = new FlowyTree({ 0: {text: initEntryText} }, treeObjToNode({ root: [0] }, null))
+  let newTree = new FlowyTree({ 0: {text: initEntryText} }, FlowyTreeNode.fromTreeObj({ root: [0] }, null))
   let newDocName = 'New document'
 
   copyDocs[newId] = {

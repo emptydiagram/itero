@@ -1,5 +1,6 @@
-import { nodeToTreeObj, treeObjToNode, deserializeEntries, serializeEntries } from "./serialization.js";
+import { nodeToTreeObj, deserializeEntries, serializeEntries } from "./serialization.js";
 import FlowyTree from "./FlowyTree.js";
+import FlowyTreeNode from "./FlowyTreeNode.js";
 
 export const EntryDisplayState = Object.freeze({
     COLLAPSED: Symbol("Colors.COLLAPSED"),
@@ -7,7 +8,7 @@ export const EntryDisplayState = Object.freeze({
 });
 
 function makeTree(entries, treeObj) {
-  let theRoot = treeObjToNode(treeObj, null);
+  let theRoot = FlowyTreeNode.fromTreeObj(treeObj, null);
   return new FlowyTree(entries, theRoot);
 }
 
@@ -51,7 +52,7 @@ export class DataManager {
       let deserDocs = {};
       Object.entries(treeObjDocs).forEach(([entryId, doc]) => {
         let newDoc = {...doc};
-        newDoc.tree = new FlowyTree(deserializeEntries(doc.tree.entries), treeObjToNode(doc.tree.node));
+        newDoc.tree = new FlowyTree(deserializeEntries(doc.tree.entries), FlowyTreeNode.fromTreeObj(doc.tree.node));
         deserDocs[entryId] = newDoc;
       });
       docs = deserDocs;
