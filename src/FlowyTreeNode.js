@@ -1,4 +1,8 @@
-import { LinkedList } from "./LinkedList";
+import { LinkedList, LinkedListItem } from "./LinkedList";
+
+function isObject(obj) {
+  return obj === Object(obj);
+}
 
 export default class FlowyTreeNode {
   constructor(id, parentId, children) {
@@ -7,6 +11,24 @@ export default class FlowyTreeNode {
 
     // LinkedList<FlowyTreeNode>
     this.children = children || new LinkedList();
+  }
+
+  // returns: a FlowyTreeNode which corresponds to the specification in treeObj
+  static fromTreeObj(treeObj, parentId) {
+    let rootKey = Object.keys(treeObj)[0];
+    let currNode = treeObj[rootKey];
+    let currId = rootKey === "root" ? null : parseInt(rootKey);
+    let nodesArray = Array.from(
+      currNode,
+      child => new LinkedListItem(
+        isObject(child)
+          ? FlowyTreeNode.fromTreeObj(child, currId)
+          : new FlowyTreeNode(child, currId)));
+    // a linked list of (LinkedListItems of) FlowyTreeNodes, one for each child in treeObj
+    let nodesList = new LinkedList(...nodesArray);
+
+    parentId = parentId === 0 ? parentId : (parentId || null);
+    return new FlowyTreeNode(currId, parentId, nodesList);
   }
 
   getId() {
