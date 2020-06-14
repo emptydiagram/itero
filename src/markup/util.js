@@ -25,6 +25,14 @@
 // e.g.: given a pointer to "def", return 11 (preceded by "xyz **abc [")
 // e.g.: given a pointer to " ghi", return 20 (preceded by "xyz **abc [def](foo)")
 //
+// example 2
+// abc [[de]] fgh
+//
+// <span>
+//  - "abc [["
+//  - <a href=blah>
+//     - "de"
+//  - "]] fgh"
 // returns { found: boolean, pos: number }
 export function findChildNodeSerializedCursorPosFromSelection(n, sel, pos) {
   if (n.nodeType !== Node.TEXT_NODE && n.nodeType !== Node.ELEMENT_NODE) {
@@ -47,9 +55,7 @@ export function findChildNodeSerializedCursorPosFromSelection(n, sel, pos) {
   if (n.localName === "strong" || n.localName === "em") {
     pos += 2;
   } else if (n.localName === "a") {
-    if (n.dataset.markupLinkType === "internal") {
-      pos += 2;
-    } else if (n.dataset.markupLinkType !== "auto") {
+    if (n.dataset.markupLinkType !== "auto" && n.dataset.markupLinkType !== "internal") {
       pos += 1;
     }
   }
@@ -67,9 +73,7 @@ export function findChildNodeSerializedCursorPosFromSelection(n, sel, pos) {
   if (n.localName === "strong" || n.localName === "em") {
     pos += 2;
   } else if (n.localName === "a") {
-    if (n.dataset.markupLinkType === "internal") {
-      pos += 2;
-    } else if (n.dataset.markupLinkType !== "auto") {
+    if (n.dataset.markupLinkType !== "auto" && n.dataset.markupLinkType !== "internal") {
       pos += n.getAttribute("href").length + 3;
     }
   }
