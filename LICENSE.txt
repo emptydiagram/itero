@@ -1,0 +1,3 @@
+This software is dual-licensed under the Apache 2.0 and 0-clause BSD licenses.
+
+Please see the files LICENSE-Apache-2.0.txt and LICENSE-0BSD.txt for more details.
