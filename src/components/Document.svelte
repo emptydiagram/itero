@@ -92,7 +92,7 @@
     border: 0;
     font-size: 1.2em;
     font-weight: bold;
-    background-color: #f7f7f2;
+    background-color: #f0f0ea;
     width: calc(98% - 7em);
   }
 
