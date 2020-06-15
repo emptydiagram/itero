@@ -69,7 +69,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       .map(name => `<span class="internal-link">[[<a data-markup-link-type="internal" href="#/page/${encodeURI(name)}">${name}</a>]]</span>`);
   },
   AutoLink: function() {
-    return Parsimmon.regexp(/https?:\/\/(\w+\.)*\w+(\/(\w|[-.~:])+)*\/?/)
+    return Parsimmon.regexp(/https?:\/\/(\w+\.)*\w+(\/(\w|[-.~:?=&%])+)*\/?/)
       .map(s => `<a data-markup-link-type="auto" href="${s}">${s}</a>`);
   },
   StandardLink: function(r) {

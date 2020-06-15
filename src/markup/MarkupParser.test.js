@@ -98,10 +98,21 @@ test('Parses a linked emphasized text', () => {
     expect(IteroParser.Text.tryParse(input)).toBe("my <a href=\"www.example.com\"><em>example</em></a>");
 });
 
-test('Parses a url', () => {
+test('Parses a basic url', () => {
     const input = "you can see it here: http://www.example.com";
     expect(IteroParser.Text.tryParse(input)).toBe("you can see it here: <a data-markup-link-type=\"auto\" href=\"http://www.example.com\">http://www.example.com</a>");
 });
+
+test('Parses a url with a query string', () => {
+    const input = "search: https://www.google.com/search?q=bipyramid";
+    expect(IteroParser.Text.tryParse(input)).toBe("search: <a data-markup-link-type=\"auto\" href=\"https://www.google.com/search?q=bipyramid\">https://www.google.com/search?q=bipyramid</a>");
+});
+
+test('Parses a url with URL-encoded stuff', () => {
+    const input = "percent sign: https://en.wikipedia.org/wiki/%25";
+    expect(IteroParser.Text.tryParse(input)).toBe("percent sign: <a data-markup-link-type=\"auto\" href=\"https://en.wikipedia.org/wiki/%25\">https://en.wikipedia.org/wiki/%25</a>");
+});
+
 
 test('Parses Wiki random page', () => {
     const url = "https://en.wikipedia.org/wiki/Special:Random";
