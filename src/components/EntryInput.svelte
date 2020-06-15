@@ -13,6 +13,7 @@
     handleSplitEntry,
     handleIndent,
     handleDedent,
+    handleMultilinePaste,
     handleSaveCursorColId,
     handleSaveDocEntry,
     handleSaveFullCursor;
@@ -125,10 +126,20 @@
   };
 
   $: handleInput = ev => {
+    console.log("EntryInput, input event");
     let colId = ev.target.selectionStart;
     let entryText = ev.target.value;
     handleSaveDocEntry(entryText, colId);
   };
+
+  $: handlePaste = ev => {
+    let pastedText = (ev.clipboardData || window.clipboardData).getData('text');
+    let pastedLines = pastedText.split('\n');
+    if (pastedLines.length > 1) {
+      ev.preventDefault();
+      handleMultilinePaste(pastedText);
+    }
+  }
 </script>
 
 <style>
@@ -151,4 +162,5 @@
   bind:this={theInput}
   on:input={handleInput}
   on:click={e => handleEntryInputClick(entryId, e)}
-  on:keydown={handleKeydown} />
+  on:keydown={handleKeydown}
+  on:paste={handlePaste} />

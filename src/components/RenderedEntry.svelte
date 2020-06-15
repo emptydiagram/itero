@@ -19,5 +19,11 @@
   }
 </script>
 
+<style>
+.rendered-entry {
+  white-space: pre-wrap;
+}
+</style>
+
 <div class="rendered-entry" bind:this={theDiv} data-entry-id={entryId}>
 </div>
