@@ -10,6 +10,7 @@
     handleEntryBackspace,
     handleIndent,
     handleDedent,
+    handleMultilinePaste,
     handleSaveCursorColId;
 
   import Icon from 'svelte-awesome';
@@ -102,6 +103,7 @@
         {handleEntryBackspace}
         {handleIndent}
         {handleDedent}
+        {handleMultilinePaste}
         {handleSaveCursorColId} />
       {:else}
         <RenderedEntry
@@ -131,6 +133,7 @@
           {handleEntryBackspace}
           {handleIndent}
           {handleDedent}
+          {handleMultilinePaste}
           {handleSaveCursorColId} />
       </li>
     {/each}
