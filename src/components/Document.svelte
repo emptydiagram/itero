@@ -14,7 +14,8 @@
     handleExpandEntry,
     handleSplitEntry,
     handleIndent,
-    handleDedent;
+    handleDedent,
+    handleMultilinePaste;
   export let handleStartEditingDocName,
     handleCancelEditingDocName,
     handleSaveDocName,
@@ -141,5 +142,6 @@
     {handleEntryBackspace}
     {handleIndent}
     {handleDedent}
+    {handleMultilinePaste}
     {handleSaveCursorColId} />
 </div>

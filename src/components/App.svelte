@@ -268,6 +268,30 @@
     return {};
   });
 
+  let savePastedEntriesAction = assign(ctxt => {
+    console.log(" saved pasted entries act");
+    let copyDocs = { ...ctxt.documents };
+    let i = ctxt.currentDocId;
+    let entryId = ctxt.docCursorEntryId;
+    console.log(" SPEA, (doc id, entry id) = ", i, entryId);
+    let parentId = copyDocs[i].tree.getParentId(entryId);
+    console.log(" SPEA, (doc id, entry id, parent id) = ", i, entryId, parentId);
+    copyDocs[i] = { ...ctxt.documents[i] };
+    let newTree = new FlowyTree(
+      copyDocs[i].tree.getEntries(),
+      copyDocs[i].tree.getRoot()
+    );
+    copyDocs[i].tree = newTree;
+    let currEntryId = entryId;
+    $nextDocEntryText.split('\n').forEach(line => {
+      console.log("inserting below ", currEntryId, " line = ", line);
+      currEntryId = newTree.insertEntryBelow(currEntryId, parentId, line);
+    });
+    return {
+      documents: copyDocs,
+    };
+  });
+
 
 
 
@@ -286,7 +310,8 @@
     saveCursorColIdAction,
     backspaceAction,
     collapseEntryAction,
-    expandEntryAction
+    expandEntryAction,
+    savePastedEntriesAction
   );
 
   const { state: machineState, send: machineSend } = useMachine(machine);
@@ -452,6 +477,10 @@
   function handleDedent() {
     machineSend("DEDENT");
   }
+  function handleMultilinePaste(entryText) {
+    nextDocEntryText.set(entryText);
+    machineSend("SAVE_PASTED_ENTRIES");
+  }
 
   // save the latest document
   $: dataMgr.saveDocuments($machineState.context.documents);
@@ -542,6 +571,7 @@
     {handleEntryBackspace}
     {handleIndent}
     {handleDedent}
+    {handleMultilinePaste}
     {handleSaveCursorColId}
     {handleSaveDocName}
     {handleSaveDocEntry}
