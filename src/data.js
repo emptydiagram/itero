@@ -94,7 +94,7 @@ export function makeDoc(id, name, entries, root) {
 
 function makeInitDocuments() {
   // 0: { text: 'this is a note taking app', displayState: EntryDisplayState.COLLAPSED },
-  let entries = [
+  let intro = [
       {
         0: { text: 'this is a note taking app' },
         1: { text: 'you can use it to write a list. ¯\\\\_(ツ)_/¯' },
@@ -112,10 +112,12 @@ function makeInitDocuments() {
         13: { text: 'my \\**bolded** text' },
         14: { text: 'make __emphasis__ with double underscore:' },
         15: { text: 'my \\__emphasized__ text' },
-        16: { text: 'make links in two ways' },
-        17: { text: 'just write a URL: https://en.wikipedia.org/wiki/Special:Random' },
-        18: { text: 'link name + URL: [random wiki page](https://en.wikipedia.org/wiki/Special:Random)' },
-        19: { text: 'type: \\[link name](www.example.com)' },
+        16: { text: 'make link to another page: [[implementation details]]' },
+        17: { text: 'surround a page name with double square brackets: \\[[page name]]' },
+        18: { text: 'make external links in two ways' },
+        19: { text: 'just write a URL: https://en.wikipedia.org/wiki/Special:Random' },
+        20: { text: 'link name + URL: [random wiki page](https://en.wikipedia.org/wiki/Special:Random)' },
+        21: { text: 'type: \\[link name](www.example.com)' },
       },
       { root: [
         0,
@@ -132,10 +134,23 @@ function makeInitDocuments() {
         ]},
         { 12: [13] },
         { 14: [15] },
-        { 16: [17, { 18: [19]}] }
+        { 16: [17] },
+        { 18: [19, { 20: [21] }] }
       ]}
   ];
+  let similar = [
+    {
+      0: { text: 'svelte for components' },
+      1: { text: 'xstate for state management' },
+      2: { text: 'parsimmon for the markup language parser/renderer' },
+      3: { text: 'mathjax v3 for math display' },
+      4: { text: 'font awesome (w/ svelte-awesome) icons' },
+      5: { text: 'parser tests using jest' },
+    },
+    { root: [0, 1, 2, 3, 4, 5] }
+  ];
   return {
-    '1': makeDoc(1, 'hello and what is this', entries[0], entries[1])
+    '1': makeDoc(1, 'hello and what is this', intro[0], intro[1]),
+    '2': makeDoc(2, 'implementation details', similar[0], similar[1])
   };
 }
