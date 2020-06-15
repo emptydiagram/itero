@@ -118,6 +118,9 @@ function makeInitDocuments() {
         19: { text: 'just write a URL: https://en.wikipedia.org/wiki/Special:Random' },
         20: { text: 'link name + URL: [random wiki page](https://en.wikipedia.org/wiki/Special:Random)' },
         21: { text: 'type: \\[link name](www.example.com)' },
+        22: { text: 'write math symbols (courtesy of MathJax): $1 = \\frac{1}{\\sqrt \\pi} \\int_0^{\\infty} e^{-x^2} dx$'},
+        23: { text: 'surround your $\\LaTeX$ with dollar signs' },
+        24: { text: '\\$1 = \\frac{1}{\\sqrt \\pi} \\int_0^{\\infty} e^{-x^2} dx\\$'},
       },
       { root: [
         0,
@@ -135,7 +138,8 @@ function makeInitDocuments() {
         { 12: [13] },
         { 14: [15] },
         { 16: [17] },
-        { 18: [19, { 20: [21] }] }
+        { 18: [19, { 20: [21] }] },
+        { 22: [{ 23: [24] }] }
       ]}
   ];
   let similar = [
