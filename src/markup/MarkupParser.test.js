@@ -113,6 +113,12 @@ test('Parses a url with URL-encoded stuff', () => {
     expect(IteroParser.Text.tryParse(input)).toBe("percent sign: <a data-markup-link-type=\"auto\" href=\"https://en.wikipedia.org/wiki/%25\">https://en.wikipedia.org/wiki/%25</a>");
 });
 
+test('Parses a url with a fragment', () => {
+    const input = "https://en.wikipedia.org/wiki/Quaternion#Definition";
+    expect(IteroParser.Text.tryParse(input)).toBe("<a data-markup-link-type=\"auto\" href=\"https://en.wikipedia.org/wiki/Quaternion#Definition\">https://en.wikipedia.org/wiki/Quaternion#Definition</a>");
+});
+
+
 
 test('Parses Wiki random page', () => {
     const url = "https://en.wikipedia.org/wiki/Special:Random";
