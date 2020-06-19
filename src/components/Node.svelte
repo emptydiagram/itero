@@ -59,8 +59,7 @@
   .tree-node-list li {
     display: flex;
     flex-direction: column;
-    margin-top: 0.15em;
-    margin-bottom: 0.15em;
+    line-height: 1.5em;
   }
 
   .entry-display {
