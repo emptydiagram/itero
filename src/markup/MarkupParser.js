@@ -1,5 +1,9 @@
 import Parsimmon from "parsimmon";
 
+function isString(x) {
+  return Object.prototype.toString.call(x) === "[object String]";
+}
+
 function escapeSpecialCharacter(c) {
   switch (c) {
     case '"':
@@ -66,7 +70,10 @@ export const MarkupParser = Parsimmon.createLanguage({
     return Parsimmon.string("[[")
       .then(r.PageName)
       .skip(Parsimmon.string("]]"))
-      .map(name => `<span class="internal-link">[[<a data-markup-link-type="internal" href="#/page/${encodeURI(name)}">${name}</a>]]</span>`);
+      .map(name => ({
+        html: `<span class="internal-link">[[<a data-markup-link-type="internal" href="#/page/${encodeURI(name)}">${name}</a>]]</span>`,
+        linkedPage: name,
+      }));
   },
   AutoLink: function() {
     return Parsimmon.regexp(/https?:\/\/(\w+\.)*\w+(\/(\w|[-.~:?=&%#])+)*\/?/)
@@ -128,6 +135,20 @@ export const MarkupParser = Parsimmon.createLanguage({
       r.Char);
   },
   Text: function (r) {
-    return r.Value.many().map(res => res.join(''));
+    return r.Value.many().map(values => {
+      // values: an array of (string || { html: string, linkedPage: string })
+      let normalizedValues = [];
+      let linkedPages = [];
+      values.forEach(val => {
+        if (isString(val)) {
+          normalizedValues.push(val);
+        } else {
+          normalizedValues.push(val.html);
+          linkedPages.push(val.linkedPage);
+        }
+      });
+      console.log("linkedPages = ", linkedPages);
+      return normalizedValues.join('');
+    });
   }
 });
