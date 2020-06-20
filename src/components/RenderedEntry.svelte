@@ -9,7 +9,7 @@
   $: {
     if (theDiv) {
       try {
-        let result = MarkupParser.Text.tryParse(entryText);
+        let result = MarkupParser.Text.tryParse(entryText).html;
         theDiv.innerHTML = result;
       } catch (err) {
         console.log("err parsing: ", err);
