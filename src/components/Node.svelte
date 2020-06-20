@@ -88,6 +88,7 @@
       {/if}
     </span>
     {#if isCurrentEntry}
+      <span>&#x200b;</span>
       <EntryInput
         entryId={currEntryId}
         entryValue={tree.getEntryText(currEntryId)}
