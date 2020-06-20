@@ -147,8 +147,10 @@ export const MarkupParser = Parsimmon.createLanguage({
           linkedPages.push(val.linkedPage);
         }
       });
-      console.log("linkedPages = ", linkedPages);
-      return normalizedValues.join('');
+      return {
+        html: normalizedValues.join(''),
+        linkedPages: linkedPages
+      };
     });
   }
 });
