@@ -121,7 +121,7 @@ function makeInitDocuments() {
         22: { text: 'write math symbols (courtesy of MathJax): $1 = \\frac{1}{\\sqrt \\pi} \\int_0^{\\infty} e^{-x^2} dx$'},
         23: { text: 'surround your $\\LaTeX$ with dollar signs' },
         24: { text: '\\$1 = \\frac{1}{\\sqrt \\pi} \\int_0^{\\infty} e^{-x^2} dx\\$'},
-        25: { text: 'look, a matrix: $\\begin{bmatrix}\cos \\theta & -\\sin \\theta\\\\\\sin \\theta & \\cos \\theta\\end{bmatrix}$'}
+        25: { text: 'look, a matrix: $\\begin{bmatrix}\\cos \\theta & -\\sin \\theta\\\\\\sin \\theta & \\cos \\theta\\end{bmatrix}$'}
       },
       { root: [
         0,

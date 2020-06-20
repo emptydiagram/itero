@@ -73,6 +73,9 @@
     height: 1em;
     margin-right: 0.5em;
   }
+  .icon-container:hover {
+    cursor: pointer;
+  }
 </style>
 
 {#if currEntryId !== null}
