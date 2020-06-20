@@ -87,8 +87,8 @@
         <Icon data={faCircle} scale="0.51" />
       {/if}
     </span>
+    <span>&#x200b;</span>
     {#if isCurrentEntry}
-      <span>&#x200b;</span>
       <EntryInput
         entryId={currEntryId}
         entryValue={tree.getEntryText(currEntryId)}
