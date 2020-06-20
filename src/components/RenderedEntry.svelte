@@ -9,9 +9,10 @@
   $: {
     if (theDiv) {
       try {
-        let result = MarkupParser.Text.tryParse(entryText).html;
-        theDiv.innerHTML = result;
+        let parseResult = MarkupParser.Text.tryParse(entryText);
+        theDiv.innerHTML = parseResult.html;
       } catch (err) {
+        // TODO: display error somehow?
         console.log("err parsing: ", err);
         theDiv.innerHTML = entryText;
       }
