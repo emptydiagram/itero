@@ -5,7 +5,7 @@ import { EntryDisplayState } from "./data.js";
 
 // TODO: handle full trees
 export default class FlowyTree {
-  // entries: Map<EntryId, Object>
+  // entries: Map<EntryId, { text: String, (displayState: EntryDisplayState)? }>
   // root: FlowyTreeNode
   // entryItems: Map<EntryId, LinkedListItem<FlowyTreeNode>>
   constructor(entries, root) {

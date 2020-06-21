@@ -22,6 +22,10 @@ let createDocAction = assign(ctxt => {
   let newDisplayDocs = [...ctxt.displayDocs];
   newDisplayDocs.push(newId);
 
+  // add entry into docIdLookup
+  let newLookup = { ...ctxt.docIdLookupByDocName };
+  newLookup[newDocName] = newId;
+
   return {
     currentDocId: newId,
     docCursorEntryId: null,
@@ -29,6 +33,7 @@ let createDocAction = assign(ctxt => {
     docTitle: 'New document',
     documents: copyDocs,
     displayDocs: newDisplayDocs,
+    docIdLookupByDocName: newLookup
   };
 });
 

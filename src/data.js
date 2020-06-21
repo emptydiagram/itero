@@ -73,6 +73,18 @@ export class DataManager {
   }
 }
 
+function makeDocIdLookup(docs) {
+  // build up index: (doc name) -> (doc id)
+
+  let docIdLookup = {};
+  Object.entries(docs).forEach(([docId, doc]) => {
+    docIdLookup[doc.name] = docId;
+  });
+  return docIdLookup;
+}
+
+
+// Document: = {id: EntryId, name: String, tree: FlowyTree }
 export function makeInitContextFromDocuments(docs) {
   return {
     currentDocId: null,
@@ -81,6 +93,7 @@ export function makeInitContextFromDocuments(docs) {
     displayDocs: Object.keys(docs),
     docCursorEntryId: null,
     docCursorColId: 0,
+    docIdLookupByDocName: makeDocIdLookup(docs),
   };
 }
 
