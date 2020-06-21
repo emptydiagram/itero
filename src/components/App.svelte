@@ -87,9 +87,15 @@
     copyDocs[i] = { ...ctxt.documents[i] };
     copyDocs[i].name = $nextDocName;
 
+    let oldDocName = ctxt.docIdLookupByDocName;
+    let newLookup = { ...ctxt.docIdLookupByDocName };
+    delete newLookup[oldDocName];
+    newLookup[$nextDocName] = ctxt.currentDocId;
+
     return {
       documents: copyDocs,
-      docTitle: $nextDocName
+      docTitle: $nextDocName,
+      docIdLookupByDocName: newLookup,
     };
   });
 
@@ -330,18 +336,14 @@
     if (pathname.startsWith("/page/")) {
       let pageName = pathname.substring(6);
       // TODO: build an index instead
-      let found = false;
-      Object.entries($machineState.context.documents).forEach(([id, doc]) => {
-        if (doc.name === pageName) {
-          found = true;
-          currentHashId = parseInt(id);
-          machineSend("NAVIGATE");
-          history.replace(`/${id}`);
-        }
-      });
-      if(!found) {
-        history.go(-1);
+      if (pageName in $machineState.context.docIdLookupByDocName) {
+        let docId = $machineState.context.docIdLookupByDocName[pageName];
+        currentHashId = parseInt(docId);
+        machineSend("NAVIGATE");
+        history.replace(`/${docId}`);
+        return;
       }
+      history.go(-1);
       return;
     }
 
