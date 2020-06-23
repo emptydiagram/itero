@@ -3,21 +3,26 @@ import FlowyTree from './FlowyTree.js';
 import FlowyTreeNode from './FlowyTreeNode.js';
 import { EntryDisplayState } from "./data.js";
 
-let createDocAction = assign(ctxt => {
-  let copyDocs = { ...ctxt.documents };
-  let existingIds = Object.keys(copyDocs).map(id => parseInt(id));
-  let maxId = Math.max(...existingIds);
-  let newId = maxId + 1
-  let initEntryText = 'TODO';
+export function createNewDocument(newDocName, initEntryText, docs) {
+  let existingIds = Object.keys(docs).map(id => parseInt(id));
+  let newId = Math.max(...existingIds) + 1
+  let newTree = new FlowyTree(
+    { 0: {text: initEntryText} },
+    FlowyTreeNode.fromTreeObj({ root: [0] }, null));
 
-  let newTree = new FlowyTree({ 0: {text: initEntryText} }, FlowyTreeNode.fromTreeObj({ root: [0] }, null))
-  let newDocName = 'New document'
-
-  copyDocs[newId] = {
+  return {
     id: newId,
     name: newDocName,
     tree: newTree,
   };
+}
+
+let createDocAction = assign(ctxt => {
+  let copyDocs = { ...ctxt.documents };
+  let newDocName = 'New document'
+  let newDoc = createNewDocument(newDocName, 'TODO', copyDocs);
+  let newId = newDoc.id;
+  copyDocs[newId] = newDoc;
 
   let newDisplayDocs = [...ctxt.displayDocs];
   newDisplayDocs.push(newId);
@@ -30,7 +35,7 @@ let createDocAction = assign(ctxt => {
     currentDocId: newId,
     docCursorEntryId: null,
     docCursorColId: 0,
-    docTitle: 'New document',
+    docTitle: newDocName,
     documents: copyDocs,
     displayDocs: newDisplayDocs,
     docIdLookupByDocName: newLookup
