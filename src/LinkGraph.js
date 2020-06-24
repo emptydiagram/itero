@@ -43,11 +43,17 @@ export default class LinkGraph {
     }
 
     removeLink(docIdFrom, entryId, docIdTo) {
-      this.outAdjacency[docIdFrom][entryId].remove(docIdTo);
-      this.inAdjacency[docIdTo].remove(this.convertToInAdjElement(docIdFrom, entryId));
+      this.outAdjacency[docIdFrom][entryId].delete(docIdTo);
+      this.inAdjacency[docIdTo].delete(this.convertToInAdjElement(docIdFrom, entryId));
     }
 
     addLink(docIdFrom, entryId, docIdTo) {
+      if (!(entryId in this.outAdjacency[docIdFrom])) {
+        this.outAdjacency[docIdFrom][entryId] = new Set();
+      }
+      if (!(docIdTo in this.inAdjacency)) {
+        this.inAdjacency[docIdTo] = new Set();
+      }
       this.outAdjacency[docIdFrom][entryId].add(docIdTo);
       this.inAdjacency[docIdTo].add(this.convertToInAdjElement(docIdFrom, entryId));
     }

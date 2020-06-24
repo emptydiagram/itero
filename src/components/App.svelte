@@ -299,6 +299,24 @@
     };
   });
 
+  // given: sets a, b
+  // returns: [elements removed from a, elements added to a]
+  function diffSets(a, b) {
+    let removed = [];
+    let added = [];
+    for (let [entry, _] of a.entries()) {
+      if (!b.has(entry)) {
+        removed.push(entry);
+      }
+    }
+    for (let [entry, _] of b.entries()) {
+      if (!a.has(entry)) {
+        added.push(entry);
+      }
+    }
+    return [removed, added];
+  }
+
   // compute the diff between the current set of links and the new set
   //  - NOTE: we start with the new set of linked *page names*, so we need to look up doc ids
   //     - whenever we find a page name with no doc id, need to automatically create
@@ -308,6 +326,9 @@
     let copyDocs = { ...ctxt.documents };
     let newDisplayDocs = [...ctxt.displayDocs];
     let newLookup = { ...ctxt.docIdLookupByDocName };
+
+    let entryId = $updateLinksEntryId;
+    let currLinks = ctxt.linkGraph.getLinks(ctxt.currentDocId, entryId);
 
     let newLinksArray = $updateLinksPageNames.map(page => {
       let lookupResult = ctxt.docIdLookupByDocName[page]
@@ -323,13 +344,26 @@
       newLookup[page] = newId;
       return newId;
     });
-    let _newLinks = new Set(newLinksArray);
+    let newLinks = new Set(newLinksArray);
 
-    // TODO: create page named `page`
+    // diff currLinks, newLinks
+    let [removed, added] = diffSets(currLinks, newLinks);
+    console.log("updateEntryLinksAction, (removed, added) = ", removed, added);
+
+    let newLinkGraph = ctxt.linkGraph;
+    removed.forEach(docId => {
+      newLinkGraph.removeLink(ctxt.currentDocId, entryId, docId);
+    });
+    added.forEach(docId => {
+      newLinkGraph.addLink(ctxt.currentDocId, entryId, docId);
+    });
+
+    console.log(" updateEntryLinksActions, boutta save, newDisplayDocs = ", newDisplayDocs);
     return {
       documents: copyDocs,
       displayDocs: newDisplayDocs,
-      docIdLookupByDocName: newLookup
+      docIdLookupByDocName: newLookup,
+      linkGraph: newLinkGraph,
     };
   });
 
@@ -520,6 +554,7 @@
     machineSend("SAVE_PASTED_ENTRIES");
   }
   function handleUpdateEntryLinks(entryId, linkedPages) {
+    console.log("handleUpdateEntryLinks, setting stores, entryId, linkedPages = ", entryId, linkedPages);
     updateLinksEntryId.set(entryId);
     updateLinksPageNames.set(linkedPages);
     machineSend("UPDATE_ENTRY_LINKS");
