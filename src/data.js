@@ -9,6 +9,21 @@ export const EntryDisplayState = Object.freeze({
     EXPANDED: Symbol("Colors.EXPANDED"),
 });
 
+export function createNewDocument(newDocName, initEntryText, docs) {
+  let existingIds = Object.keys(docs).map(id => parseInt(id));
+  let newId = Math.max(...existingIds) + 1
+  let newTree = new FlowyTree(
+    { 0: {text: initEntryText} },
+    FlowyTreeNode.fromTreeObj({ root: [0] }, null));
+
+  return {
+    id: newId,
+    name: newDocName,
+    tree: newTree,
+  };
+}
+
+
 function makeTree(entries, treeObj) {
   let theRoot = FlowyTreeNode.fromTreeObj(treeObj, null);
   return new FlowyTree(entries, theRoot);
