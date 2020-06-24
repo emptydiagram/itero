@@ -1,21 +1,6 @@
 import { Machine, assign } from 'xstate';
 import FlowyTree from './FlowyTree.js';
-import FlowyTreeNode from './FlowyTreeNode.js';
-import { EntryDisplayState } from "./data.js";
-
-export function createNewDocument(newDocName, initEntryText, docs) {
-  let existingIds = Object.keys(docs).map(id => parseInt(id));
-  let newId = Math.max(...existingIds) + 1
-  let newTree = new FlowyTree(
-    { 0: {text: initEntryText} },
-    FlowyTreeNode.fromTreeObj({ root: [0] }, null));
-
-  return {
-    id: newId,
-    name: newDocName,
-    tree: newTree,
-  };
-}
+import { EntryDisplayState, createNewDocument } from "./data.js";
 
 let createDocAction = assign(ctxt => {
   let copyDocs = { ...ctxt.documents };

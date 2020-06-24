@@ -12,9 +12,8 @@
   import FlowyTree from "../FlowyTree.js";
   import DataStore from "../DataStore.js";
   import createMachine from "../machine.js";
-  import { createNewDocument } from "../machine.js";
   import { useMachine } from "./useMachine.js";
-  import { DataManager, makeInitContextFromDocuments, makeDoc, EntryDisplayState } from "../data.js";
+  import { DataManager, makeInitContextFromDocuments, makeDoc, EntryDisplayState, createNewDocument } from "../data.js";
   import { findChildNodeSerializedCursorPosFromSelection } from "../markup/util.js";
 
   function findRenderedEntryParent(initNode) {
