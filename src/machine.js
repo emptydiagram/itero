@@ -157,7 +157,7 @@ let dedentAction = assign(ctxt => {
 
 export default (initContext, navigateToDocAction, importDocsAction, saveDocNameAction,
     saveDocEntryAction, saveFullCursorAction, saveCursorColIdAction, backspaceAction,
-    collapseEntryAction, expandEntryAction, savePastedEntriesAction) => {
+    collapseEntryAction, expandEntryAction, savePastedEntriesAction, updateEntryLinksAction) => {
 
   const docStates = {
     states: {
@@ -236,6 +236,9 @@ export default (initContext, navigateToDocAction, importDocsAction, saveDocNameA
           },
           SAVE_CURSOR_COL_ID: {
             actions: saveCursorColIdAction,
+          },
+          UPDATE_ENTRY_LINKS: {
+            actions: updateEntryLinksAction,
           }
         },
         type: 'parallel',

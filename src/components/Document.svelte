@@ -15,11 +15,12 @@
     handleSplitEntry,
     handleIndent,
     handleDedent,
-    handleMultilinePaste;
-  export let handleStartEditingDocName,
+    handleMultilinePaste,
+    handleStartEditingDocName,
     handleCancelEditingDocName,
     handleSaveDocName,
-    handleSaveCursorColId;
+    handleSaveCursorColId,
+    handleUpdateEntryLinks;
 
   import { afterUpdate } from 'svelte';
   import Node from "./Node.svelte";
@@ -143,5 +144,7 @@
     {handleIndent}
     {handleDedent}
     {handleMultilinePaste}
-    {handleSaveCursorColId} />
+    {handleSaveCursorColId}
+    {handleUpdateEntryLinks}
+  />
 </div>

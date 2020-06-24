@@ -5,12 +5,14 @@
   import Icon from 'svelte-awesome';
   import { faHammer } from '@fortawesome/free-solid-svg-icons';
 
-  import { nextDocCursorEntryId, nextDocCursorColId, nextDocName, nextDocEntryText, collapseExpandEntryId } from "./stores.js";
+  import { nextDocCursorEntryId, nextDocCursorColId, nextDocName, nextDocEntryText,
+           collapseExpandEntryId, updateLinksEntryId, updateLinksPageNames } from "./stores.js";
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
   import FlowyTree from "../FlowyTree.js";
   import DataStore from "../DataStore.js";
   import createMachine from "../machine.js";
+  import { createNewDocument } from "../machine.js";
   import { useMachine } from "./useMachine.js";
   import { DataManager, makeInitContextFromDocuments, makeDoc, EntryDisplayState } from "../data.js";
   import { findChildNodeSerializedCursorPosFromSelection } from "../markup/util.js";
@@ -298,6 +300,40 @@
     };
   });
 
+  // compute the diff between the current set of links and the new set
+  //  - NOTE: we start with the new set of linked *page names*, so we need to look up doc ids
+  //     - whenever we find a page name with no doc id, need to automatically create
+  // for each removed and added link in the entry, update the link graph
+  // return { updated LinkGraph, updated documents object }
+  let updateEntryLinksAction = assign(ctxt => {
+    let copyDocs = { ...ctxt.documents };
+    let newDisplayDocs = [...ctxt.displayDocs];
+    let newLookup = { ...ctxt.docIdLookupByDocName };
+
+    let newLinksArray = $updateLinksPageNames.map(page => {
+      let lookupResult = ctxt.docIdLookupByDocName[page]
+      if (lookupResult) {
+        return lookupResult;
+      }
+
+      // FIXME: duplicates some from createDocAction
+      let newDoc = createNewDocument(page, 'TODO', copyDocs);
+      let newId = newDoc.id;
+      copyDocs[newId] = newDoc;
+      newDisplayDocs.push(newId);
+      newLookup[page] = newId;
+      return newId;
+    });
+    let _newLinks = new Set(newLinksArray);
+
+    // TODO: create page named `page`
+    return {
+      documents: copyDocs,
+      displayDocs: newDisplayDocs,
+      docIdLookupByDocName: newLookup
+    };
+  });
+
 
 
 
@@ -317,7 +353,8 @@
     backspaceAction,
     collapseEntryAction,
     expandEntryAction,
-    savePastedEntriesAction
+    savePastedEntriesAction,
+    updateEntryLinksAction
   );
 
   const { state: machineState, send: machineSend } = useMachine(machine);
@@ -483,6 +520,11 @@
     nextDocEntryText.set(entryText);
     machineSend("SAVE_PASTED_ENTRIES");
   }
+  function handleUpdateEntryLinks(entryId, linkedPages) {
+    updateLinksEntryId.set(entryId);
+    updateLinksPageNames.set(linkedPages);
+    machineSend("UPDATE_ENTRY_LINKS");
+  }
 
   // save the latest document
   $: dataMgr.saveDocuments($machineState.context.documents);
@@ -577,7 +619,9 @@
     {handleSaveCursorColId}
     {handleSaveDocName}
     {handleSaveDocEntry}
-    {handleSaveFullCursor} />
+    {handleSaveFullCursor}
+    {handleUpdateEntryLinks}
+    />
 {/if}
 
 <div id="actions-bar">

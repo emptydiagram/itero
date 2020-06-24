@@ -1,6 +1,7 @@
 <script>
   export let entryId,
-    entryText;
+    entryText,
+    handleUpdateEntryLinks;
 
   import { MarkupParser } from "../markup/MarkupParser.js";
 
@@ -11,6 +12,7 @@
       try {
         let parseResult = MarkupParser.Text.tryParse(entryText);
         theDiv.innerHTML = parseResult.html;
+        handleUpdateEntryLinks(entryId, parseResult.linkedPages);
       } catch (err) {
         // TODO: display error somehow?
         console.log("err parsing: ", err);
