@@ -102,6 +102,7 @@ function makeDocIdLookup(docs) {
 
 function makeLinkGraph(docs, docIdLookup) {
   let outAdjacency = {};
+  let newDocs = { ...docs };
   Object.entries(docs).forEach(([docId, doc]) => {
     outAdjacency[docId] = {};
     let currDocEntries = outAdjacency[docId];
@@ -113,31 +114,32 @@ function makeLinkGraph(docs, docIdLookup) {
         }
         // TODO: auto-create when page doesnt exist
         if (!(page in docIdLookup)) {
-          console.log(" ## missing (docId, entryId, page) = ", docId, entryId, page);
+          let newDoc = createNewDocument(page, 'TODO', newDocs);
+          newDocs[newDoc.id] = newDoc;
         } else {
-          console.log(" ## adding (docId, entryId, page) = ", docId, entryId, page);
           outAdjacency[docId][entryId].add(docIdLookup[page]);
         }
       });
     });
   });
   console.log(" !! makeLinkGraph, outAdj = ", outAdjacency);
-  return new LinkGraph(outAdjacency);
+  return { linkGraph: new LinkGraph(outAdjacency), documents: newDocs };
 }
 
 
 // Document: = {id: EntryId, name: String, tree: FlowyTree }
 export function makeInitContextFromDocuments(docs) {
   let docIdLookup = makeDocIdLookup(docs);
+  let { linkGraph, documents } = makeLinkGraph(docs, docIdLookup);
   return {
     currentDocId: null,
     docTitle: '',
-    documents: docs,
-    displayDocs: Object.keys(docs),
+    documents: documents,
+    displayDocs: Object.keys(documents),
     docCursorEntryId: null,
     docCursorColId: 0,
     docIdLookupByDocName: docIdLookup,
-    linkGraph: makeLinkGraph(docs, docIdLookup),
+    linkGraph: linkGraph
   };
 }
 
