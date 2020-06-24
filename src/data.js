@@ -2,6 +2,7 @@ import { deserializeEntries, serializeEntries } from "./serialization.js";
 import FlowyTree from "./FlowyTree.js";
 import FlowyTreeNode from "./FlowyTreeNode.js";
 import { MarkupParser } from "./markup/MarkupParser.js";
+import LinkGraph from "./LinkGraph.js";
 
 export const EntryDisplayState = Object.freeze({
     COLLAPSED: Symbol("Colors.COLLAPSED"),
@@ -84,6 +85,30 @@ function makeDocIdLookup(docs) {
   return docIdLookup;
 }
 
+function makeLinkGraph(docs, docIdLookup) {
+  let outAdjacency = {};
+  Object.entries(docs).forEach(([docId, doc]) => {
+    outAdjacency[docId] = {};
+    let currDocEntries = outAdjacency[docId];
+    Object.entries(doc.tree.getEntries()).forEach(([entryId, entry]) => {
+      let parseResult = MarkupParser.Text.tryParse(entry.text);
+      parseResult.linkedPages.forEach(page => {
+        if (!(entryId in currDocEntries)) {
+           currDocEntries[entryId] = new Set();
+        }
+        // TODO: auto-create when page doesnt exist
+        if (!(page in docIdLookup)) {
+          console.log(" ## missing (docId, entryId, page) = ", docId, entryId, page);
+        } else {
+          console.log(" ## adding (docId, entryId, page) = ", docId, entryId, page);
+          outAdjacency[docId][entryId].add(docIdLookup[page]);
+        }
+      });
+    });
+  });
+  console.log(" !! makeLinkGraph, outAdj = ", outAdjacency);
+  return new LinkGraph(outAdjacency);
+}
 
 
 // Document: = {id: EntryId, name: String, tree: FlowyTree }
@@ -97,6 +122,7 @@ export function makeInitContextFromDocuments(docs) {
     docCursorEntryId: null,
     docCursorColId: 0,
     docIdLookupByDocName: docIdLookup,
+    linkGraph: makeLinkGraph(docs, docIdLookup),
   };
 }
 
