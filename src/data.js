@@ -11,7 +11,7 @@ export const EntryDisplayState = Object.freeze({
 
 export function createNewDocument(newDocName, initEntryText, docs) {
   let existingIds = Object.keys(docs).map(id => parseInt(id));
-  let newId = Math.max(...existingIds) + 1
+  let newId = (Math.max(...existingIds) + 1).toString();
   let newTree = new FlowyTree(
     { 0: {text: initEntryText} },
     FlowyTreeNode.fromTreeObj({ root: [0] }, null));
