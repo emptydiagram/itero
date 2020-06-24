@@ -11,7 +11,8 @@
     handleIndent,
     handleDedent,
     handleMultilinePaste,
-    handleSaveCursorColId;
+    handleSaveCursorColId,
+    handleUpdateEntryLinks;
 
   import Icon from 'svelte-awesome';
   import { faCircle,faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -112,6 +113,7 @@
         <RenderedEntry
           entryId={currEntryId}
           entryText={tree.getEntryText(currEntryId)}
+          {handleUpdateEntryLinks}
           />
       {/if}
   </div>
@@ -137,7 +139,9 @@
           {handleIndent}
           {handleDedent}
           {handleMultilinePaste}
-          {handleSaveCursorColId} />
+          {handleSaveCursorColId}
+          {handleUpdateEntryLinks}
+          />
       </li>
     {/each}
   </ul>

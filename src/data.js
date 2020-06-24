@@ -1,6 +1,7 @@
 import { deserializeEntries, serializeEntries } from "./serialization.js";
 import FlowyTree from "./FlowyTree.js";
 import FlowyTreeNode from "./FlowyTreeNode.js";
+import { MarkupParser } from "./markup/MarkupParser.js";
 
 export const EntryDisplayState = Object.freeze({
     COLLAPSED: Symbol("Colors.COLLAPSED"),
@@ -84,8 +85,10 @@ function makeDocIdLookup(docs) {
 }
 
 
+
 // Document: = {id: EntryId, name: String, tree: FlowyTree }
 export function makeInitContextFromDocuments(docs) {
+  let docIdLookup = makeDocIdLookup(docs);
   return {
     currentDocId: null,
     docTitle: '',
@@ -93,7 +96,7 @@ export function makeInitContextFromDocuments(docs) {
     displayDocs: Object.keys(docs),
     docCursorEntryId: null,
     docCursorColId: 0,
-    docIdLookupByDocName: makeDocIdLookup(docs),
+    docIdLookupByDocName: docIdLookup,
   };
 }
 
