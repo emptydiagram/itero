@@ -4,6 +4,7 @@
     docTitle,
     docCursorEntryId,
     docCursorColId,
+    backlinks,
     docIsEditingName;
   export let handleSaveDocEntry,
     handleSaveFullCursor,
@@ -24,6 +25,7 @@
 
   import { afterUpdate } from 'svelte';
   import Node from "./Node.svelte";
+  import BacklinksDisplay from "./BacklinksDisplay.svelte";
   import Icon from 'svelte-awesome';
   import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
@@ -146,5 +148,9 @@
     {handleMultilinePaste}
     {handleSaveCursorColId}
     {handleUpdateEntryLinks}
+  />
+
+  <BacklinksDisplay
+    {backlinks}
   />
 </div>

@@ -560,6 +560,26 @@
     machineSend("UPDATE_ENTRY_LINKS");
   }
 
+  // TODO: move into getBacklinks?
+  function makeBacklinksFromContext(context) {
+    let backlinks = context.linkGraph.getBacklinks(context.currentDocId);
+    let backlinksObj = {};
+    for (let [[docId, entryId], _] of backlinks.entries()) {
+      if (!(docId in backlinksObj)) {
+        backlinksObj[docId] = {
+          id: docId,
+          name: context.documents[docId].name,
+          entries: {}
+        };
+      }
+      backlinksObj[docId].entries[entryId] = {
+        id: entryId,
+        text: context.documents[docId].tree.getEntryText(entryId)
+      };
+    }
+    return backlinksObj;
+  }
+
   // save the latest document
   $: dataMgr.saveDocuments($machineState.context.documents);
 
@@ -588,6 +608,8 @@
   $: if (history.location.pathname === "/create" && typeof $machineState.context.currentDocId === "number") {
     history.replace(`/${$machineState.context.currentDocId}`);
   }
+
+  $: backlinks = makeBacklinksFromContext($machineState.context);
 </script>
 
 <style>
@@ -638,6 +660,7 @@
     docCursorEntryId={$machineState.context.docCursorEntryId}
     docCursorColId={$machineState.context.docCursorColId}
     docTitle={$machineState.context.docTitle}
+    backlinks={makeBacklinksFromContext($machineState.context)}
     {docIsEditingName}
     {handleStartEditingDocName}
     {handleCancelEditingDocName}
