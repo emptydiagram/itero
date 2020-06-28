@@ -30,6 +30,9 @@ export default class LinkGraph {
     }
 
     getBacklinks(docId) {
+      if (!(docId in this.inAdjacency)) {
+        return new Set();
+      }
       let linksTo = this.inAdjacency[docId];
       return new Set([...linksTo].map(elem => this.convertFromInAdjElement(elem)));
     }
