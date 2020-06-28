@@ -69,11 +69,13 @@
   }
 
   .icon-container {
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
     width: 1em;
-    height: 1em;
     margin-right: 0.5em;
   }
+
   .icon-container:hover {
     cursor: pointer;
   }
