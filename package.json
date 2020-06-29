@@ -1,6 +1,6 @@
 {
   "name": "itero",
-  "version": "0.0.14",
+  "version": "0.0.15-dev",
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.10.1",
     "cross-env": "^5.2.0",
