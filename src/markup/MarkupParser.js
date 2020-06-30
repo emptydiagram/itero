@@ -19,6 +19,24 @@ function escapeSpecialCharacter(c) {
   }
 }
 
+function combineParseResults(values) {
+  // values: an array of (string || { html: string, linkedPage: string })
+  let normalizedValues = [];
+  let linkedPages = [];
+  values.forEach(val => {
+    if (isString(val)) {
+      normalizedValues.push(val);
+    } else {
+      normalizedValues.push(val.html);
+      linkedPages = linkedPages.concat(val.linkedPages);
+    }
+  });
+  return {
+    html: normalizedValues.join(''),
+    linkedPages: linkedPages
+  };
+}
+
 export const MarkupParser = Parsimmon.createLanguage({
   EscapedPunctuation: function () {
     return Parsimmon.string("\\")
@@ -52,13 +70,25 @@ export const MarkupParser = Parsimmon.createLanguage({
     return r.StrongDelimiter.notFollowedBy(Parsimmon.whitespace)
       .then(r.ValueInsideStrong.many())
       .skip(r.StrongDelimiter)
-      .map(result => "<strong>" + result.join('') + "</strong>");
+      .map(values => {
+        let combined = combineParseResults(values);
+        return {
+          html: "<strong>" + combined.html + "</strong>",
+          linkedPages: combined.linkedPages
+        };
+      });
   },
   Emphasis: function (r) {
     return r.EmphasisDelimiter.notFollowedBy(Parsimmon.whitespace)
       .then(r.ValueInsideEmphasis.many())
       .skip(r.EmphasisDelimiter)
-      .map(result => "<em>" + result.join('') + "</em>");
+      .map(values => {
+        let combined = combineParseResults(values);
+        return {
+          html: "<em>" + combined.html + "</em>",
+          linkedPages: combined.linkedPages
+        };
+      });
   },
   InlineMathjax: function (r) {
     return r.InlineMathjaxDelimiter.notFollowedBy(Parsimmon.whitespace)
@@ -72,7 +102,7 @@ export const MarkupParser = Parsimmon.createLanguage({
       .skip(Parsimmon.string("]]"))
       .map(name => ({
         html: `<span class="internal-link">[[<a data-markup-link-type="internal" href="#/page/${encodeURI(name)}">${name}</a>]]</span>`,
-        linkedPage: name,
+        linkedPages: [name],
       }));
   },
   AutoLink: function() {
@@ -88,7 +118,9 @@ export const MarkupParser = Parsimmon.createLanguage({
       Parsimmon.notFollowedBy(Parsimmon.string(")")).then(r.Char).many(),
       Parsimmon.string(")"),
       function(_a, b, _c, _d, e, _f) {
-        return `<a href="${e.join('')}">${b.join('')}</a>`;
+        // the reason we throw away combineParseResults().linkedPages
+        // is that it's not possible to have an internal link in the link body
+        return `<a href="${e.join('')}">${combineParseResults(b).html}</a>`;
       }
     );
   },
@@ -135,22 +167,6 @@ export const MarkupParser = Parsimmon.createLanguage({
       r.Char);
   },
   Text: function (r) {
-    return r.Value.many().map(values => {
-      // values: an array of (string || { html: string, linkedPage: string })
-      let normalizedValues = [];
-      let linkedPages = [];
-      values.forEach(val => {
-        if (isString(val)) {
-          normalizedValues.push(val);
-        } else {
-          normalizedValues.push(val.html);
-          linkedPages.push(val.linkedPage);
-        }
-      });
-      return {
-        html: normalizedValues.join(''),
-        linkedPages: linkedPages
-      };
-    });
+    return r.Value.many().map(combineParseResults);
   }
 });

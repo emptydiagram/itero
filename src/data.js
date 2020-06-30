@@ -112,7 +112,6 @@ function makeLinkGraph(docs, docIdLookup) {
         if (!(entryId in currDocEntries)) {
            currDocEntries[entryId] = new Set();
         }
-        // TODO: auto-create when page doesnt exist
         if (!(page in docIdLookup)) {
           let newDoc = createNewDocument(page, 'TODO', newDocs);
           newDocs[newDoc.id] = newDoc;

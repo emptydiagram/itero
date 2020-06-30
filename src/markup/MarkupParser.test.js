@@ -140,10 +140,24 @@ test('Parses **__foo bar__**', () => {
 
 test('Parses internal link', () => {
     const input = "as explained in [[dodecahedron earth]], the earth is neither flat nor round";
-    expect(IteroParser.Text.tryParse(input).html)
-    .toBe(`as explained in <span class="internal-link">[[<a data-markup-link-type="internal" href="#/page/dodecahedron%20earth">dodecahedron earth</a>]]</span>, the earth is neither flat nor round`);
+    const parseResult = IteroParser.Text.tryParse(input);
+    expect(parseResult.html)
+      .toBe(`as explained in <span class="internal-link">[[<a data-markup-link-type="internal" href="#/page/dodecahedron%20earth">dodecahedron earth</a>]]</span>, the earth is neither flat nor round`);
+    expect(parseResult.linkedPages).toHaveLength(1);
 })
 
+test('Parses internal link inside strong', () => {
+    const input = "**[[Word God]] is Bad Math**";
+    expect(IteroParser.Text.tryParse(input).html)
+    .toBe(`<strong><span class="internal-link">[[<a data-markup-link-type="internal" href="#/page/Word%20God">Word God</a>]]</span> is Bad Math</strong>`);
+})
+
+test('Parses internal link inside emph', () => {
+    const input = "__4 harmonic [[corner days]] rotate simultaneously__";
+    console.log(" ===================== internal inside emph");
+    expect(IteroParser.Text.tryParse(input).html)
+    .toBe(`<em>4 harmonic <span class="internal-link">[[<a data-markup-link-type="internal" href="#/page/corner%20days">corner days</a>]]</span> rotate simultaneously</em>`);
+})
 
 test('Test basic math', () => {
     const input = "let $x > 5$, then x is too big";
@@ -153,4 +167,11 @@ test('Test basic math', () => {
 test('Test math inside emphasis', () => {
     const input = "__recall that $\\mathbb{N}$ is infinite__";
     expect(IteroParser.Text.tryParse(input).html).toBe(`<em>recall that \\(\\mathbb{N}\\) is infinite</em>`);
+})
+
+test('Test em, no internal links, has correct linked pages', () => {
+    const input = "__abc__";
+    const parseResult = IteroParser.Text.tryParse(input);
+    expect(parseResult.html).toBe(`<em>abc</em>`);
+    expect(parseResult.linkedPages).toHaveLength(0);
 })
