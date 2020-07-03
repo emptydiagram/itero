@@ -71,9 +71,9 @@
     let docId = currentHashId;
     let doc = ctxt.documents[docId];
     let initEntryId = doc.tree.getTopEntryId();
+    docDisplayStore.saveCurrentDocId(docId);
     docDisplayStore.saveDocName(doc.name);
     return {
-      currentDocId: docId,
       docCursorEntryId: initEntryId,
     };
   });
@@ -85,14 +85,14 @@
   let saveDocNameAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
 
-    let i = ctxt.currentDocId;
+    let i = $docDisplayStore.currentDocId;
     copyDocs[i] = { ...ctxt.documents[i] };
     copyDocs[i].name = $docDisplayStore.nextDocName;
 
     let oldDocName = ctxt.docIdLookupByDocName;
     let newLookup = { ...ctxt.docIdLookupByDocName };
     delete newLookup[oldDocName];
-    newLookup[$docDisplayStore.nextDocName] = ctxt.currentDocId;
+    newLookup[$docDisplayStore.nextDocName] = $docDisplayStore.currentDocId;
 
     docDisplayStore.saveCurrentDocName();
     return {
@@ -103,7 +103,7 @@
 
   let saveDocEntryAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
-    let i = ctxt.currentDocId;
+    let i = $docDisplayStore.currentDocId;
     let j = ctxt.docCursorEntryId;
     copyDocs[i] = { ...ctxt.documents[i] };
     let newTree = new FlowyTree(
@@ -134,7 +134,7 @@
 
   let backspaceAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
-    let currentDoc = copyDocs[ctxt.currentDocId];
+    let currentDoc = copyDocs[$docDisplayStore.currentDocId];
     currentDoc.tree = new FlowyTree(
       currentDoc.tree.getEntries(),
       currentDoc.tree.getRoot()
@@ -158,7 +158,7 @@
     }
 
     // col is zero, so we merge adjacent entries
-    let currTree = ctxt.documents[ctxt.currentDocId].tree;
+    let currTree = ctxt.documents[$docDisplayStore.currentDocId].tree;
     let entryId = ctxt.docCursorEntryId;
 
     // cases where backspacing @ col 0 is a no-op
@@ -176,7 +176,7 @@
 
       let newDocs;
       newDocs = { ...ctxt.documents };
-      let docId = ctxt.currentDocId;
+      let docId = $docDisplayStore.currentDocId;
       let currDoc = newDocs[docId];
 
 
@@ -232,7 +232,7 @@
 
   let collapseEntryAction = assign(ctxt => {
     // check if display state is collapsed, and, if so, expand
-    let docId = ctxt.currentDocId;
+    let docId = $docDisplayStore.currentDocId;
     let entryId = $collapseExpandEntryId;
 
     let newDocs = { ...ctxt.documents };
@@ -255,7 +255,7 @@
 
   let expandEntryAction = assign(ctxt => {
     // check if display state is collapsed, and, if so, expand
-    let docId = ctxt.currentDocId;
+    let docId = $docDisplayStore.currentDocId;
     let entryId = $collapseExpandEntryId;
 
     let newDocs = { ...ctxt.documents };
@@ -279,7 +279,7 @@
   let savePastedEntriesAction = assign(ctxt => {
     console.log(" saved pasted entries act");
     let copyDocs = { ...ctxt.documents };
-    let i = ctxt.currentDocId;
+    let i = $docDisplayStore.currentDocId;
     let entryId = ctxt.docCursorEntryId;
     console.log(" SPEA, (doc id, entry id) = ", i, entryId);
     let parentId = copyDocs[i].tree.getParentId(entryId);
@@ -329,7 +329,7 @@
     let newLookup = { ...ctxt.docIdLookupByDocName };
 
     let entryId = $updateLinksEntryId;
-    let currLinks = ctxt.linkGraph.getLinks(ctxt.currentDocId, entryId);
+    let currLinks = ctxt.linkGraph.getLinks($docDisplayStore.currentDocId, entryId);
 
     let newLinksArray = $updateLinksPageNames.map(page => {
       let lookupResult = ctxt.docIdLookupByDocName[page]
@@ -353,10 +353,10 @@
 
     let newLinkGraph = ctxt.linkGraph;
     removed.forEach(docId => {
-      newLinkGraph.removeLink(ctxt.currentDocId, entryId, docId);
+      newLinkGraph.removeLink($docDisplayStore.currentDocId, entryId, docId);
     });
     added.forEach(docId => {
-      newLinkGraph.addLink(ctxt.currentDocId, entryId, docId);
+      newLinkGraph.addLink($docDisplayStore.currentDocId, entryId, docId);
     });
 
     console.log(" updateEntryLinksActions, boutta save, newDisplayDocs = ", newDisplayDocs);
@@ -563,7 +563,7 @@
 
   // TODO: move into getBacklinks?
   function makeBacklinksFromContext(context) {
-    let backlinks = context.linkGraph.getBacklinks(context.currentDocId);
+    let backlinks = context.linkGraph.getBacklinks($docDisplayStore.currentDocId);
     let backlinksObj = {};
     for (let [[docId, entryId], _] of backlinks.entries()) {
       if (!(docId in backlinksObj)) {
@@ -592,8 +592,8 @@
   });
 
   $: currentTree =
-    $machineState.context.currentDocId !== null
-      ? $machineState.context.documents[$machineState.context.currentDocId].tree
+    $docDisplayStore.currentDocId !== null
+      ? $machineState.context.documents[$docDisplayStore.currentDocId].tree
       : null;
 
   $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
@@ -606,8 +606,8 @@
     return curr.document.docTitle === "editing";
   })();
 
-  $: if (history.location.pathname === "/create" && typeof $machineState.context.currentDocId === "number") {
-    history.replace(`/${$machineState.context.currentDocId}`);
+  $: if (history.location.pathname === "/create" && typeof $docDisplayStore.currentDocId === "number") {
+    history.replace(`/${$docDisplayStore.currentDocId}`);
   }
 
   $: backlinks = makeBacklinksFromContext($machineState.context);
