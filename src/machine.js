@@ -152,7 +152,7 @@ let dedentAction = assign(ctxt => {
 });
 
 
-export default (initContext, navigateToDocAction, importDocsAction, saveDocNameAction,
+export default (initContext, importDocsAction, saveDocNameAction,
     saveDocEntryAction, backspaceAction,
     collapseEntryAction, expandEntryAction, savePastedEntriesAction, updateEntryLinksAction) => {
 
@@ -247,7 +247,6 @@ export default (initContext, navigateToDocAction, importDocsAction, saveDocNameA
         on: {
           NAVIGATE: {
             target: 'flowiki.document',
-            actions: navigateToDocAction,
           },
           GO_HOME: {
             target: 'flowiki.top',
