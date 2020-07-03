@@ -1,7 +1,5 @@
 import { writable } from 'svelte/store';
 
-export const nextDocCursorEntryId = writable(null);
-export const nextDocCursorColId = writable(0);
 export const nextDocEntryText = writable('');
 export const collapseExpandEntryId = writable(null);
 export const updateLinksEntryId = writable(null);
@@ -16,6 +14,8 @@ function createDocDisplayStore() {
     cursorEntryId: null,
     docName: '',
     nextDocName: '',
+    nextCursorEntryId: null,
+    nextCursorColId: 0,
   });
 
   return {
@@ -26,10 +26,6 @@ function createDocDisplayStore() {
     }),
     saveDocName: (newDocName) => update(store => {
       store.docName = newDocName;
-      return store;
-    }),
-    saveNextDocName: (newNextDocName) => update(store => {
-      store.nextDocName = newNextDocName;
       return store;
     }),
     saveCursor: (newEntryId, newColId) => update(store => {
@@ -45,10 +41,31 @@ function createDocDisplayStore() {
       store.cursorEntryId = newEntryId;
       return store;
     }),
+    saveNextDocName: (newNextDocName) => update(store => {
+      store.nextDocName = newNextDocName;
+      return store;
+    }),
+    saveNextCursorEntryId: (newNextCursorEntryId) => update(store => {
+      store.nextCursorEntryId = newNextCursorEntryId;
+      return store;
+    }),
+    saveNextCursorColId: (newNextCursorColId) => update(store => {
+      store.nextCursorColId = newNextCursorColId;
+      return store;
+    }),
 
     // TODO: this name is confusing
     saveCurrentDocName: () => update(store => {
       store.docName = store.nextDocName;
+      return store;
+    }),
+    saveNextCursorColIdAsColId: () => update(store => {
+      store.cursorColId = store.nextCursorColId;
+      return store;
+    }),
+    saveNextCursorAsCursor: () => update(store => {
+      store.cursorEntryId = store.nextCursorEntryId;
+      store.cursorColId = store.nextCursorColId;
       return store;
     }),
   }
