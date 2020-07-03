@@ -13,7 +13,6 @@ function createDocDisplayStore() {
     cursorColId: 0,
     cursorEntryId: null,
     docName: '',
-    nextCursorColId: 0,
   });
 
   return {
@@ -37,10 +36,6 @@ function createDocDisplayStore() {
     }),
     saveCursorEntryId: (newEntryId) => update(store => {
       store.cursorEntryId = newEntryId;
-      return store;
-    }),
-    saveNextCursorColId: (newNextCursorColId) => update(store => {
-      store.nextCursorColId = newNextCursorColId;
       return store;
     }),
   }
