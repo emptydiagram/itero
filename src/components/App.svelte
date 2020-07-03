@@ -69,6 +69,7 @@
   let importDocsAction = assign(_ctxt => {
     let initContext = makeInitContextFromDocuments(fileUploadObj);
     docsStore.initDocsDisplayList(initContext.documents);
+    docsStore.initDocIdLookup(initContext.docIdLookupByDocName);
     return initContext;
   });
 
@@ -77,16 +78,14 @@
 
     let i = $docsStore.currentDocId;
     copyDocs[i] = { ...ctxt.documents[i] };
+    let oldDocName = copyDocs[i].name;
     copyDocs[i].name = $docsStore.docName;
 
-    let oldDocName = ctxt.docIdLookupByDocName;
-    let newLookup = { ...ctxt.docIdLookupByDocName };
-    delete newLookup[oldDocName];
-    newLookup[$docsStore.docName] = $docsStore.currentDocId;
+    docsStore.removeDocIdLookup(oldDocName);
+    docsStore.putDocIdLookup($docsStore.docName, $docsStore.currentDocId);
 
     return {
       documents: copyDocs,
-      docIdLookupByDocName: newLookup,
     };
   });
 
@@ -296,13 +295,12 @@
   // return { updated LinkGraph, updated documents object }
   let updateEntryLinksAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
-    let newLookup = { ...ctxt.docIdLookupByDocName };
 
     let entryId = $updateLinksEntryId;
     let currLinks = ctxt.linkGraph.getLinks($docsStore.currentDocId, entryId);
 
     let newLinksArray = $updateLinksPageNames.map(page => {
-      let lookupResult = ctxt.docIdLookupByDocName[page]
+      let lookupResult = $docsStore.docIdLookupByDocName[page];
       if (lookupResult) {
         return lookupResult;
       }
@@ -312,7 +310,7 @@
       let newId = newDoc.id;
       copyDocs[newId] = newDoc;
       docsStore.appendToDocsDisplayList(newId);
-      newLookup[page] = newId;
+      docsStore.putDocIdLookup(page, newId);
       return newId;
     });
     let newLinks = new Set(newLinksArray);
@@ -331,7 +329,6 @@
 
     return {
       documents: copyDocs,
-      docIdLookupByDocName: newLookup,
       linkGraph: newLinkGraph,
     };
   });
@@ -344,6 +341,7 @@
   let dataMgr = new DataManager(new DataStore);
   let initContext = makeInitContextFromDocuments(dataMgr.getDocuments());
   docsStore.initDocsDisplayList(initContext.documents);
+  docsStore.initDocIdLookup(initContext.docIdLookupByDocName);
 
   let machine = createMachine(
     initContext,
@@ -372,9 +370,8 @@
     }
     if (pathname.startsWith("/page/")) {
       let pageName = pathname.substring(6);
-      // TODO: build an index instead
-      if (pageName in $machineState.context.docIdLookupByDocName) {
-        let docId = $machineState.context.docIdLookupByDocName[pageName];
+      if (pageName in $docsStore.docIdLookupByDocName) {
+        let docId = $docsStore.docIdLookupByDocName[pageName];
         let doc = $machineState.context.documents[docId];
         let initEntryId = doc.tree.getTopEntryId();
         docsStore.saveCurrentDocId(docId);
@@ -557,7 +554,6 @@
   // save the latest document
   $: dataMgr.saveDocuments($machineState.context.documents);
 
-  //$: isAtTop = machineState.value.flowiki === "top";
   $: isAtTop = $machineState.matches("flowiki.top");
 
   $: displayDocs = $docsStore.docsDisplayList.map(id => {

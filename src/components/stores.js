@@ -14,6 +14,7 @@ function createDocsStore() {
     cursorEntryId: null,
     docName: '',
     docsDisplayList: [],
+    docIdLookupByDocName: {},
   });
 
   return {
@@ -37,6 +38,19 @@ function createDocsStore() {
     }),
     saveCursorEntryId: (newEntryId) => update(store => {
       store.cursorEntryId = newEntryId;
+      return store;
+    }),
+
+    initDocIdLookup: (lookup) => update(store => {
+      store.docIdLookupByDocName = lookup;
+      return store;
+    }),
+    putDocIdLookup: (docName, docId) => update(store => {
+      store.docIdLookupByDocName[docName] = docId;
+      return store;
+    }),
+    removeDocIdLookup: (docName) => update(store => {
+      delete store.docIdLookupByDocName[docName];
       return store;
     }),
 
