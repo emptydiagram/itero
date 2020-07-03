@@ -13,6 +13,7 @@ function createDocsStore() {
     cursorColId: 0,
     cursorEntryId: null,
     docName: '',
+    docsDisplayList: [],
   });
 
   return {
@@ -39,6 +40,14 @@ function createDocsStore() {
       return store;
     }),
 
+    initDocsDisplayList: (documents) => update(store => {
+      store.docsDisplayList = Object.keys(documents);
+      return store;
+    }),
+    appendToDocsDisplayList: (newDocId) => update(store => {
+      store.docsDisplayList.push(newDocId);
+      return store;
+    }),
     entryGoUp: (documents) => update(store => {
       let currDocId = store.currentDocId;
       let cursorEntryId = store.cursorEntryId;
