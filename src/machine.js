@@ -13,8 +13,7 @@ let createDocAction = assign(ctxt => {
 
 
   // add entry into docIdLookup
-  let newLookup = { ...ctxt.docIdLookupByDocName };
-  newLookup[newDocName] = newId;
+  docsStore.putDocIdLookup(newDocName, newId);
 
   docsStore.saveCurrentDocId(newId);
   docsStore.saveDocName(newDocName);
@@ -22,7 +21,6 @@ let createDocAction = assign(ctxt => {
   docsStore.appendToDocsDisplayList(newId);
   return {
     documents: copyDocs,
-    docIdLookupByDocName: newLookup
   };
 });
 
