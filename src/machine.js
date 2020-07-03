@@ -2,7 +2,7 @@ import { Machine, assign } from 'xstate';
 import { get } from 'svelte/store';
 import FlowyTree from './FlowyTree.js';
 import { EntryDisplayState, createNewDocument } from "./data.js";
-import { docDisplayStore } from './components/stores.js';
+import { docsStore } from './components/stores.js';
 
 let createDocAction = assign(ctxt => {
   let copyDocs = { ...ctxt.documents };
@@ -18,9 +18,9 @@ let createDocAction = assign(ctxt => {
   let newLookup = { ...ctxt.docIdLookupByDocName };
   newLookup[newDocName] = newId;
 
-  docDisplayStore.saveCurrentDocId(newId);
-  docDisplayStore.saveDocName(newDocName);
-  docDisplayStore.saveCursor(null, 0);
+  docsStore.saveCurrentDocId(newId);
+  docsStore.saveDocName(newDocName);
+  docsStore.saveCursor(null, 0);
   return {
     documents: copyDocs,
     displayDocs: newDisplayDocs,
@@ -34,7 +34,7 @@ let goUpAction = assign(ctxt => {
   // use currentDocId to get current flowy tree. use current tree to
   //   a) check if current entry can go up (is the top-most entry in the document)
   //   b) if not, get the entry id of the entry immediately above
-  let currDocStore = get(docDisplayStore);
+  let currDocStore = get(docsStore);
   let currDocId = currDocStore.currentDocId;
   let cursorEntryId = currDocStore.cursorEntryId;
   let currTree = ctxt.documents[currDocId].tree;
@@ -42,14 +42,14 @@ let goUpAction = assign(ctxt => {
 
 
   let newEntryId = hasEntryAbove ? currTree.getEntryIdAboveWithCollapse(cursorEntryId) : cursorEntryId;
-  docDisplayStore.saveCursorEntryId(newEntryId);
+  docsStore.saveCursorEntryId(newEntryId);
   return {
   };
 });
 
 // TODO: move to store
 let goDownAction = assign(ctxt => {
-  let currDocStore = get(docDisplayStore);
+  let currDocStore = get(docsStore);
   let currDocId = currDocStore.currentDocId;
   let cursorEntryId = currDocStore.cursorEntryId;
   let currTree = ctxt.documents[currDocId].tree;
@@ -57,13 +57,13 @@ let goDownAction = assign(ctxt => {
   let hasEntryBelow = currTree.hasEntryBelow(cursorEntryId);
 
   let newEntryId = hasEntryBelow ? currTree.getEntryIdBelowWithCollapse(cursorEntryId) : cursorEntryId;
-  docDisplayStore.saveCursorEntryId(newEntryId);
+  docsStore.saveCursorEntryId(newEntryId);
   return {
   };
 });
 
 let splitEntryAction = assign(ctxt => {
-  let currDocStore = get(docDisplayStore);
+  let currDocStore = get(docsStore);
   let docId = currDocStore.currentDocId;
   let entryId = currDocStore.cursorEntryId;
   let colId = currDocStore.cursorColId;
@@ -84,7 +84,7 @@ let splitEntryAction = assign(ctxt => {
 
     let newId = newTree.insertEntryBelow(entryId, parentId, '');
 
-    docDisplayStore.saveCursor(newId, 0);
+    docsStore.saveCursor(newId, 0);
     return {
       documents: newDocs,
     }
@@ -96,7 +96,7 @@ let splitEntryAction = assign(ctxt => {
   newTree.setEntryText(entryId, updatedCurrEntry);
   newTree.insertEntryAbove(entryId, parentId, newEntryText);
 
-  docDisplayStore.saveCursorColId(0);
+  docsStore.saveCursorColId(0);
   return {
     // docCursorColId: 0,
     documents: newDocs,
@@ -104,7 +104,7 @@ let splitEntryAction = assign(ctxt => {
 });
 
 let indentAction = assign(ctxt => {
-  let currDocStore = get(docDisplayStore);
+  let currDocStore = get(docsStore);
   let docId = currDocStore.currentDocId;
   let entryId = currDocStore.cursorEntryId;
 
@@ -128,7 +128,7 @@ let indentAction = assign(ctxt => {
 });
 
 let dedentAction = assign(ctxt => {
-  let currDocStore = get(docDisplayStore);
+  let currDocStore = get(docsStore);
   let entryId = currDocStore.cursorEntryId;
   let docId = currDocStore.currentDocId;
 

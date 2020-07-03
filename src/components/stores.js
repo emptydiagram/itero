@@ -7,7 +7,7 @@ export const updateLinksPageNames = writable(null);
 
 
 
-function createDocDisplayStore() {
+function createDocsStore() {
   let { subscribe, update } = writable({
     currentDocId: null,
     cursorColId: 0,
@@ -41,4 +41,4 @@ function createDocDisplayStore() {
   }
 }
 
-export const docDisplayStore = createDocDisplayStore();
+export const docsStore = createDocsStore();

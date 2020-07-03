@@ -7,7 +7,7 @@
 
   import { nextDocEntryText,
            collapseExpandEntryId, updateLinksEntryId, updateLinksPageNames,
-           docDisplayStore } from "./stores.js";
+           docsStore } from "./stores.js";
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
   import FlowyTree from "../FlowyTree.js";
@@ -73,14 +73,14 @@
   let saveDocNameAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
 
-    let i = $docDisplayStore.currentDocId;
+    let i = $docsStore.currentDocId;
     copyDocs[i] = { ...ctxt.documents[i] };
-    copyDocs[i].name = $docDisplayStore.docName;
+    copyDocs[i].name = $docsStore.docName;
 
     let oldDocName = ctxt.docIdLookupByDocName;
     let newLookup = { ...ctxt.docIdLookupByDocName };
     delete newLookup[oldDocName];
-    newLookup[$docDisplayStore.docName] = $docDisplayStore.currentDocId;
+    newLookup[$docsStore.docName] = $docsStore.currentDocId;
 
     return {
       documents: copyDocs,
@@ -90,8 +90,8 @@
 
   let saveDocEntryAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
-    let i = $docDisplayStore.currentDocId;
-    let j = $docDisplayStore.cursorEntryId;
+    let i = $docsStore.currentDocId;
+    let j = $docsStore.cursorEntryId;
     copyDocs[i] = { ...ctxt.documents[i] };
     let newTree = new FlowyTree(
       copyDocs[i].tree.getEntries(),
@@ -107,13 +107,13 @@
 
   let backspaceAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
-    let currentDoc = copyDocs[$docDisplayStore.currentDocId];
+    let currentDoc = copyDocs[$docsStore.currentDocId];
     currentDoc.tree = new FlowyTree(
       currentDoc.tree.getEntries(),
       currentDoc.tree.getRoot()
     );
-    let colId = $docDisplayStore.cursorColId;
-    let entryId = $docDisplayStore.cursorEntryId;
+    let colId = $docsStore.cursorColId;
+    let entryId = $docsStore.cursorEntryId;
 
     if (colId > 0) {
       let currEntryText = currentDoc.tree.getEntryText(entryId);
@@ -124,14 +124,14 @@
         currEntryText.substring(0, actualColId - 1) + currEntryText.substring(actualColId);
       currentDoc.tree.setEntryText(entryId, newEntry);
 
-      docDisplayStore.saveCursorColId(actualColId - 1);
+      docsStore.saveCursorColId(actualColId - 1);
       return {
         documents: copyDocs
       };
     }
 
     // col is zero, so we merge adjacent entries
-    let currTree = ctxt.documents[$docDisplayStore.currentDocId].tree;
+    let currTree = ctxt.documents[$docsStore.currentDocId].tree;
 
     // cases where backspacing @ col 0 is a no-op
     //  - if curr entry has no entry above (no parent, no previous sibling)
@@ -148,7 +148,7 @@
 
       let newDocs;
       newDocs = { ...ctxt.documents };
-      let docId = $docDisplayStore.currentDocId;
+      let docId = $docsStore.currentDocId;
       let currDoc = newDocs[docId];
 
 
@@ -191,7 +191,7 @@
       }
 
 
-      docDisplayStore.saveCursor(newEntryId, newColId);
+      docsStore.saveCursor(newEntryId, newColId);
       return {
         documents: newDocs
       };
@@ -201,7 +201,7 @@
 
   let collapseEntryAction = assign(ctxt => {
     // check if display state is collapsed, and, if so, expand
-    let docId = $docDisplayStore.currentDocId;
+    let docId = $docsStore.currentDocId;
     let entryId = $collapseExpandEntryId;
 
     let newDocs = { ...ctxt.documents };
@@ -224,7 +224,7 @@
 
   let expandEntryAction = assign(ctxt => {
     // check if display state is collapsed, and, if so, expand
-    let docId = $docDisplayStore.currentDocId;
+    let docId = $docsStore.currentDocId;
     let entryId = $collapseExpandEntryId;
 
     let newDocs = { ...ctxt.documents };
@@ -248,8 +248,8 @@
   let savePastedEntriesAction = assign(ctxt => {
     console.log(" saved pasted entries act");
     let copyDocs = { ...ctxt.documents };
-    let i = $docDisplayStore.currentDocId;
-    let entryId = $docDisplayStore.cursorEntryId;
+    let i = $docsStore.currentDocId;
+    let entryId = $docsStore.cursorEntryId;
     console.log(" SPEA, (doc id, entry id) = ", i, entryId);
     let parentId = copyDocs[i].tree.getParentId(entryId);
     console.log(" SPEA, (doc id, entry id, parent id) = ", i, entryId, parentId);
@@ -298,7 +298,7 @@
     let newLookup = { ...ctxt.docIdLookupByDocName };
 
     let entryId = $updateLinksEntryId;
-    let currLinks = ctxt.linkGraph.getLinks($docDisplayStore.currentDocId, entryId);
+    let currLinks = ctxt.linkGraph.getLinks($docsStore.currentDocId, entryId);
 
     let newLinksArray = $updateLinksPageNames.map(page => {
       let lookupResult = ctxt.docIdLookupByDocName[page]
@@ -322,10 +322,10 @@
 
     let newLinkGraph = ctxt.linkGraph;
     removed.forEach(docId => {
-      newLinkGraph.removeLink($docDisplayStore.currentDocId, entryId, docId);
+      newLinkGraph.removeLink($docsStore.currentDocId, entryId, docId);
     });
     added.forEach(docId => {
-      newLinkGraph.addLink($docDisplayStore.currentDocId, entryId, docId);
+      newLinkGraph.addLink($docsStore.currentDocId, entryId, docId);
     });
 
     console.log(" updateEntryLinksActions, boutta save, newDisplayDocs = ", newDisplayDocs);
@@ -377,9 +377,9 @@
         let docId = $machineState.context.docIdLookupByDocName[pageName];
         let doc = $machineState.context.documents[docId];
         let initEntryId = doc.tree.getTopEntryId();
-        docDisplayStore.saveCurrentDocId(docId);
-        docDisplayStore.saveDocName(doc.name);
-        docDisplayStore.saveCursorEntryId(initEntryId);
+        docsStore.saveCurrentDocId(docId);
+        docsStore.saveDocName(doc.name);
+        docsStore.saveCursorEntryId(initEntryId);
         machineSend("NAVIGATE");
         history.replace(`/${docId}`);
         return;
@@ -394,9 +394,9 @@
       let docId = parseResult;
       let doc = $machineState.context.documents[docId];
       let initEntryId = doc.tree.getTopEntryId();
-      docDisplayStore.saveCurrentDocId(docId);
-      docDisplayStore.saveDocName(doc.name);
-      docDisplayStore.saveCursorEntryId(initEntryId);
+      docsStore.saveCurrentDocId(docId);
+      docsStore.saveDocName(doc.name);
+      docsStore.saveCursorEntryId(initEntryId);
       machineSend("NAVIGATE");
     } else {
       machineSend("GO_HOME");
@@ -474,23 +474,23 @@
   }
 
   function handleSaveDocName(docNameText) {
-    docDisplayStore.saveDocName(docNameText);
+    docsStore.saveDocName(docNameText);
     machineSend("SAVE_DOC_NAME");
   }
 
   function handleSaveDocEntry(entryText, colId) {
     nextDocEntryText.set(entryText);
-    docDisplayStore.saveCursorColId(colId);
+    docsStore.saveCursorColId(colId);
     machineSend("SAVE_DOC_ENTRY");
   }
 
-  // TODO: just pass docDisplayStore.saveCursor in instead of handleSaveFullCursor?
+  // TODO: just pass docsStore.saveCursor in instead of handleSaveFullCursor?
   function handleSaveFullCursor(entryId, colId) {
-    docDisplayStore.saveCursor(entryId, colId);
+    docsStore.saveCursor(entryId, colId);
   }
 
   function handleSaveCursorColId(colId) {
-    docDisplayStore.saveCursorColId(colId);
+    docsStore.saveCursorColId(colId);
   }
 
   function handleGoUp() {
@@ -536,7 +536,7 @@
 
   // TODO: move into getBacklinks?
   function makeBacklinksFromContext(context) {
-    let backlinks = context.linkGraph.getBacklinks($docDisplayStore.currentDocId);
+    let backlinks = context.linkGraph.getBacklinks($docsStore.currentDocId);
     let backlinksObj = {};
     for (let [[docId, entryId], _] of backlinks.entries()) {
       if (!(docId in backlinksObj)) {
@@ -565,8 +565,8 @@
   });
 
   $: currentTree =
-    $docDisplayStore.currentDocId !== null
-      ? $machineState.context.documents[$docDisplayStore.currentDocId].tree
+    $docsStore.currentDocId !== null
+      ? $machineState.context.documents[$docsStore.currentDocId].tree
       : null;
 
   $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
@@ -579,8 +579,8 @@
     return curr.document.docTitle === "editing";
   })();
 
-  $: if (history.location.pathname === "/create" && typeof $docDisplayStore.currentDocId === "number") {
-    history.replace(`/${$docDisplayStore.currentDocId}`);
+  $: if (history.location.pathname === "/create" && typeof $docsStore.currentDocId === "number") {
+    history.replace(`/${$docsStore.currentDocId}`);
   }
 
   $: backlinks = makeBacklinksFromContext($machineState.context);
@@ -631,9 +631,9 @@
   <Document
     tree={currentTree}
     flowyTreeNode={currentTreeRoot}
-    docCursorEntryId={$docDisplayStore.cursorEntryId}
-    docCursorColId={$docDisplayStore.cursorColId}
-    docTitle={$docDisplayStore.docName}
+    docCursorEntryId={$docsStore.cursorEntryId}
+    docCursorColId={$docsStore.cursorColId}
+    docTitle={$docsStore.docName}
     backlinks={makeBacklinksFromContext($machineState.context)}
     {docIsEditingName}
     {handleStartEditingDocName}
