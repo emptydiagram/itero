@@ -57,7 +57,6 @@
 
   });
 
-  let currentHashId;
   let fileUploadObj;
 
   const history = createHashHistory();
@@ -66,18 +65,6 @@
   function isObject(obj) {
     return obj === Object(obj);
   }
-
-  // TODO: remove
-  let navigateToDocAction = assign(ctxt => {
-    let docId = currentHashId;
-    let doc = ctxt.documents[docId];
-    let initEntryId = doc.tree.getTopEntryId();
-    docDisplayStore.saveCurrentDocId(docId);
-    docDisplayStore.saveDocName(doc.name);
-    docDisplayStore.saveCursorEntryId(initEntryId);
-    return {
-    };
-  });
 
   let importDocsAction = assign(_ctxt => {
     return makeInitContextFromDocuments(fileUploadObj);
@@ -362,7 +349,6 @@
 
   let machine = createMachine(
     initContext,
-    navigateToDocAction,
     importDocsAction,
     saveDocNameAction,
     saveDocEntryAction,
@@ -391,7 +377,11 @@
       // TODO: build an index instead
       if (pageName in $machineState.context.docIdLookupByDocName) {
         let docId = $machineState.context.docIdLookupByDocName[pageName];
-        currentHashId = parseInt(docId);
+        let doc = $machineState.context.documents[docId];
+        let initEntryId = doc.tree.getTopEntryId();
+        docDisplayStore.saveCurrentDocId(docId);
+        docDisplayStore.saveDocName(doc.name);
+        docDisplayStore.saveCursorEntryId(initEntryId);
         machineSend("NAVIGATE");
         history.replace(`/${docId}`);
         return;
@@ -403,7 +393,12 @@
     let newId = pathname.substring(1);
     let parseResult = parseInt(newId);
     if (!isNaN(parseResult)) {
-      currentHashId = parseResult;
+      let docId = parseResult;
+      let doc = $machineState.context.documents[docId];
+      let initEntryId = doc.tree.getTopEntryId();
+      docDisplayStore.saveCurrentDocId(docId);
+      docDisplayStore.saveDocName(doc.name);
+      docDisplayStore.saveCursorEntryId(initEntryId);
       machineSend("NAVIGATE");
     } else {
       machineSend("GO_HOME");
