@@ -6,7 +6,8 @@
   import { faHammer } from '@fortawesome/free-solid-svg-icons';
 
   import { nextDocCursorEntryId, nextDocCursorColId, nextDocName, nextDocEntryText,
-           collapseExpandEntryId, updateLinksEntryId, updateLinksPageNames } from "./stores.js";
+           collapseExpandEntryId, updateLinksEntryId, updateLinksPageNames,
+           docDisplayStore } from "./stores.js";
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
   import FlowyTree from "../FlowyTree.js";
@@ -70,10 +71,10 @@
     let docId = currentHashId;
     let doc = ctxt.documents[docId];
     let initEntryId = doc.tree.getTopEntryId();
+    docDisplayStore.saveDocTitle(doc.name);
     return {
       currentDocId: docId,
       docCursorEntryId: initEntryId,
-      docTitle: doc.name
     };
   });
 
@@ -93,9 +94,9 @@
     delete newLookup[oldDocName];
     newLookup[$nextDocName] = ctxt.currentDocId;
 
+    docDisplayStore.saveDocTitle($nextDocName);
     return {
       documents: copyDocs,
-      docTitle: $nextDocName,
       docIdLookupByDocName: newLookup,
     };
   });
@@ -659,7 +660,7 @@
     flowyTreeNode={currentTreeRoot}
     docCursorEntryId={$machineState.context.docCursorEntryId}
     docCursorColId={$machineState.context.docCursorColId}
-    docTitle={$machineState.context.docTitle}
+    docTitle={$docDisplayStore.docTitle}
     backlinks={makeBacklinksFromContext($machineState.context)}
     {docIsEditingName}
     {handleStartEditingDocName}
