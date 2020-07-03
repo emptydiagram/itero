@@ -63,11 +63,6 @@ function createDocDisplayStore() {
       store.cursorColId = store.nextCursorColId;
       return store;
     }),
-    saveNextCursorAsCursor: () => update(store => {
-      store.cursorEntryId = store.nextCursorEntryId;
-      store.cursorColId = store.nextCursorColId;
-      return store;
-    }),
   }
 }
 
