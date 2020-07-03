@@ -118,20 +118,6 @@
     };
   });
 
-  // the action of SAVE_FULL_CURSOR
-  // TODO: move to store
-  let saveFullCursorAction = assign(_ctxt => {
-    docDisplayStore.saveNextCursorAsCursor();
-    return {
-    };
-  });
-
-  // TODO: move to store
-  let saveCursorColIdAction = assign(_ctxt => {
-    docDisplayStore.saveNextCursorColIdAsColId();
-    return {
-    };
-  });
 
   let backspaceAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
@@ -381,8 +367,6 @@
     importDocsAction,
     saveDocNameAction,
     saveDocEntryAction,
-    saveFullCursorAction,
-    saveCursorColIdAction,
     backspaceAction,
     collapseEntryAction,
     expandEntryAction,
@@ -508,15 +492,13 @@
     machineSend("SAVE_DOC_ENTRY");
   }
 
+  // TODO: just pass docDisplayStore.saveCursor in instead of handleSaveFullCursor?
   function handleSaveFullCursor(entryId, colId) {
-    docDisplayStore.saveNextCursorEntryId(entryId);
-    docDisplayStore.saveNextCursorColId(colId);
-    machineSend("SAVE_FULL_CURSOR");
+    docDisplayStore.saveCursor(entryId, colId);
   }
 
   function handleSaveCursorColId(colId) {
-    docDisplayStore.saveNextCursorColId(colId);
-    machineSend("SAVE_CURSOR_COL_ID");
+    docDisplayStore.saveCursorColId(colId);
   }
 
   function handleGoUp() {
