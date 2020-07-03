@@ -5,7 +5,7 @@
   import Icon from 'svelte-awesome';
   import { faHammer } from '@fortawesome/free-solid-svg-icons';
 
-  import { nextDocCursorEntryId, nextDocCursorColId, nextDocName, nextDocEntryText,
+  import { nextDocCursorEntryId, nextDocCursorColId, nextDocEntryText,
            collapseExpandEntryId, updateLinksEntryId, updateLinksPageNames,
            docDisplayStore } from "./stores.js";
   import Document from "./Document.svelte";
@@ -71,7 +71,7 @@
     let docId = currentHashId;
     let doc = ctxt.documents[docId];
     let initEntryId = doc.tree.getTopEntryId();
-    docDisplayStore.saveDocTitle(doc.name);
+    docDisplayStore.saveDocName(doc.name);
     return {
       currentDocId: docId,
       docCursorEntryId: initEntryId,
@@ -87,14 +87,14 @@
 
     let i = ctxt.currentDocId;
     copyDocs[i] = { ...ctxt.documents[i] };
-    copyDocs[i].name = $nextDocName;
+    copyDocs[i].name = $docDisplayStore.nextDocName;
 
     let oldDocName = ctxt.docIdLookupByDocName;
     let newLookup = { ...ctxt.docIdLookupByDocName };
     delete newLookup[oldDocName];
-    newLookup[$nextDocName] = ctxt.currentDocId;
+    newLookup[$docDisplayStore.nextDocName] = ctxt.currentDocId;
 
-    docDisplayStore.saveDocTitle($nextDocName);
+    docDisplayStore.saveCurrentDocName();
     return {
       documents: copyDocs,
       docIdLookupByDocName: newLookup,
@@ -499,7 +499,7 @@
   }
 
   function handleSaveDocName(docNameText) {
-    nextDocName.set(docNameText);
+    docDisplayStore.saveNextDocName(docNameText);
     machineSend("SAVE_DOC_NAME");
   }
 
@@ -660,7 +660,7 @@
     flowyTreeNode={currentTreeRoot}
     docCursorEntryId={$machineState.context.docCursorEntryId}
     docCursorColId={$machineState.context.docCursorColId}
-    docTitle={$docDisplayStore.docTitle}
+    docTitle={$docDisplayStore.docName}
     backlinks={makeBacklinksFromContext($machineState.context)}
     {docIsEditingName}
     {handleStartEditingDocName}

@@ -17,7 +17,7 @@ let createDocAction = assign(ctxt => {
   let newLookup = { ...ctxt.docIdLookupByDocName };
   newLookup[newDocName] = newId;
 
-  docDisplayStore.saveDocTitle(newDocName);
+  docDisplayStore.saveDocName(newDocName);
   return {
     currentDocId: newId,
     docCursorEntryId: null,
