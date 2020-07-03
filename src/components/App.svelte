@@ -67,6 +67,7 @@
     return obj === Object(obj);
   }
 
+  // TODO: remove
   let navigateToDocAction = assign(ctxt => {
     let docId = currentHashId;
     let doc = ctxt.documents[docId];
