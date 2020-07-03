@@ -20,9 +20,8 @@ let createDocAction = assign(ctxt => {
 
   docDisplayStore.saveCurrentDocId(newId);
   docDisplayStore.saveDocName(newDocName);
+  docDisplayStore.saveCursor(null, 0);
   return {
-    docCursorEntryId: null,
-    docCursorColId: 0,
     documents: copyDocs,
     displayDocs: newDisplayDocs,
     docIdLookupByDocName: newLookup
@@ -30,37 +29,44 @@ let createDocAction = assign(ctxt => {
 });
 
 
+// TODO: move to store
 let goUpAction = assign(ctxt => {
   // use currentDocId to get current flowy tree. use current tree to
   //   a) check if current entry can go up (is the top-most entry in the document)
   //   b) if not, get the entry id of the entry immediately above
-  let currDocId = get(docDisplayStore).currentDocId;
+  let currDocStore = get(docDisplayStore);
+  let currDocId = currDocStore.currentDocId;
+  let cursorEntryId = currDocStore.cursorEntryId;
   let currTree = ctxt.documents[currDocId].tree;
-  let hasEntryAbove = currTree.hasEntryAbove(ctxt.docCursorEntryId);
+  let hasEntryAbove = currTree.hasEntryAbove(cursorEntryId);
 
 
-  let newEntryId = hasEntryAbove ? currTree.getEntryIdAboveWithCollapse(ctxt.docCursorEntryId) : ctxt.docCursorEntryId;
+  let newEntryId = hasEntryAbove ? currTree.getEntryIdAboveWithCollapse(cursorEntryId) : cursorEntryId;
+  docDisplayStore.saveCursorEntryId(newEntryId);
   return {
-    docCursorEntryId: newEntryId,
   };
 });
 
+// TODO: move to store
 let goDownAction = assign(ctxt => {
-  let currDocId = get(docDisplayStore).currentDocId;
+  let currDocStore = get(docDisplayStore);
+  let currDocId = currDocStore.currentDocId;
+  let cursorEntryId = currDocStore.cursorEntryId;
   let currTree = ctxt.documents[currDocId].tree;
   // TODO: take into account collapse
-  let hasEntryBelow = currTree.hasEntryBelow(ctxt.docCursorEntryId);
+  let hasEntryBelow = currTree.hasEntryBelow(cursorEntryId);
 
-  let newEntryId = hasEntryBelow ? currTree.getEntryIdBelowWithCollapse(ctxt.docCursorEntryId) : ctxt.docCursorEntryId;
+  let newEntryId = hasEntryBelow ? currTree.getEntryIdBelowWithCollapse(cursorEntryId) : cursorEntryId;
+  docDisplayStore.saveCursorEntryId(newEntryId);
   return {
-    docCursorEntryId: newEntryId,
   };
 });
 
 let splitEntryAction = assign(ctxt => {
-  let docId = get(docDisplayStore).currentDocId;
-  let entryId = ctxt.docCursorEntryId;
-  let colId = ctxt.docCursorColId;
+  let currDocStore = get(docDisplayStore);
+  let docId = currDocStore.currentDocId;
+  let entryId = currDocStore.cursorEntryId;
+  let colId = currDocStore.cursorColId;
 
   // TODO: only update documents if there's a docId (is this possible?)
   let newDocs = { ...ctxt.documents };
@@ -78,9 +84,8 @@ let splitEntryAction = assign(ctxt => {
 
     let newId = newTree.insertEntryBelow(entryId, parentId, '');
 
+    docDisplayStore.saveCursor(newId, 0);
     return {
-      docCursorEntryId: newId,
-      docCursorColId: 0,
       documents: newDocs,
     }
   }
@@ -91,15 +96,17 @@ let splitEntryAction = assign(ctxt => {
   newTree.setEntryText(entryId, updatedCurrEntry);
   newTree.insertEntryAbove(entryId, parentId, newEntryText);
 
+  docDisplayStore.saveCursorColId(0);
   return {
-    docCursorColId: 0,
+    // docCursorColId: 0,
     documents: newDocs,
   };
 });
 
 let indentAction = assign(ctxt => {
-  let entryId = ctxt.docCursorEntryId;
-  let docId = get(docDisplayStore).currentDocId;
+  let currDocStore = get(docDisplayStore);
+  let docId = currDocStore.currentDocId;
+  let entryId = currDocStore.cursorEntryId;
 
   //  1. check if LinkedListItem can be indented
   //  2. if so, get LinkedListItem for entryId in docId, and make it a child of its previous sibling
@@ -121,8 +128,9 @@ let indentAction = assign(ctxt => {
 });
 
 let dedentAction = assign(ctxt => {
-  let entryId = ctxt.docCursorEntryId;
-  let docId = get(docDisplayStore).currentDocId;
+  let currDocStore = get(docDisplayStore);
+  let entryId = currDocStore.cursorEntryId;
+  let docId = currDocStore.currentDocId;
 
   //  1. check if LinkedListItem can be dedented
   //  2. if so, get LinkedListItem for entryId in docId, and make it the next sibling of parent

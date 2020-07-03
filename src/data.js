@@ -133,8 +133,6 @@ export function makeInitContextFromDocuments(docs) {
   return {
     documents: documents,
     displayDocs: Object.keys(documents),
-    docCursorEntryId: null,
-    docCursorColId: 0,
     docIdLookupByDocName: docIdLookup,
     linkGraph: linkGraph
   };
