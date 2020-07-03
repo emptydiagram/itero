@@ -11,24 +11,31 @@ export const updateLinksPageNames = writable(null);
 
 function createDocDisplayStore() {
   let { subscribe, update } = writable({
+    currentDocId: null,
     docName: '',
-    nextDocName: ''
+    nextDocName: '',
   });
 
   return {
     subscribe,
-    saveNextDocName: (newNextDocName) => update(store => {
-      store.nextDocName = newNextDocName;
+    saveCurrentDocId: (newCurrentDocId) => update(store => {
+      store.currentDocId = newCurrentDocId;
       return store;
     }),
     saveDocName: (newDocName) => update(store => {
       store.docName = newDocName;
       return store;
     }),
+    saveNextDocName: (newNextDocName) => update(store => {
+      store.nextDocName = newNextDocName;
+      return store;
+    }),
+
+    // TODO: this name is confusing
     saveCurrentDocName: () => update(store => {
       store.docName = store.nextDocName;
       return store;
-    })
+    }),
   }
 }
 

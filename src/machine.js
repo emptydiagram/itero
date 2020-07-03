@@ -1,4 +1,5 @@
 import { Machine, assign } from 'xstate';
+import { get } from 'svelte/store';
 import FlowyTree from './FlowyTree.js';
 import { EntryDisplayState, createNewDocument } from "./data.js";
 import { docDisplayStore } from './components/stores.js';
@@ -17,9 +18,9 @@ let createDocAction = assign(ctxt => {
   let newLookup = { ...ctxt.docIdLookupByDocName };
   newLookup[newDocName] = newId;
 
+  docDisplayStore.saveCurrentDocId(newId);
   docDisplayStore.saveDocName(newDocName);
   return {
-    currentDocId: newId,
     docCursorEntryId: null,
     docCursorColId: 0,
     documents: copyDocs,
@@ -33,7 +34,8 @@ let goUpAction = assign(ctxt => {
   // use currentDocId to get current flowy tree. use current tree to
   //   a) check if current entry can go up (is the top-most entry in the document)
   //   b) if not, get the entry id of the entry immediately above
-  let currTree = ctxt.documents[ctxt.currentDocId].tree;
+  let currDocId = get(docDisplayStore).currentDocId;
+  let currTree = ctxt.documents[currDocId].tree;
   let hasEntryAbove = currTree.hasEntryAbove(ctxt.docCursorEntryId);
 
 
@@ -44,7 +46,8 @@ let goUpAction = assign(ctxt => {
 });
 
 let goDownAction = assign(ctxt => {
-  let currTree = ctxt.documents[ctxt.currentDocId].tree;
+  let currDocId = get(docDisplayStore).currentDocId;
+  let currTree = ctxt.documents[currDocId].tree;
   // TODO: take into account collapse
   let hasEntryBelow = currTree.hasEntryBelow(ctxt.docCursorEntryId);
 
@@ -55,7 +58,7 @@ let goDownAction = assign(ctxt => {
 });
 
 let splitEntryAction = assign(ctxt => {
-  let docId = ctxt.currentDocId;
+  let docId = get(docDisplayStore).currentDocId;
   let entryId = ctxt.docCursorEntryId;
   let colId = ctxt.docCursorColId;
 
@@ -96,7 +99,7 @@ let splitEntryAction = assign(ctxt => {
 
 let indentAction = assign(ctxt => {
   let entryId = ctxt.docCursorEntryId;
-  let docId = ctxt.currentDocId;
+  let docId = get(docDisplayStore).currentDocId;
 
   //  1. check if LinkedListItem can be indented
   //  2. if so, get LinkedListItem for entryId in docId, and make it a child of its previous sibling
@@ -119,7 +122,7 @@ let indentAction = assign(ctxt => {
 
 let dedentAction = assign(ctxt => {
   let entryId = ctxt.docCursorEntryId;
-  let docId = ctxt.currentDocId;
+  let docId = get(docDisplayStore).currentDocId;
 
   //  1. check if LinkedListItem can be dedented
   //  2. if so, get LinkedListItem for entryId in docId, and make it the next sibling of parent
