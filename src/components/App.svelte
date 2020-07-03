@@ -124,7 +124,6 @@
         currEntryText.substring(0, actualColId - 1) + currEntryText.substring(actualColId);
       currentDoc.tree.setEntryText(entryId, newEntry);
 
-      docDisplayStore.saveNextCursorColId(actualColId - 1);
       docDisplayStore.saveCursorColId(actualColId - 1);
       return {
         documents: copyDocs
@@ -192,7 +191,6 @@
       }
 
 
-      docDisplayStore.saveNextCursorColId(newColId);
       docDisplayStore.saveCursor(newEntryId, newColId);
       return {
         documents: newDocs
