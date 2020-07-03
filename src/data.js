@@ -132,7 +132,6 @@ export function makeInitContextFromDocuments(docs) {
   let { linkGraph, documents } = makeLinkGraph(docs, docIdLookup);
   return {
     documents: documents,
-    displayDocs: Object.keys(documents),
     docIdLookupByDocName: docIdLookup,
     linkGraph: linkGraph
   };

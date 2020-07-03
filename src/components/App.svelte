@@ -67,7 +67,9 @@
   }
 
   let importDocsAction = assign(_ctxt => {
-    return makeInitContextFromDocuments(fileUploadObj);
+    let initContext = makeInitContextFromDocuments(fileUploadObj);
+    docsStore.initDocsDisplayList(initContext.documents);
+    return initContext;
   });
 
   let saveDocNameAction = assign(ctxt => {
@@ -294,7 +296,6 @@
   // return { updated LinkGraph, updated documents object }
   let updateEntryLinksAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
-    let newDisplayDocs = [...ctxt.displayDocs];
     let newLookup = { ...ctxt.docIdLookupByDocName };
 
     let entryId = $updateLinksEntryId;
@@ -310,7 +311,7 @@
       let newDoc = createNewDocument(page, 'TODO', copyDocs);
       let newId = newDoc.id;
       copyDocs[newId] = newDoc;
-      newDisplayDocs.push(newId);
+      docsStore.appendToDocsDisplayList(newId);
       newLookup[page] = newId;
       return newId;
     });
@@ -328,10 +329,8 @@
       newLinkGraph.addLink($docsStore.currentDocId, entryId, docId);
     });
 
-    console.log(" updateEntryLinksActions, boutta save, newDisplayDocs = ", newDisplayDocs);
     return {
       documents: copyDocs,
-      displayDocs: newDisplayDocs,
       docIdLookupByDocName: newLookup,
       linkGraph: newLinkGraph,
     };
@@ -344,6 +343,7 @@
 
   let dataMgr = new DataManager(new DataStore);
   let initContext = makeInitContextFromDocuments(dataMgr.getDocuments());
+  docsStore.initDocsDisplayList(initContext.documents);
 
   let machine = createMachine(
     initContext,
@@ -560,7 +560,7 @@
   //$: isAtTop = machineState.value.flowiki === "top";
   $: isAtTop = $machineState.matches("flowiki.top");
 
-  $: displayDocs = $machineState.context.displayDocs.map(id => {
+  $: displayDocs = $docsStore.docsDisplayList.map(id => {
     return $machineState.context.documents[id];
   });
 
