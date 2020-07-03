@@ -1,6 +1,7 @@
 import { Machine, assign } from 'xstate';
 import FlowyTree from './FlowyTree.js';
 import { EntryDisplayState, createNewDocument } from "./data.js";
+import { docDisplayStore } from './components/stores.js';
 
 let createDocAction = assign(ctxt => {
   let copyDocs = { ...ctxt.documents };
@@ -16,11 +17,11 @@ let createDocAction = assign(ctxt => {
   let newLookup = { ...ctxt.docIdLookupByDocName };
   newLookup[newDocName] = newId;
 
+  docDisplayStore.saveDocTitle(newDocName);
   return {
     currentDocId: newId,
     docCursorEntryId: null,
     docCursorColId: 0,
-    docTitle: newDocName,
     documents: copyDocs,
     displayDocs: newDisplayDocs,
     docIdLookupByDocName: newLookup
