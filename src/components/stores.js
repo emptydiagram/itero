@@ -12,6 +12,8 @@ export const updateLinksPageNames = writable(null);
 function createDocDisplayStore() {
   let { subscribe, update } = writable({
     currentDocId: null,
+    cursorColId: 0,
+    cursorEntryId: null,
     docName: '',
     nextDocName: '',
   });
@@ -28,6 +30,19 @@ function createDocDisplayStore() {
     }),
     saveNextDocName: (newNextDocName) => update(store => {
       store.nextDocName = newNextDocName;
+      return store;
+    }),
+    saveCursor: (newEntryId, newColId) => update(store => {
+      store.cursorColId = newColId;
+      store.cursorEntryId = newEntryId;
+      return store;
+    }),
+    saveCursorColId: (newColId) => update(store => {
+      store.cursorColId = newColId;
+      return store;
+    }),
+    saveCursorEntryId: (newEntryId) => update(store => {
+      store.cursorEntryId = newEntryId;
       return store;
     }),
 

@@ -73,8 +73,8 @@
     let initEntryId = doc.tree.getTopEntryId();
     docDisplayStore.saveCurrentDocId(docId);
     docDisplayStore.saveDocName(doc.name);
+    docDisplayStore.saveCursorEntryId(initEntryId);
     return {
-      docCursorEntryId: initEntryId,
     };
   });
 
@@ -104,7 +104,7 @@
   let saveDocEntryAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
     let i = $docDisplayStore.currentDocId;
-    let j = ctxt.docCursorEntryId;
+    let j = $docDisplayStore.cursorEntryId;
     copyDocs[i] = { ...ctxt.documents[i] };
     let newTree = new FlowyTree(
       copyDocs[i].tree.getEntries(),
@@ -112,23 +112,24 @@
     );
     copyDocs[i].tree = newTree;
     newTree.setEntryText(j, $nextDocEntryText);
+    docDisplayStore.saveCursorColId($nextDocCursorColId);
     return {
       documents: copyDocs,
-      docCursorColId: $nextDocCursorColId
     };
   });
 
   // the action of SAVE_FULL_CURSOR
+  // TODO: move to store
   let saveFullCursorAction = assign(_ctxt => {
+    docDisplayStore.saveCursor($nextDocCursorEntryId, $nextDocCursorColId);
     return {
-      docCursorEntryId: $nextDocCursorEntryId,
-      docCursorColId: $nextDocCursorColId
     };
   });
 
+  // TODO: move to store
   let saveCursorColIdAction = assign(_ctxt => {
+    docDisplayStore.saveCursorColId($nextDocCursorColId);
     return {
-      docCursorColId: $nextDocCursorColId
     };
   });
 
@@ -139,27 +140,27 @@
       currentDoc.tree.getEntries(),
       currentDoc.tree.getRoot()
     );
-    let colId = ctxt.docCursorColId;
+    let colId = $docDisplayStore.cursorColId;
+    let entryId = $docDisplayStore.cursorEntryId;
 
     if (colId > 0) {
-      let currEntryText = currentDoc.tree.getEntryText(ctxt.docCursorEntryId);
+      let currEntryText = currentDoc.tree.getEntryText(entryId);
       let currTextLength = currEntryText.length;
       // colId might be larger than the text length, so handle it
       let actualColId = Math.min(colId, currTextLength);
       let newEntry =
         currEntryText.substring(0, actualColId - 1) + currEntryText.substring(actualColId);
-      currentDoc.tree.setEntryText(ctxt.docCursorEntryId, newEntry);
+      currentDoc.tree.setEntryText(entryId, newEntry);
 
       nextDocCursorColId.set(actualColId - 1);
+      docDisplayStore.saveCursorColId(actualColId - 1);
       return {
-        docCursorColId: actualColId - 1,
         documents: copyDocs
       };
     }
 
     // col is zero, so we merge adjacent entries
     let currTree = ctxt.documents[$docDisplayStore.currentDocId].tree;
-    let entryId = ctxt.docCursorEntryId;
 
     // cases where backspacing @ col 0 is a no-op
     //  - if curr entry has no entry above (no parent, no previous sibling)
@@ -221,9 +222,8 @@
 
       // NOTE: we *set* currentCursorColId here.
       nextDocCursorColId.set(newColId);
+      docDisplayStore.saveCursor(newEntryId, newColId);
       return {
-        docCursorEntryId: newEntryId,
-        docCursorColId: newColId,
         documents: newDocs
       };
     }
@@ -280,7 +280,7 @@
     console.log(" saved pasted entries act");
     let copyDocs = { ...ctxt.documents };
     let i = $docDisplayStore.currentDocId;
-    let entryId = ctxt.docCursorEntryId;
+    let entryId = $docDisplayStore.cursorEntryId;
     console.log(" SPEA, (doc id, entry id) = ", i, entryId);
     let parentId = copyDocs[i].tree.getParentId(entryId);
     console.log(" SPEA, (doc id, entry id, parent id) = ", i, entryId, parentId);
@@ -658,8 +658,8 @@
   <Document
     tree={currentTree}
     flowyTreeNode={currentTreeRoot}
-    docCursorEntryId={$machineState.context.docCursorEntryId}
-    docCursorColId={$machineState.context.docCursorColId}
+    docCursorEntryId={$docDisplayStore.cursorEntryId}
+    docCursorColId={$docDisplayStore.cursorColId}
     docTitle={$docDisplayStore.docName}
     backlinks={makeBacklinksFromContext($machineState.context)}
     {docIsEditingName}
