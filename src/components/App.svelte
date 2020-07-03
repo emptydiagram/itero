@@ -87,14 +87,13 @@
 
     let i = $docDisplayStore.currentDocId;
     copyDocs[i] = { ...ctxt.documents[i] };
-    copyDocs[i].name = $docDisplayStore.nextDocName;
+    copyDocs[i].name = $docDisplayStore.docName;
 
     let oldDocName = ctxt.docIdLookupByDocName;
     let newLookup = { ...ctxt.docIdLookupByDocName };
     delete newLookup[oldDocName];
-    newLookup[$docDisplayStore.nextDocName] = $docDisplayStore.currentDocId;
+    newLookup[$docDisplayStore.docName] = $docDisplayStore.currentDocId;
 
-    docDisplayStore.saveCurrentDocName();
     return {
       documents: copyDocs,
       docIdLookupByDocName: newLookup,
@@ -112,7 +111,6 @@
     );
     copyDocs[i].tree = newTree;
     newTree.setEntryText(j, $nextDocEntryText);
-    docDisplayStore.saveNextCursorColIdAsColId();
     return {
       documents: copyDocs,
     };
@@ -482,13 +480,13 @@
   }
 
   function handleSaveDocName(docNameText) {
-    docDisplayStore.saveNextDocName(docNameText);
+    docDisplayStore.saveDocName(docNameText);
     machineSend("SAVE_DOC_NAME");
   }
 
   function handleSaveDocEntry(entryText, colId) {
     nextDocEntryText.set(entryText);
-    docDisplayStore.saveNextCursorColId(colId);
+    docDisplayStore.saveCursorColId(colId);
     machineSend("SAVE_DOC_ENTRY");
   }
 
