@@ -29,39 +29,6 @@ let createDocAction = assign(ctxt => {
 });
 
 
-// TODO: move to store
-let goUpAction = assign(ctxt => {
-  // use currentDocId to get current flowy tree. use current tree to
-  //   a) check if current entry can go up (is the top-most entry in the document)
-  //   b) if not, get the entry id of the entry immediately above
-  let currDocStore = get(docsStore);
-  let currDocId = currDocStore.currentDocId;
-  let cursorEntryId = currDocStore.cursorEntryId;
-  let currTree = ctxt.documents[currDocId].tree;
-  let hasEntryAbove = currTree.hasEntryAbove(cursorEntryId);
-
-
-  let newEntryId = hasEntryAbove ? currTree.getEntryIdAboveWithCollapse(cursorEntryId) : cursorEntryId;
-  docsStore.saveCursorEntryId(newEntryId);
-  return {
-  };
-});
-
-// TODO: move to store
-let goDownAction = assign(ctxt => {
-  let currDocStore = get(docsStore);
-  let currDocId = currDocStore.currentDocId;
-  let cursorEntryId = currDocStore.cursorEntryId;
-  let currTree = ctxt.documents[currDocId].tree;
-  // TODO: take into account collapse
-  let hasEntryBelow = currTree.hasEntryBelow(cursorEntryId);
-
-  let newEntryId = hasEntryBelow ? currTree.getEntryIdBelowWithCollapse(cursorEntryId) : cursorEntryId;
-  docsStore.saveCursorEntryId(newEntryId);
-  return {
-  };
-});
-
 let splitEntryAction = assign(ctxt => {
   let currDocStore = get(docsStore);
   let docId = currDocStore.currentDocId;
@@ -198,12 +165,6 @@ export default (initContext, importDocsAction, saveDocNameAction,
       },
       document: {
         on: {
-          UP: {
-            actions: goUpAction
-          },
-          DOWN: {
-            actions: goDownAction
-          },
           COLLAPSE_ENTRY: {
             actions: collapseEntryAction,
           },

@@ -38,6 +38,25 @@ function createDocsStore() {
       store.cursorEntryId = newEntryId;
       return store;
     }),
+
+    entryGoUp: (documents) => update(store => {
+      let currDocId = store.currentDocId;
+      let cursorEntryId = store.cursorEntryId;
+      let currTree = documents[currDocId].tree;
+      let hasEntryAbove = currTree.hasEntryAbove(cursorEntryId);
+      let newEntryId = hasEntryAbove ? currTree.getEntryIdAboveWithCollapse(cursorEntryId) : cursorEntryId;
+      store.cursorEntryId = newEntryId;
+      return store;
+    }),
+    entryGoDown: (documents) => update(store => {
+      let currDocId = store.currentDocId;
+      let cursorEntryId = store.cursorEntryId;
+      let currTree = documents[currDocId].tree;
+      let hasEntryBelow = currTree.hasEntryBelow(cursorEntryId);
+      let newEntryId = hasEntryBelow ? currTree.getEntryIdBelowWithCollapse(cursorEntryId) : cursorEntryId;
+      store.cursorEntryId = newEntryId;
+      return store;
+    }),
   }
 }
 

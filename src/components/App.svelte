@@ -494,10 +494,10 @@
   }
 
   function handleGoUp() {
-    machineSend("UP");
+    docsStore.entryGoUp($machineState.context.documents);
   }
   function handleGoDown() {
-    machineSend("DOWN");
+    docsStore.entryGoDown($machineState.context.documents);
   }
   function handleEntryBackspace() {
     machineSend("ENTRY_BACKSPACE");
