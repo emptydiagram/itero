@@ -13,8 +13,6 @@ function createDocDisplayStore() {
     cursorColId: 0,
     cursorEntryId: null,
     docName: '',
-    nextDocName: '',
-    nextCursorEntryId: null,
     nextCursorColId: 0,
   });
 
@@ -41,26 +39,8 @@ function createDocDisplayStore() {
       store.cursorEntryId = newEntryId;
       return store;
     }),
-    saveNextDocName: (newNextDocName) => update(store => {
-      store.nextDocName = newNextDocName;
-      return store;
-    }),
-    saveNextCursorEntryId: (newNextCursorEntryId) => update(store => {
-      store.nextCursorEntryId = newNextCursorEntryId;
-      return store;
-    }),
     saveNextCursorColId: (newNextCursorColId) => update(store => {
       store.nextCursorColId = newNextCursorColId;
-      return store;
-    }),
-
-    // TODO: this name is confusing
-    saveCurrentDocName: () => update(store => {
-      store.docName = store.nextDocName;
-      return store;
-    }),
-    saveNextCursorColIdAsColId: () => update(store => {
-      store.cursorColId = store.nextCursorColId;
       return store;
     }),
   }
