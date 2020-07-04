@@ -63,269 +63,8 @@
   }
 
   function initDocStoreFromInitContext(initContext) {
-    docsStore.init(initContext.documents, initContext.docIdLookupByDocName);
+    docsStore.init(initContext.documents, initContext.docIdLookupByDocName, initContext.linkGraph);
   }
-
-  let saveDocNameAction = assign(ctxt => {
-    let copyDocs = { ...ctxt.documents };
-
-    let i = $docsStore.currentDocId;
-    copyDocs[i] = { ...ctxt.documents[i] };
-    let oldDocName = copyDocs[i].name;
-    copyDocs[i].name = $docsStore.docName;
-
-    docsStore.removeDocIdLookup(oldDocName);
-    docsStore.putDocIdLookup($docsStore.docName, $docsStore.currentDocId);
-
-    return {
-      documents: copyDocs,
-    };
-  });
-
-  let saveDocEntryAction = assign(ctxt => {
-    let copyDocs = { ...ctxt.documents };
-    let i = $docsStore.currentDocId;
-    let j = $docsStore.cursorEntryId;
-    copyDocs[i] = { ...ctxt.documents[i] };
-    let newTree = new FlowyTree(
-      copyDocs[i].tree.getEntries(),
-      copyDocs[i].tree.getRoot()
-    );
-    copyDocs[i].tree = newTree;
-    newTree.setEntryText(j, $docsStore.nextDocEntryText);
-    return {
-      documents: copyDocs,
-    };
-  });
-
-
-  let backspaceAction = assign(ctxt => {
-    let copyDocs = { ...ctxt.documents };
-    let currentDoc = copyDocs[$docsStore.currentDocId];
-    currentDoc.tree = new FlowyTree(
-      currentDoc.tree.getEntries(),
-      currentDoc.tree.getRoot()
-    );
-    let colId = $docsStore.cursorColId;
-    let entryId = $docsStore.cursorEntryId;
-
-    if (colId > 0) {
-      let currEntryText = currentDoc.tree.getEntryText(entryId);
-      let currTextLength = currEntryText.length;
-      // colId might be larger than the text length, so handle it
-      let actualColId = Math.min(colId, currTextLength);
-      let newEntry =
-        currEntryText.substring(0, actualColId - 1) + currEntryText.substring(actualColId);
-      currentDoc.tree.setEntryText(entryId, newEntry);
-
-      docsStore.saveCursorColId(actualColId - 1);
-      return {
-        documents: copyDocs
-      };
-    }
-
-    // col is zero, so we merge adjacent entries
-    let currTree = ctxt.documents[$docsStore.currentDocId].tree;
-
-    // cases where backspacing @ col 0 is a no-op
-    //  - if curr entry has no entry above (no parent, no previous sibling)
-    //  - if current has children + previous sibling, and previous sibling has children
-    //  - if current has children + no previous sibling
-    if (currTree.hasEntryAbove(entryId)) {
-
-      let currItem = currTree.getEntryItem(entryId);
-      let prevItem = currItem.prev;
-      if (currItem.value.hasChildren() && (prevItem == null || prevItem.value.hasChildren())) {
-        return {};
-      }
-
-
-      let newDocs;
-      newDocs = { ...ctxt.documents };
-      let docId = $docsStore.currentDocId;
-      let currDoc = newDocs[docId];
-
-
-      currentDoc.tree = new FlowyTree(
-        currDoc.tree.getEntries(),
-        currDoc.tree.getRoot()
-      );
-
-      let currEntryText = currDoc.tree.getEntryText(entryId);
-
-      let newEntryId, newColId;
-      if (!currItem.value.hasChildren()) {
-        // if current has no children, we delete current and append current's text
-        // to previous entry.
-        let prevEntryId = currTree.getEntryIdAboveWithCollapse(entryId);
-        let prevRowOrigEntryText = currDoc.tree.getEntryText(prevEntryId);
-        currDoc.tree.setEntryText(
-          prevEntryId,
-          prevRowOrigEntryText + currEntryText
-        );
-        currDoc.tree.removeEntry(entryId);
-        newEntryId = prevEntryId;
-        newColId = prevRowOrigEntryText.length;
-
-      } else {
-        // otherwise, current has children, and so if we had (prevItem == null || prevItem.value.hasChildren()), then
-        // we would have aborted the backspace.
-        // thus we must either have (prevItem exists && has no children)
-        // so: delete previous, prepend its text to current element
-        let prevEntryId = currTree.getEntryIdAbove(entryId);
-        let prevRowOrigEntryText = currDoc.tree.getEntryText(prevEntryId);
-
-        currDoc.tree.setEntryText(
-          entryId,
-          prevRowOrigEntryText + currEntryText
-        );
-        currDoc.tree.removeEntry(prevEntryId);
-        newEntryId = entryId;
-        newColId = prevRowOrigEntryText.length;
-      }
-
-
-      docsStore.saveCursor(newEntryId, newColId);
-      return {
-        documents: newDocs
-      };
-    }
-  });
-
-
-  let collapseEntryAction = assign(ctxt => {
-    // check if display state is collapsed, and, if so, expand
-    let docId = $docsStore.currentDocId;
-    let entryId = $docsStore.collapseExpandEntryId;
-
-    let newDocs = { ...ctxt.documents };
-    let currDoc = newDocs[docId];
-    let currTree = currDoc.tree;
-    let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
-
-    if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.EXPANDED) {
-      let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-      newTree.setEntryDisplayState(entryId, EntryDisplayState.COLLAPSED)
-      currDoc.tree = newTree;
-
-      return {
-        documents: newDocs,
-      };
-    }
-
-    return {};
-  });
-
-  let expandEntryAction = assign(ctxt => {
-    // check if display state is collapsed, and, if so, expand
-    let docId = $docsStore.currentDocId;
-    let entryId = $docsStore.collapseExpandEntryId;
-
-    let newDocs = { ...ctxt.documents };
-    let currDoc = newDocs[docId];
-    let currTree = currDoc.tree;
-    let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
-
-    if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED) {
-      let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-      currDoc.tree = newTree;
-      newTree.setEntryDisplayState(entryId, EntryDisplayState.EXPANDED)
-
-      return {
-        documents: newDocs,
-      };
-    }
-
-    return {};
-  });
-
-  let savePastedEntriesAction = assign(ctxt => {
-    console.log(" saved pasted entries act");
-    let copyDocs = { ...ctxt.documents };
-    let i = $docsStore.currentDocId;
-    let entryId = $docsStore.cursorEntryId;
-    console.log(" SPEA, (doc id, entry id) = ", i, entryId);
-    let parentId = copyDocs[i].tree.getParentId(entryId);
-    console.log(" SPEA, (doc id, entry id, parent id) = ", i, entryId, parentId);
-    copyDocs[i] = { ...ctxt.documents[i] };
-    let newTree = new FlowyTree(
-      copyDocs[i].tree.getEntries(),
-      copyDocs[i].tree.getRoot()
-    );
-    copyDocs[i].tree = newTree;
-    let currEntryId = entryId;
-    $docsStore.nextDocEntryText.split('\n').forEach(line => {
-      console.log("inserting below ", currEntryId, " line = ", line);
-      currEntryId = newTree.insertEntryBelow(currEntryId, parentId, line);
-    });
-    return {
-      documents: copyDocs,
-    };
-  });
-
-  // given: sets a, b
-  // returns: [elements removed from a, elements added to a]
-  function diffSets(a, b) {
-    let removed = [];
-    let added = [];
-    for (let [entry, _] of a.entries()) {
-      if (!b.has(entry)) {
-        removed.push(entry);
-      }
-    }
-    for (let [entry, _] of b.entries()) {
-      if (!a.has(entry)) {
-        added.push(entry);
-      }
-    }
-    return [removed, added];
-  }
-
-  // compute the diff between the current set of links and the new set
-  //  - NOTE: we start with the new set of linked *page names*, so we need to look up doc ids
-  //     - whenever we find a page name with no doc id, need to automatically create
-  // for each removed and added link in the entry, update the link graph
-  // return { updated LinkGraph, updated documents object }
-  let updateEntryLinksAction = assign(ctxt => {
-    let copyDocs = { ...ctxt.documents };
-
-    let entryId = $docsStore.updateLinksEntryId;
-    let currLinks = ctxt.linkGraph.getLinks($docsStore.currentDocId, entryId);
-
-    let newLinksArray = $docsStore.updateLinksPageNames.map(page => {
-      let lookupResult = $docsStore.docIdLookupByDocName[page];
-      if (lookupResult) {
-        return lookupResult;
-      }
-
-      // FIXME: duplicates some from createDocAction
-      let newDoc = createNewDocument(page, 'TODO', copyDocs);
-      let newId = newDoc.id;
-      copyDocs[newId] = newDoc;
-      docsStore.appendToDocsDisplayList(newId);
-      docsStore.putDocIdLookup(page, newId);
-      return newId;
-    });
-    let newLinks = new Set(newLinksArray);
-
-    // diff currLinks, newLinks
-    let [removed, added] = diffSets(currLinks, newLinks);
-    console.log("updateEntryLinksAction, (removed, added) = ", removed, added);
-
-    let newLinkGraph = ctxt.linkGraph;
-    removed.forEach(docId => {
-      newLinkGraph.removeLink($docsStore.currentDocId, entryId, docId);
-    });
-    added.forEach(docId => {
-      newLinkGraph.addLink($docsStore.currentDocId, entryId, docId);
-    });
-
-    return {
-      documents: copyDocs,
-      linkGraph: newLinkGraph,
-    };
-  });
-
 
 
 
@@ -335,17 +74,7 @@
   let initContext = makeInitContextFromDocuments(dataMgr.getDocuments());
   initDocStoreFromInitContext(initContext);
 
-  let machine = createMachine(
-    initContext,
-    saveDocNameAction,
-    saveDocEntryAction,
-    backspaceAction,
-    collapseEntryAction,
-    expandEntryAction,
-    savePastedEntriesAction,
-    updateEntryLinksAction
-  );
-
+  let machine = createMachine();
   const { state: machineState, send: machineSend } = useMachine(machine);
 
   /*** history ***/
@@ -356,6 +85,7 @@
       return;
     }
     if (pathname === "/create") {
+      docsStore.createNewDocument();
       machineSend("CREATE_DOC");
       return;
     }
@@ -363,11 +93,7 @@
       let pageName = pathname.substring(6);
       if (pageName in $docsStore.docIdLookupByDocName) {
         let docId = $docsStore.docIdLookupByDocName[pageName];
-        let doc = $machineState.context.documents[docId];
-        let initEntryId = doc.tree.getTopEntryId();
-        docsStore.saveCurrentDocId(docId);
-        docsStore.saveDocName(doc.name);
-        docsStore.saveCursorEntryId(initEntryId);
+        docsStore.navigateToDoc(docId);
         machineSend("NAVIGATE");
         history.replace(`/${docId}`);
         return;
@@ -380,11 +106,7 @@
     let parseResult = parseInt(newId);
     if (!isNaN(parseResult)) {
       let docId = parseResult;
-      let doc = $machineState.context.documents[docId];
-      let initEntryId = doc.tree.getTopEntryId();
-      docsStore.saveCurrentDocId(docId);
-      docsStore.saveDocName(doc.name);
-      docsStore.saveCursorEntryId(initEntryId);
+      docsStore.navigateToDoc(docId);
       machineSend("NAVIGATE");
     } else {
       machineSend("GO_HOME");
@@ -443,7 +165,6 @@
         })
 
         // TODO: verify that it has the required fields in the object
-        // TODO: convert tree objects to FlowyTrees
         let initContext = makeInitContextFromDocuments(newFileUploadObj);
         initDocStoreFromInitContext(initContext);
         machineSend("IMPORT_DOCS");
@@ -463,14 +184,13 @@
   }
 
   function handleSaveDocName(docNameText) {
-    docsStore.saveDocName(docNameText);
+    docsStore.saveCurrentPageDocName(docNameText);
     machineSend("SAVE_DOC_NAME");
   }
 
   function handleSaveDocEntry(entryText, colId) {
-    docsStore.saveNextDocEntryText(entryText);
     docsStore.saveCursorColId(colId);
-    machineSend("SAVE_DOC_ENTRY");
+    docsStore.saveCurrentPageDocEntry(entryText);
   }
 
   // TODO: just pass docsStore.saveCursor in instead of handleSaveFullCursor?
@@ -483,78 +203,73 @@
   }
 
   function handleGoUp() {
-    docsStore.entryGoUp($machineState.context.documents);
+    docsStore.entryGoUp();
   }
   function handleGoDown() {
-    docsStore.entryGoDown($machineState.context.documents);
+    docsStore.entryGoDown();
   }
   function handleEntryBackspace() {
-    machineSend("ENTRY_BACKSPACE");
+    docsStore.backspaceEntry();
   }
   function handleCollapseEntry(entryId) {
     if (entryId !== null) {
-      $docsStore.saveCollapseExpandEntryId(entryId);
+      docsStore.collapseEntry(entryId);
     }
-    machineSend("COLLAPSE_ENTRY");
   }
   function handleExpandEntry(entryId) {
     if (entryId !== null) {
-      $docsStore.saveCollapseExpandEntryId(entryId);
+      docsStore.expandEntry(entryId);
     }
-    machineSend("EXPAND_ENTRY");
   }
   function handleSplitEntry() {
-    machineSend("SPLIT_ENTRY");
+    docsStore.splitEntry();
   }
   function handleIndent() {
-    machineSend("INDENT");
+    docsStore.indentEntry();
   }
   function handleDedent() {
-    machineSend("DEDENT");
+    docsStore.dedentEntry();
   }
   function handleMultilinePaste(entryText) {
-    nextDocEntryText.set(entryText);
-    machineSend("SAVE_PASTED_ENTRIES");
+    docsStore.savePastedEntries(entryText);
   }
   function handleUpdateEntryLinks(entryId, linkedPages) {
     console.log("handleUpdateEntryLinks, setting stores, entryId, linkedPages = ", entryId, linkedPages);
-    docsStore.saveUpdateLinksEntryId(entryId);
-    docsStore.saveUpdateLinksPageNames(linkedPages);
-    machineSend("UPDATE_ENTRY_LINKS");
+    docsStore.updateEntryLinks(entryId, linkedPages);
   }
 
   // TODO: move into getBacklinks?
-  function makeBacklinksFromContext(context) {
-    let backlinks = context.linkGraph.getBacklinks($docsStore.currentDocId);
+  function makeBacklinksFromContext() {
+    let backlinks = $docsStore.linkGraph.getBacklinks($docsStore.currentDocId);
     let backlinksObj = {};
     for (let [[docId, entryId], _] of backlinks.entries()) {
       if (!(docId in backlinksObj)) {
         backlinksObj[docId] = {
           id: docId,
-          name: context.documents[docId].name,
+          name: $docsStore.documents[docId].name,
           entries: {}
         };
       }
       backlinksObj[docId].entries[entryId] = {
         id: entryId,
-        text: context.documents[docId].tree.getEntryText(entryId)
+        text: $docsStore.documents[docId].tree.getEntryText(entryId)
       };
     }
     return backlinksObj;
   }
 
   // save the latest document
-  $: dataMgr.saveDocuments($machineState.context.documents);
+  $: dataMgr.saveDocuments($docsStore.documents);
 
   $: isAtTop = $machineState.matches("flowiki.top");
 
   $: displayDocs = $docsStore.docsDisplayList.map(id => {
-    return $machineState.context.documents[id];
+    return $docsStore.documents[id];
   });
 
   $: currentTree =
     $docsStore.currentDocId !== null
-      ? $machineState.context.documents[$docsStore.currentDocId].tree
+      ? $docsStore.documents[$docsStore.currentDocId].tree
       : null;
 
   $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
@@ -571,7 +286,7 @@
     history.replace(`/${$docsStore.currentDocId}`);
   }
 
-  $: backlinks = makeBacklinksFromContext($machineState.context);
+  $: backlinks = makeBacklinksFromContext();
 </script>
 
 <style>
@@ -622,7 +337,7 @@
     docCursorEntryId={$docsStore.cursorEntryId}
     docCursorColId={$docsStore.cursorColId}
     docTitle={$docsStore.docName}
-    backlinks={makeBacklinksFromContext($machineState.context)}
+    backlinks={makeBacklinksFromContext()}
     {docIsEditingName}
     {handleStartEditingDocName}
     {handleCancelEditingDocName}
