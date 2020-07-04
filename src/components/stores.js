@@ -1,39 +1,100 @@
+import { EntryDisplayState, createNewDocument } from "../data.js";
+import FlowyTree from '../FlowyTree.js';
+
 import { writable } from 'svelte/store';
+
+// given: sets a, b
+// returns: [elements removed from a, elements added to a]
+function diffSets(a, b) {
+  let removed = [];
+  let added = [];
+  for (let [entry, _] of a.entries()) {
+    if (!b.has(entry)) {
+      removed.push(entry);
+    }
+  }
+  for (let [entry, _] of b.entries()) {
+    if (!a.has(entry)) {
+      added.push(entry);
+    }
+  }
+  return [removed, added];
+}
 
 
 function createDocsStore() {
   let { subscribe, update } = writable({
-    collapseExpandEntryId: null,
     currentDocId: null,
     cursorColId: 0,
     cursorEntryId: null,
     docName: '',
     docsDisplayList: [],
     docIdLookupByDocName: {},
-    nextDocEntryText: '',
-    updateLinksEntryId: null,
-    updateLinksPageNames: null,
     documents: {},
   });
 
   return {
     subscribe,
-    init: (documents, docIdLookupByDocName) => update(store => {
+    init: (documents, docIdLookupByDocName, linkGraph) => update(store => {
       store.docsDisplayList = Object.keys(documents);
       store.docIdLookupByDocName = docIdLookupByDocName;
       store.documents = documents;
+      store.linkGraph = linkGraph;
       return store;
     }),
-    saveCollapseExpandEntryId: (newCollapseExpandEntryId) => update(store => {
-      store.collapseExpandEntryId = newCollapseExpandEntryId;
+
+    createNewDocument: () => update(store => {
+      let newDocName = 'New document'
+      let newDoc = createNewDocument(newDocName, 'TODO', copyDocs);
+      let newId = newDoc.id;
+      store.documents[newId] = newDoc;
+
+      // add entry into docIdLookup
+      store.docIdLookupByDocName[newDocName] = newId;
+
+      store.currentDocId = newId;
+      store.docName = newDocName;
+      store.cursorColId = null;
+      store.cursorEntryId = 0;
+      store.docsDisplayList.push(newId);
       return store;
     }),
+
+    navigateToDoc: (docId) => update(store => {
+      let doc = store.documents[docId];
+      let initEntryId = doc.tree.getTopEntryId();
+      store.currentDocId = docId;
+      store.docName = doc.name;
+      store.cursorEntryId = initEntryId;
+      return store;
+    }),
+
     saveCurrentDocId: (newCurrentDocId) => update(store => {
       store.currentDocId = newCurrentDocId;
       return store;
     }),
     saveDocName: (newDocName) => update(store => {
       store.docName = newDocName;
+      return store;
+    }),
+    saveCurrentPageDocName: (newDocName) => update(store => {
+      // sync page's doc name display
+      store.docName = newDocName;
+
+      let docId = store.currentDocId;
+      let currDoc = store.documents[docId];
+      let oldDocName = currDoc.name;
+      currDoc.name = newDocName;
+
+      // remove old entry, add new in docIdLookup
+      delete store.docIdLookupByDocName[oldDocName];
+      store.docIdLookupByDocName[newDocName] = docId;
+      return store;
+    }),
+    saveCurrentPageDocEntry: (newDocEntryText) => update(store => {
+      let i = store.currentDocId;
+      let currDoc = store.documents[i];
+      currDoc.tree.setEntryText(store.cursorEntryId, newDocEntryText);
       return store;
     }),
     saveCursor: (newEntryId, newColId) => update(store => {
@@ -47,18 +108,6 @@ function createDocsStore() {
     }),
     saveCursorEntryId: (newEntryId) => update(store => {
       store.cursorEntryId = newEntryId;
-      return store;
-    }),
-    saveNextDocEntryText: (newNextDocEntryText) => update(store => {
-      store.nextDocEntryText = newNextDocEntryText;
-      return store;
-    }),
-    saveUpdateLinksEntryId: (entryId) => update(store => {
-      store.updateLinksEntryId = entryId;
-      return store;
-    }),
-    saveUpdateLinksPageNames: (pageNames) => update(store => {
-      store.updateLinksPageNames = pageNames;
       return store;
     }),
 
@@ -75,22 +124,253 @@ function createDocsStore() {
       store.docsDisplayList.push(newDocId);
       return store;
     }),
-    entryGoUp: (documents) => update(store => {
+    entryGoUp: () => update(store => {
       let currDocId = store.currentDocId;
       let cursorEntryId = store.cursorEntryId;
-      let currTree = documents[currDocId].tree;
+      let currTree = store.documents[currDocId].tree;
       let hasEntryAbove = currTree.hasEntryAbove(cursorEntryId);
       let newEntryId = hasEntryAbove ? currTree.getEntryIdAboveWithCollapse(cursorEntryId) : cursorEntryId;
       store.cursorEntryId = newEntryId;
       return store;
     }),
-    entryGoDown: (documents) => update(store => {
+    entryGoDown: () => update(store => {
       let currDocId = store.currentDocId;
       let cursorEntryId = store.cursorEntryId;
-      let currTree = documents[currDocId].tree;
+      let currTree = store.documents[currDocId].tree;
       let hasEntryBelow = currTree.hasEntryBelow(cursorEntryId);
       let newEntryId = hasEntryBelow ? currTree.getEntryIdBelowWithCollapse(cursorEntryId) : cursorEntryId;
       store.cursorEntryId = newEntryId;
+      return store;
+    }),
+
+    collapseEntry: (entryId) => update(store => {
+      // check if display state is collapsed, and, if so, expand
+      let docId = store.currentDocId;
+
+      let currDoc = store.documents[docId];
+      let currTree = currDoc.tree;
+      let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
+
+      if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.EXPANDED) {
+        let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
+        newTree.setEntryDisplayState(entryId, EntryDisplayState.COLLAPSED)
+        currDoc.tree = newTree;
+      }
+      return store;
+    }),
+
+    expandEntry: (entryId) => update(store => {
+      let docId = store.currentDocId;
+
+      let currDoc = store.documents[docId];
+      let currTree = currDoc.tree;
+      let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
+
+      if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED) {
+        let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
+        newTree.setEntryDisplayState(entryId, EntryDisplayState.EXPANDED)
+        currDoc.tree = newTree;
+      }
+      return store;
+    }),
+
+    indentEntry: () => update(store => {
+      let docId = store.currentDocId;
+      let entryId = store.cursorEntryId;
+      let currTree = store.documents[docId].tree;
+      let currItem = currTree.getEntryItem(entryId);
+
+      if (currTree.hasPrevSibling(entryId)) {
+        let prevNode = currTree.getPrevSiblingNode(entryId);
+        currItem.detach();
+        prevNode.appendChildItem(currItem);
+        let parentId = prevNode.getId();
+        currItem.value.setParentId(parentId);
+      }
+
+      return store;
+    }),
+    dedentEntry: () => update(store => {
+      let docId = store.currentDocId;
+      let entryId = store.cursorEntryId;
+      let currTree = store.documents[docId].tree;
+      let currItem = currTree.getEntryItem(entryId);
+
+      if (currItem.value.hasParent()) {
+        let parentItem = currTree.getEntryItem(currItem.value.getParentId());
+        currItem.detach();
+        parentItem.append(currItem);
+        let parentParentId = parentItem.value.getParentId();
+        currItem.value.setParentId(parentParentId);
+      }
+
+      return store;
+    }),
+    splitEntry: () => update(store => {
+      let docId = store.currentDocId;
+      let entryId = store.cursorEntryId;
+      let colId = store.cursorColId;
+
+      // TODO: only update documents if there's a docId (is this possible?)
+      let currDoc = store.docs[docId];
+      let currTree = currDoc.tree;
+      let currEntryText = currTree.getEntryText(entryId);
+      let parentId = currTree.getParentId(entryId);
+
+      // let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
+      // currDoc.tree = newTree;
+
+      // if at the end of a collapsed item, make a next sibling with empty text
+      if (currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED
+          && colId === currEntryText.length) {
+
+        let newId = currDoc.tree.insertEntryBelow(entryId, parentId, '');
+        store.cursorEntryId = newId;
+        store.cursorColId = 0;
+        return store;
+      }
+
+      let newEntryText = currEntryText.substring(0, colId);
+      let updatedCurrEntry = currEntryText.substring(colId, currEntryText.length);
+      currDoc.tree.setEntryText(entryId, updatedCurrEntry);
+      currDoc.tree.insertEntryAbove(entryId, parentId, newEntryText);
+
+      currDoc.tree.setEntryText(entryId, updatedCurrEntry);
+      currDoc.tree.insertEntryAbove(entryId, parentId, newEntryText);
+
+      store.cursorColId = newColId;
+
+      return store;
+    }),
+
+    backspaceEntry: () => update(store => {
+      let currentDoc = store.documents[store.currentDocId];
+      let colId = store.cursorColId;
+      let entryId = store.cursorEntryId;
+
+      if (colId > 0) {
+        let currEntryText = currentDoc.tree.getEntryText(entryId);
+        let currTextLength = currEntryText.length;
+        // colId might be larger than the text length, so handle it
+        let actualColId = Math.min(colId, currTextLength);
+        let newEntry =
+          currEntryText.substring(0, actualColId - 1) + currEntryText.substring(actualColId);
+        currentDoc.tree.setEntryText(entryId, newEntry);
+
+        store.cursorColId = actualColId - 1;
+        return store;
+      }
+
+
+      // col is zero, so we merge adjacent entries
+      let currTree = currentDoc.tree;
+
+      // cases where backspacing @ col 0 is a no-op
+      //  - if curr entry has no entry above (no parent, no previous sibling)
+      //  - if current has children + previous sibling, and previous sibling has children
+      //  - if current has children + no previous sibling
+      if (currTree.hasEntryAbove(entryId)) {
+
+        let currItem = currTree.getEntryItem(entryId);
+        let prevItem = currItem.prev;
+        if (currItem.value.hasChildren() && (prevItem == null || prevItem.value.hasChildren())) {
+          // exit without change
+          return store;
+        }
+
+        let currEntryText = currentDoc.tree.getEntryText(entryId);
+
+        let newEntryId, newColId;
+        if (!currItem.value.hasChildren()) {
+          // if current has no children, we delete current and append current's text
+          // to previous entry.
+          let prevEntryId = currTree.getEntryIdAboveWithCollapse(entryId);
+          let prevRowOrigEntryText = currentDoc.tree.getEntryText(prevEntryId);
+          currentDoc.tree.setEntryText(
+            prevEntryId,
+            prevRowOrigEntryText + currEntryText
+          );
+          currentDoc.tree.removeEntry(entryId);
+          newEntryId = prevEntryId;
+          newColId = prevRowOrigEntryText.length;
+
+        } else {
+          // otherwise, current has children, and so if we had (prevItem == null || prevItem.value.hasChildren()), then
+          // we would have aborted the backspace.
+          // thus we must either have (prevItem exists && has no children)
+          // so: delete previous, prepend its text to current element
+          let prevEntryId = currTree.getEntryIdAbove(entryId);
+          let prevRowOrigEntryText = currentDoc.tree.getEntryText(prevEntryId);
+
+          currentDoc.tree.setEntryText(
+            entryId,
+            prevRowOrigEntryText + currEntryText
+          );
+          currentDoc.tree.removeEntry(prevEntryId);
+          newEntryId = entryId;
+          newColId = prevRowOrigEntryText.length;
+        }
+
+        store.cursorEntryId = newEntryId;
+        store.cursorColId = newColId;
+      }
+
+      return store;
+
+    }),
+
+    savePastedEntries: (newDocEntryText) => update(store => {
+      console.log(" saved pasted entries act");
+      let i = store.currentDocId;
+      let entryId = store.cursorEntryId;
+      let currentDoc = store.documents[i];
+      let parentId = currentDoc.tree.getParentId(entryId);
+      console.log(" SPEA, (doc id, entry id, parent id) = ", i, entryId, parentId);
+
+      let currEntryId = entryId;
+      newDocEntryText.split('\n').forEach(line => {
+        console.log("inserting below ", currEntryId, " line = ", line);
+        currEntryId = newTree.insertEntryBelow(currEntryId, parentId, line);
+      });
+
+      return store;
+    }),
+
+    // compute the diff between the current set of links and the new set
+    //  - NOTE: we start with the new set of linked *page names*, so we need to look up doc ids
+    //     - whenever we find a page name with no doc id, need to automatically create
+    // for each removed and added link in the entry, update the link graph
+    // return { updated LinkGraph, updated documents object }
+    updateEntryLinks: (entryId, pageNames) => update(store => {
+      let currLinks = store.linkGraph.getLinks(store.currentDocId, entryId);
+
+      let newLinksArray = pageNames.map(page => {
+        let lookupResult = store.docIdLookupByDocName[page];
+        if (lookupResult) {
+          return lookupResult;
+        }
+
+        // FIXME: duplicates some from createDocAction
+        let newDoc = createNewDocument(page, 'TODO', store.documents);
+        let newId = newDoc.id;
+        store.documents[newId] = newDoc;
+        store.docsDisplayList.push(newId);
+        store.docIdLookupByDocName[page] = newId;
+        return newId;
+      });
+      let newLinks = new Set(newLinksArray);
+
+      // diff currLinks, newLinks
+      let [removed, added] = diffSets(currLinks, newLinks);
+      console.log("updateEntryLinks, (removed, added) = ", removed, added);
+
+      removed.forEach(docId => {
+        store.linkGraph.removeLink(store.currentDocId, entryId, docId);
+      });
+      added.forEach(docId => {
+        store.linkGraph.addLink(store.currentDocId, entryId, docId);
+      });
+
       return store;
     }),
 
