@@ -55,8 +55,6 @@
 
   });
 
-  let fileUploadObj;
-
   const history = createHashHistory();
 
 
@@ -67,12 +65,6 @@
   function initDocStoreFromInitContext(initContext) {
     docsStore.init(initContext.documents, initContext.docIdLookupByDocName);
   }
-
-  let importDocsAction = assign(_ctxt => {
-    let initContext = makeInitContextFromDocuments(fileUploadObj);
-    initDocStoreFromInitContext(initContext);
-    return initContext;
-  });
 
   let saveDocNameAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
@@ -345,7 +337,6 @@
 
   let machine = createMachine(
     initContext,
-    importDocsAction,
     saveDocNameAction,
     saveDocEntryAction,
     backspaceAction,
@@ -453,7 +444,8 @@
 
         // TODO: verify that it has the required fields in the object
         // TODO: convert tree objects to FlowyTrees
-        fileUploadObj = newFileUploadObj;
+        let initContext = makeInitContextFromDocuments(newFileUploadObj);
+        initDocStoreFromInitContext(initContext);
         machineSend("IMPORT_DOCS");
       } catch (err) {
         // TODO: show error to UI
