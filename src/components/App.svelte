@@ -188,12 +188,11 @@
     machineSend("SAVE_DOC_NAME");
   }
 
+/*
   function handleSaveDocEntry(entryText, colId) {
-    docsStore.saveCursorColId(colId);
-    docsStore.saveCurrentPageDocEntry(entryText);
+    docsStore.saveCurrentPageDocEntry(entryText, colId);
   }
 
-  // TODO: just pass docsStore.saveCursor in instead of handleSaveFullCursor?
   function handleSaveFullCursor(entryId, colId) {
     docsStore.saveCursor(entryId, colId);
   }
@@ -237,6 +236,7 @@
     console.log("handleUpdateEntryLinks, setting stores, entryId, linkedPages = ", entryId, linkedPages);
     docsStore.updateEntryLinks(entryId, linkedPages);
   }
+  */
 
   // TODO: move into getBacklinks?
   function makeBacklinksFromContext() {
@@ -339,22 +339,22 @@
     docTitle={$docsStore.docName}
     backlinks={makeBacklinksFromContext()}
     {docIsEditingName}
+    handleGoUp={docsStore.entryGoUp}
+    handleGoDown={docsStore.entryGoDown}
+    handleSaveFullCursor={docsStore.saveCursor}
+    handleSaveCursorColId={docsStore.saveCursorColId}
+    handleIndent={docsStore.indentEntry}
+    handleDedent={docsStore.dedentEntry}
+    handleSplitEntry={docsStore.splitEntry}
+    handleEntryBackspace={docsStore.backspaceEntry}
+    handleMultilinePaste={docsStore.savePastedEntries}
+    handleUpdateEntryLinks={docsStore.updateEntryLinks}
+    handleCollapseEntry={docsStore.collapseEntry}
+    handleExpandEntry={docsStore.expandEntry}
+    handleSaveDocEntry={docsStore.saveCurrentPageDocEntry}
     {handleStartEditingDocName}
     {handleCancelEditingDocName}
-    {handleGoUp}
-    {handleGoDown}
-    {handleCollapseEntry}
-    {handleExpandEntry}
-    {handleSplitEntry}
-    {handleEntryBackspace}
-    {handleIndent}
-    {handleDedent}
-    {handleMultilinePaste}
-    {handleSaveCursorColId}
     {handleSaveDocName}
-    {handleSaveDocEntry}
-    {handleSaveFullCursor}
-    {handleUpdateEntryLinks}
     />
 {/if}
 

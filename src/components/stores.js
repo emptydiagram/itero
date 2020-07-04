@@ -91,10 +91,11 @@ function createDocsStore() {
       store.docIdLookupByDocName[newDocName] = docId;
       return store;
     }),
-    saveCurrentPageDocEntry: (newDocEntryText) => update(store => {
+    saveCurrentPageDocEntry: (newDocEntryText, newColId) => update(store => {
       let i = store.currentDocId;
       let currDoc = store.documents[i];
       currDoc.tree.setEntryText(store.cursorEntryId, newDocEntryText);
+      store.cursorColId = newColId;
       return store;
     }),
     saveCursor: (newEntryId, newColId) => update(store => {
@@ -145,31 +146,35 @@ function createDocsStore() {
 
     collapseEntry: (entryId) => update(store => {
       // check if display state is collapsed, and, if so, expand
-      let docId = store.currentDocId;
+      if (entryId != null) {
+        let docId = store.currentDocId;
 
-      let currDoc = store.documents[docId];
-      let currTree = currDoc.tree;
-      let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
+        let currDoc = store.documents[docId];
+        let currTree = currDoc.tree;
+        let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
 
-      if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.EXPANDED) {
-        let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-        newTree.setEntryDisplayState(entryId, EntryDisplayState.COLLAPSED)
-        currDoc.tree = newTree;
+        if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.EXPANDED) {
+          let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
+          newTree.setEntryDisplayState(entryId, EntryDisplayState.COLLAPSED)
+          currDoc.tree = newTree;
+        }
       }
       return store;
     }),
 
     expandEntry: (entryId) => update(store => {
-      let docId = store.currentDocId;
+      if (entryId != null) {
+        let docId = store.currentDocId;
 
-      let currDoc = store.documents[docId];
-      let currTree = currDoc.tree;
-      let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
+        let currDoc = store.documents[docId];
+        let currTree = currDoc.tree;
+        let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
 
-      if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED) {
-        let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-        newTree.setEntryDisplayState(entryId, EntryDisplayState.EXPANDED)
-        currDoc.tree = newTree;
+        if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED) {
+          let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
+          newTree.setEntryDisplayState(entryId, EntryDisplayState.EXPANDED)
+          currDoc.tree = newTree;
+        }
       }
       return store;
     }),
