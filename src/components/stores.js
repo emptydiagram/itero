@@ -1,7 +1,6 @@
 import { writable } from 'svelte/store';
 
 export const nextDocEntryText = writable('');
-export const collapseExpandEntryId = writable(null);
 export const updateLinksEntryId = writable(null);
 export const updateLinksPageNames = writable(null);
 
@@ -9,6 +8,7 @@ export const updateLinksPageNames = writable(null);
 
 function createDocsStore() {
   let { subscribe, update } = writable({
+    collapseExpandEntryId: null,
     currentDocId: null,
     cursorColId: 0,
     cursorEntryId: null,
@@ -19,6 +19,10 @@ function createDocsStore() {
 
   return {
     subscribe,
+    saveCollapseExpandEntryId: (newCollapseExpandEntryId) => update(store => {
+      store.collapseExpandEntryId = newCollapseExpandEntryId;
+      return store;
+    }),
     saveCurrentDocId: (newCurrentDocId) => update(store => {
       store.currentDocId = newCurrentDocId;
       return store;

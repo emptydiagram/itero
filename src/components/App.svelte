@@ -6,7 +6,7 @@
   import { faHammer } from '@fortawesome/free-solid-svg-icons';
 
   import { nextDocEntryText,
-           collapseExpandEntryId, updateLinksEntryId, updateLinksPageNames,
+           updateLinksEntryId, updateLinksPageNames,
            docsStore } from "./stores.js";
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
@@ -203,7 +203,7 @@
   let collapseEntryAction = assign(ctxt => {
     // check if display state is collapsed, and, if so, expand
     let docId = $docsStore.currentDocId;
-    let entryId = $collapseExpandEntryId;
+    let entryId = $docsStore.collapseExpandEntryId;
 
     let newDocs = { ...ctxt.documents };
     let currDoc = newDocs[docId];
@@ -212,8 +212,8 @@
 
     if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.EXPANDED) {
       let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-      currDoc.tree = newTree;
       newTree.setEntryDisplayState(entryId, EntryDisplayState.COLLAPSED)
+      currDoc.tree = newTree;
 
       return {
         documents: newDocs,
@@ -226,7 +226,7 @@
   let expandEntryAction = assign(ctxt => {
     // check if display state is collapsed, and, if so, expand
     let docId = $docsStore.currentDocId;
-    let entryId = $collapseExpandEntryId;
+    let entryId = $docsStore.collapseExpandEntryId;
 
     let newDocs = { ...ctxt.documents };
     let currDoc = newDocs[docId];
@@ -501,13 +501,13 @@
   }
   function handleCollapseEntry(entryId) {
     if (entryId !== null) {
-      collapseExpandEntryId.set(entryId);
+      $docsStore.saveCollapseExpandEntryId(entryId);
     }
     machineSend("COLLAPSE_ENTRY");
   }
   function handleExpandEntry(entryId) {
     if (entryId !== null) {
-      collapseExpandEntryId.set(entryId);
+      $docsStore.saveCollapseExpandEntryId(entryId);
     }
     machineSend("EXPAND_ENTRY");
   }
