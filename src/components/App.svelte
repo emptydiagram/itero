@@ -5,9 +5,7 @@
   import Icon from 'svelte-awesome';
   import { faHammer } from '@fortawesome/free-solid-svg-icons';
 
-  import { nextDocEntryText,
-           updateLinksEntryId, updateLinksPageNames,
-           docsStore } from "./stores.js";
+  import { docsStore } from "./stores.js";
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
   import FlowyTree from "../FlowyTree.js";
@@ -99,7 +97,7 @@
       copyDocs[i].tree.getRoot()
     );
     copyDocs[i].tree = newTree;
-    newTree.setEntryText(j, $nextDocEntryText);
+    newTree.setEntryText(j, $docsStore.nextDocEntryText);
     return {
       documents: copyDocs,
     };
@@ -261,7 +259,7 @@
     );
     copyDocs[i].tree = newTree;
     let currEntryId = entryId;
-    $nextDocEntryText.split('\n').forEach(line => {
+    $docsStore.nextDocEntryText.split('\n').forEach(line => {
       console.log("inserting below ", currEntryId, " line = ", line);
       currEntryId = newTree.insertEntryBelow(currEntryId, parentId, line);
     });
@@ -296,10 +294,10 @@
   let updateEntryLinksAction = assign(ctxt => {
     let copyDocs = { ...ctxt.documents };
 
-    let entryId = $updateLinksEntryId;
+    let entryId = $docsStore.updateLinksEntryId;
     let currLinks = ctxt.linkGraph.getLinks($docsStore.currentDocId, entryId);
 
-    let newLinksArray = $updateLinksPageNames.map(page => {
+    let newLinksArray = $docsStore.updateLinksPageNames.map(page => {
       let lookupResult = $docsStore.docIdLookupByDocName[page];
       if (lookupResult) {
         return lookupResult;
@@ -476,7 +474,7 @@
   }
 
   function handleSaveDocEntry(entryText, colId) {
-    nextDocEntryText.set(entryText);
+    docsStore.saveNextDocEntryText(entryText);
     docsStore.saveCursorColId(colId);
     machineSend("SAVE_DOC_ENTRY");
   }
@@ -526,8 +524,8 @@
   }
   function handleUpdateEntryLinks(entryId, linkedPages) {
     console.log("handleUpdateEntryLinks, setting stores, entryId, linkedPages = ", entryId, linkedPages);
-    updateLinksEntryId.set(entryId);
-    updateLinksPageNames.set(linkedPages);
+    docsStore.saveUpdateLinksEntryId(entryId);
+    docsStore.saveUpdateLinksPageNames(linkedPages);
     machineSend("UPDATE_ENTRY_LINKS");
   }
 

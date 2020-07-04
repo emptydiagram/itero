@@ -1,10 +1,5 @@
 import { writable } from 'svelte/store';
 
-export const nextDocEntryText = writable('');
-export const updateLinksEntryId = writable(null);
-export const updateLinksPageNames = writable(null);
-
-
 
 function createDocsStore() {
   let { subscribe, update } = writable({
@@ -15,6 +10,9 @@ function createDocsStore() {
     docName: '',
     docsDisplayList: [],
     docIdLookupByDocName: {},
+    nextDocEntryText: '',
+    updateLinksEntryId: null,
+    updateLinksPageNames: null,
   });
 
   return {
@@ -42,6 +40,18 @@ function createDocsStore() {
     }),
     saveCursorEntryId: (newEntryId) => update(store => {
       store.cursorEntryId = newEntryId;
+      return store;
+    }),
+    saveNextDocEntryText: (newNextDocEntryText) => update(store => {
+      store.nextDocEntryText = newNextDocEntryText;
+      return store;
+    }),
+    saveUpdateLinksEntryId: (entryId) => update(store => {
+      store.updateLinksEntryId = entryId;
+      return store;
+    }),
+    saveUpdateLinksPageNames: (pageNames) => update(store => {
+      store.updateLinksPageNames = pageNames;
       return store;
     }),
 
