@@ -13,10 +13,17 @@ function createDocsStore() {
     nextDocEntryText: '',
     updateLinksEntryId: null,
     updateLinksPageNames: null,
+    documents: {},
   });
 
   return {
     subscribe,
+    init: (documents, docIdLookupByDocName) => update(store => {
+      store.docsDisplayList = Object.keys(documents);
+      store.docIdLookupByDocName = docIdLookupByDocName;
+      store.documents = documents;
+      return store;
+    }),
     saveCollapseExpandEntryId: (newCollapseExpandEntryId) => update(store => {
       store.collapseExpandEntryId = newCollapseExpandEntryId;
       return store;
@@ -55,10 +62,6 @@ function createDocsStore() {
       return store;
     }),
 
-    initDocIdLookup: (lookup) => update(store => {
-      store.docIdLookupByDocName = lookup;
-      return store;
-    }),
     putDocIdLookup: (docName, docId) => update(store => {
       store.docIdLookupByDocName[docName] = docId;
       return store;
@@ -68,10 +71,6 @@ function createDocsStore() {
       return store;
     }),
 
-    initDocsDisplayList: (documents) => update(store => {
-      store.docsDisplayList = Object.keys(documents);
-      return store;
-    }),
     appendToDocsDisplayList: (newDocId) => update(store => {
       store.docsDisplayList.push(newDocId);
       return store;
@@ -94,6 +93,7 @@ function createDocsStore() {
       store.cursorEntryId = newEntryId;
       return store;
     }),
+
   }
 }
 

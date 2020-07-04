@@ -64,10 +64,13 @@
     return obj === Object(obj);
   }
 
+  function initDocStoreFromInitContext(initContext) {
+    docsStore.init(initContext.documents, initContext.docIdLookupByDocName);
+  }
+
   let importDocsAction = assign(_ctxt => {
     let initContext = makeInitContextFromDocuments(fileUploadObj);
-    docsStore.initDocsDisplayList(initContext.documents);
-    docsStore.initDocIdLookup(initContext.docIdLookupByDocName);
+    initDocStoreFromInitContext(initContext);
     return initContext;
   });
 
@@ -338,8 +341,7 @@
 
   let dataMgr = new DataManager(new DataStore);
   let initContext = makeInitContextFromDocuments(dataMgr.getDocuments());
-  docsStore.initDocsDisplayList(initContext.documents);
-  docsStore.initDocIdLookup(initContext.docIdLookupByDocName);
+  initDocStoreFromInitContext(initContext);
 
   let machine = createMachine(
     initContext,
