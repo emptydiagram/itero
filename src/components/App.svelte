@@ -1,7 +1,6 @@
 <script>
   import { createHashHistory } from "history";
   import { onMount } from "svelte";
-  import { assign } from "xstate";
   import Icon from 'svelte-awesome';
   import { faHammer } from '@fortawesome/free-solid-svg-icons';
 
