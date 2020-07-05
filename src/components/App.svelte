@@ -177,7 +177,7 @@
 
 
   // TODO: move into getBacklinks?
-  function makeBacklinksFromContext() {
+  $: backlinks = (function() {
     let backlinks = $docsStore.linkGraph.getBacklinks($docsStore.currentDocId);
     let backlinksObj = {};
     for (let [[docId, entryId], _] of backlinks.entries()) {
@@ -194,7 +194,7 @@
       };
     }
     return backlinksObj;
-  }
+  })();
 
   // save the latest document
   $: dataMgr.saveDocuments($docsStore.documents);
@@ -215,8 +215,6 @@
   $: if (history.location.pathname === "/create" && typeof $docsStore.currentDocId === "number") {
     history.replace(`/${$docsStore.currentDocId}`);
   }
-
-  $: backlinks = makeBacklinksFromContext();
 </script>
 
 <style>
@@ -267,7 +265,7 @@
     docCursorEntryId={$docsStore.cursorEntryId}
     docCursorColId={$docsStore.cursorColId}
     docTitle={$docsStore.docName}
-    backlinks={makeBacklinksFromContext()}
+    backlinks={backlinks}
     docIsEditingName={$docsStore.docIsEditingName}
     handleGoUp={docsStore.entryGoUp}
     handleGoDown={docsStore.entryGoDown}
