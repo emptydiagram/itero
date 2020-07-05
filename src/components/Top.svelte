@@ -1,10 +1,21 @@
 <script>
-  export let displayDocs, createDoc;
-
   import Header from './Header.svelte';
+  import { docsStore } from "./stores.js";
 
+  import { createHashHistory } from "history";
   import Icon from 'svelte-awesome';
   import { faPlus } from '@fortawesome/free-solid-svg-icons';
+
+  const history = createHashHistory();
+
+  function createDoc() {
+    // navigate to #/create
+    history.push("/create");
+  }
+
+  $: displayDocs = $docsStore.docsDisplayList.map(id => {
+    return $docsStore.documents[id];
+  });
 </script>
 
 <style>
