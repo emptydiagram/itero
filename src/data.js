@@ -130,7 +130,6 @@ function makeLinkGraph(docs, docIdLookup) {
 export function makeInitContextFromDocuments(docs) {
   let docIdLookup = makeDocIdLookup(docs);
   let { linkGraph, documents } = makeLinkGraph(docs, docIdLookup);
-  // NOTE: docIdLookupByDocName isn't used in xstate machine. it's needed to init docStore.docIdLookupByDocName
   return {
     documents: documents,
     docIdLookupByDocName: docIdLookup,
