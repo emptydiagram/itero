@@ -175,67 +175,6 @@
     });
   }
 
-/*
-  function handleStartEditingDocName() {
-    docsStore.startEditingDocName();
-  }
-
-  function handleCancelEditingDocName() {
-    docsStore.cancelEditingDocName();
-  }
-
-  function handleSaveDocName(docNameText) {
-    docsStore.saveEditingDocName(docNameText);
-  }
-
-  function handleSaveDocEntry(entryText, colId) {
-    docsStore.saveCurrentPageDocEntry(entryText, colId);
-  }
-
-  function handleSaveFullCursor(entryId, colId) {
-    docsStore.saveCursor(entryId, colId);
-  }
-
-  function handleSaveCursorColId(colId) {
-    docsStore.saveCursorColId(colId);
-  }
-
-  function handleGoUp() {
-    docsStore.entryGoUp();
-  }
-  function handleGoDown() {
-    docsStore.entryGoDown();
-  }
-  function handleEntryBackspace() {
-    docsStore.backspaceEntry();
-  }
-  function handleCollapseEntry(entryId) {
-    if (entryId !== null) {
-      docsStore.collapseEntry(entryId);
-    }
-  }
-  function handleExpandEntry(entryId) {
-    if (entryId !== null) {
-      docsStore.expandEntry(entryId);
-    }
-  }
-  function handleSplitEntry() {
-    docsStore.splitEntry();
-  }
-  function handleIndent() {
-    docsStore.indentEntry();
-  }
-  function handleDedent() {
-    docsStore.dedentEntry();
-  }
-  function handleMultilinePaste(entryText) {
-    docsStore.savePastedEntries(entryText);
-  }
-  function handleUpdateEntryLinks(entryId, linkedPages) {
-    console.log("handleUpdateEntryLinks, setting stores, entryId, linkedPages = ", entryId, linkedPages);
-    docsStore.updateEntryLinks(entryId, linkedPages);
-  }
-  */
 
   // TODO: move into getBacklinks?
   function makeBacklinksFromContext() {

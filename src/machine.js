@@ -2,29 +2,19 @@ import { Machine } from 'xstate';
 
 export default () => {
 
-  const docStates = {
-    states: {
-      docTitle: {
-        on: {},
-      }
-    },
-  }
-
   const flowikiStates = {
     initial: 'top',
     states: {
       top: {
         on: {
           CREATE_DOC: {
-            target: ['document.docTitle.editing'],
+            target: ['document'],
           },
         },
       },
       document: {
         on: {
         },
-        type: 'parallel',
-        ...docStates
       }
     }
   };
