@@ -6,26 +6,6 @@ export default () => {
     states: {
       docTitle: {
         on: {},
-        initial: 'displaying',
-        states: {
-          editing: {
-            on: {
-              SAVE_DOC_NAME: {
-                target: 'displaying',
-              },
-              CANCEL_EDITING_NAME: {
-                target: 'displaying',
-              },
-            },
-          },
-          displaying: {
-            on: {
-              START_EDITING_NAME: {
-                target: 'editing',
-              },
-            }
-          }
-        }
       }
     },
   }

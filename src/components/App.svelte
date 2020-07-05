@@ -175,20 +175,19 @@
     });
   }
 
+/*
   function handleStartEditingDocName() {
-    machineSend("START_EDITING_NAME");
+    docsStore.startEditingDocName();
   }
 
   function handleCancelEditingDocName() {
-    machineSend("CANCEL_EDITING_NAME");
+    docsStore.cancelEditingDocName();
   }
 
   function handleSaveDocName(docNameText) {
-    docsStore.saveCurrentPageDocName(docNameText);
-    machineSend("SAVE_DOC_NAME");
+    docsStore.saveEditingDocName(docNameText);
   }
 
-/*
   function handleSaveDocEntry(entryText, colId) {
     docsStore.saveCurrentPageDocEntry(entryText, colId);
   }
@@ -274,14 +273,6 @@
 
   $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
 
-  $: docIsEditingName = (() => {
-    let curr = $machineState.value.flowiki;
-    if (!isObject(curr)) {
-      return docIsEditingName;
-    }
-    return curr.document.docTitle === "editing";
-  })();
-
   $: if (history.location.pathname === "/create" && typeof $docsStore.currentDocId === "number") {
     history.replace(`/${$docsStore.currentDocId}`);
   }
@@ -338,7 +329,7 @@
     docCursorColId={$docsStore.cursorColId}
     docTitle={$docsStore.docName}
     backlinks={makeBacklinksFromContext()}
-    {docIsEditingName}
+    docIsEditingName={$docsStore.docIsEditingName}
     handleGoUp={docsStore.entryGoUp}
     handleGoDown={docsStore.entryGoDown}
     handleSaveFullCursor={docsStore.saveCursor}
@@ -352,9 +343,9 @@
     handleCollapseEntry={docsStore.collapseEntry}
     handleExpandEntry={docsStore.expandEntry}
     handleSaveDocEntry={docsStore.saveCurrentPageDocEntry}
-    {handleStartEditingDocName}
-    {handleCancelEditingDocName}
-    {handleSaveDocName}
+    handleStartEditingDocName={docsStore.startEditingDocName}
+    handleCancelEditingDocName={docsStore.cancelEditingDocName}
+    handleSaveDocName={docsStore.saveEditingDocName}
     />
 {/if}
 
