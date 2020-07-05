@@ -115,11 +115,6 @@
 
   /*** event handlers & some reactive variables ***/
 
-  function createDoc() {
-    // navigate to #/create
-    history.push("/create");
-  }
-
   // from https://wiki.developer.mozilla.org/en-US/docs/Glossary/Base64$revision/1597964#The_Unicode_Problem
   function b64EncodeUnicode(str) {
       // first we use encodeURIComponent to get percent-encoded UTF-8,
@@ -201,9 +196,6 @@
 
   $: isAtTop = $machineState.matches("flowiki.top");
 
-  $: displayDocs = $docsStore.docsDisplayList.map(id => {
-    return $docsStore.documents[id];
-  });
 
   $: currentTree =
     $docsStore.currentDocId !== null
@@ -232,7 +224,7 @@
 </style>
 
 {#if isAtTop}
-  <Top {displayDocs} {createDoc} />
+  <Top />
 {:else}
   <Document
     tree={currentTree}
