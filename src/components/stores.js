@@ -28,6 +28,7 @@ function createDocsStore() {
     cursorColId: 0,
     cursorEntryId: null,
     docName: '',
+    docIsEditingName: false,
     docsDisplayList: [],
     docIdLookupByDocName: {},
     documents: {},
@@ -69,9 +70,20 @@ function createDocsStore() {
       return store;
     }),
 
-    saveCurrentPageDocName: (newDocName) => update(store => {
+    cancelEditingDocName: () => update(store => {
+      // sync page's doc name display
+      store.docIsEditingName = false;
+      return store;
+    }),
+    startEditingDocName: () => update(store => {
+      // sync page's doc name display
+      store.docIsEditingName = true;
+      return store;
+    }),
+    saveEditingDocName: (newDocName) => update(store => {
       // sync page's doc name display
       store.docName = newDocName;
+      store.docIsEditingName = false;
 
       let docId = store.currentDocId;
       let currDoc = store.documents[docId];
