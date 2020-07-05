@@ -319,7 +319,7 @@ function createDocsStore() {
       let currEntryId = entryId;
       newDocEntryText.split('\n').forEach(line => {
         console.log("inserting below ", currEntryId, " line = ", line);
-        currEntryId = newTree.insertEntryBelow(currEntryId, parentId, line);
+        currEntryId = currentDoc.tree.insertEntryBelow(currEntryId, parentId, line);
       });
 
       return store;
