@@ -45,7 +45,7 @@
       let newColId = colResult.pos;
 
       let newEntryId = parseInt(renderedEntryNode.dataset.entryId);
-      handleSaveFullCursor(newEntryId, newColId);
+      docsStore.saveCursor(newEntryId, newColId);
     });
 
     // handle initial navigation to a page

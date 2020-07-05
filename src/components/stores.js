@@ -46,7 +46,7 @@ function createDocsStore() {
 
     createNewDocument: () => update(store => {
       let newDocName = 'New document'
-      let newDoc = createNewDocument(newDocName, 'TODO', copyDocs);
+      let newDoc = createNewDocument(newDocName, 'TODO', store.documents);
       let newId = newDoc.id;
       store.documents[newId] = newDoc;
 
@@ -204,7 +204,7 @@ function createDocsStore() {
       let colId = store.cursorColId;
 
       // TODO: only update documents if there's a docId (is this possible?)
-      let currDoc = store.docs[docId];
+      let currDoc = store.documents[docId];
       let currTree = currDoc.tree;
       let currEntryText = currTree.getEntryText(entryId);
       let parentId = currTree.getParentId(entryId);
@@ -227,10 +227,7 @@ function createDocsStore() {
       currDoc.tree.setEntryText(entryId, updatedCurrEntry);
       currDoc.tree.insertEntryAbove(entryId, parentId, newEntryText);
 
-      currDoc.tree.setEntryText(entryId, updatedCurrEntry);
-      currDoc.tree.insertEntryAbove(entryId, parentId, newEntryText);
-
-      store.cursorColId = newColId;
+      store.cursorColId = 0;
 
       return store;
     }),
