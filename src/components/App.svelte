@@ -247,9 +247,6 @@
     handleCollapseEntry={docsStore.collapseEntry}
     handleExpandEntry={docsStore.expandEntry}
     handleSaveDocEntry={docsStore.saveCurrentPageDocEntry}
-    handleStartEditingDocName={docsStore.startEditingDocName}
-    handleCancelEditingDocName={docsStore.cancelEditingDocName}
-    handleSaveDocName={docsStore.saveEditingDocName}
     />
 {/if}
 
