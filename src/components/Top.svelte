@@ -2,15 +2,13 @@
   import Header from './Header.svelte';
   import { docsStore } from "./stores.js";
 
-  import { createHashHistory } from "history";
+  import { replace } from 'svelte-spa-router';
   import Icon from 'svelte-awesome';
   import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-  const history = createHashHistory();
-
   function createDoc() {
     // navigate to #/create
-    history.push("/create");
+    replace("/create-doc");
   }
 
   $: displayDocs = $docsStore.docsDisplayList.map(id => {
@@ -37,7 +35,7 @@
 <ul id="docsList">
   {#each displayDocs as doc}
     <li>
-      <a href={'#/' + doc.id}>{doc.name}</a>
+      <a href={'#/doc/' + doc.id}>{doc.name}</a>
     </li>
   {/each}
 </ul>

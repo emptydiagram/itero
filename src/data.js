@@ -198,8 +198,8 @@ function makeInitDocuments() {
   ];
   let similar = [
     {
-      0: { text: 'svelte for components' },
-      1: { text: 'xstate for state management' },
+      0: { text: 'svelte for components/state' },
+      1: { text: 'svelte-spa-router for routing' },
       2: { text: 'parsimmon for the markup language parser/renderer' },
       3: { text: 'mathjax v3 for math display' },
       4: { text: 'font awesome (w/ svelte-awesome) icons' },

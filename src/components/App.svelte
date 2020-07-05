@@ -1,17 +1,18 @@
 <script>
-  import { createHashHistory } from "history";
   import { onMount } from "svelte";
   import Icon from 'svelte-awesome';
   import { faHammer } from '@fortawesome/free-solid-svg-icons';
+  import Router from "svelte-spa-router";
+  import { push } from "svelte-spa-router";
 
   import { docsStore } from "./stores.js";
   import Document from "./Document.svelte";
   import Top from "./Top.svelte";
-  import FlowyTree from "../FlowyTree.js";
+  import Page from "./Page.svelte";
+  import CreateDoc from "./CreateDoc.svelte";
+  import NotFound from "./NotFound.svelte";
   import DataStore from "../DataStore.js";
-  import createMachine from "../machine.js";
-  import { useMachine } from "./useMachine.js";
-  import { DataManager, makeInitContextFromDocuments, makeDoc, EntryDisplayState, createNewDocument } from "../data.js";
+  import { DataManager, makeInitContextFromDocuments, makeDoc } from "../data.js";
   import { findChildNodeSerializedCursorPosFromSelection } from "../markup/util.js";
 
   function findRenderedEntryParent(initNode) {
@@ -24,15 +25,6 @@
   }
 
   onMount(() => {
-    // Listen for changes to the current location.
-    const _unlisten = history.listen((location, action) => {
-      // location is an object like window.location
-      // if it's a REPLACE, don't trigger a navigation event
-      if (action !== 'REPLACE' && location.pathname.startsWith("/")) {
-        route(location.pathname);
-      }
-    });
-
     document.addEventListener('selectionchange', () => {
       let sel = document.getSelection();
       const renderedEntryNode = findRenderedEntryParent(sel.anchorNode);
@@ -46,71 +38,19 @@
       let newEntryId = parseInt(renderedEntryNode.dataset.entryId);
       docsStore.saveCursor(newEntryId, newColId);
     });
-
-    // handle initial navigation to a page
-    if (location.hash.startsWith("#/")) {
-      route(location.hash.substring(1));
-    }
-
   });
 
-  const history = createHashHistory();
 
-
-  function isObject(obj) {
-    return obj === Object(obj);
-  }
+  /*** service and state ***/
 
   function initDocStoreFromInitContext(initContext) {
     docsStore.init(initContext.documents, initContext.docIdLookupByDocName, initContext.linkGraph);
   }
 
-
-
-  /*** service and state ***/
-
   let dataMgr = new DataManager(new DataStore);
   let initContext = makeInitContextFromDocuments(dataMgr.getDocuments());
   initDocStoreFromInitContext(initContext);
 
-  let machine = createMachine();
-  const { state: machineState, send: machineSend } = useMachine(machine);
-
-  /*** history ***/
-
-  function route(pathname) {
-    if (pathname === "/") {
-      machineSend("GO_HOME");
-      return;
-    }
-    if (pathname === "/create") {
-      docsStore.createNewDocument();
-      machineSend("CREATE_DOC");
-      return;
-    }
-    if (pathname.startsWith("/page/")) {
-      let pageName = pathname.substring(6);
-      if (pageName in $docsStore.docIdLookupByDocName) {
-        let docId = $docsStore.docIdLookupByDocName[pageName];
-        docsStore.navigateToDoc(docId);
-        machineSend("NAVIGATE");
-        history.replace(`/${docId}`);
-        return;
-      }
-      history.go(-1);
-      return;
-    }
-
-    let newId = pathname.substring(1);
-    let parseResult = parseInt(newId);
-    if (!isNaN(parseResult)) {
-      let docId = parseResult;
-      docsStore.navigateToDoc(docId);
-      machineSend("NAVIGATE");
-    } else {
-      machineSend("GO_HOME");
-    }
-  }
 
   /*** event handlers & some reactive variables ***/
 
@@ -161,7 +101,8 @@
         // TODO: verify that it has the required fields in the object
         let initContext = makeInitContextFromDocuments(newFileUploadObj);
         initDocStoreFromInitContext(initContext);
-        machineSend("IMPORT_DOCS");
+
+        push('/');
       } catch (err) {
         // TODO: show error to UI
         console.log("TODO: file is not a valid JSON object, err = ", err);
@@ -169,15 +110,17 @@
     });
   }
 
-
   // save the latest document
   $: dataMgr.saveDocuments($docsStore.documents);
 
-  $: isAtTop = $machineState.matches("flowiki.top");
 
-
-  $: if (history.location.pathname === "/create" && typeof $docsStore.currentDocId === "number") {
-    history.replace(`/${$docsStore.currentDocId}`);
+  const routes = {
+    '/': Top,
+    '/docs': Top,
+    '/doc/:id': Document,
+    '/create-doc': CreateDoc,
+    '/page/:name': Page,
+    '*': NotFound,
   }
 </script>
 
@@ -195,11 +138,7 @@
   }
 </style>
 
-{#if isAtTop}
-  <Top />
-{:else}
-  <Document />
-{/if}
+<Router {routes} />
 
 <div id="actions-bar">
   <Icon data={faHammer} scale="1" />

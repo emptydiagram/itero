@@ -25,11 +25,10 @@
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
-    "history": "^4.10.1",
     "linked-list": "^2.1.0",
     "mathjax": "^3.0.5",
     "parsimmon": "^1.13.0",
     "svelte-awesome": "^2.3.0",
-    "xstate": "^4.10.0"
+    "svelte-spa-router": "^2.2.0"
   }
 }

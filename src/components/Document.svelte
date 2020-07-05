@@ -1,4 +1,6 @@
 <script>
+  export let params = {};
+
   import BacklinksDisplay from "./BacklinksDisplay.svelte";
   import Header from './Header.svelte';
   import Node from "./Node.svelte";
@@ -26,6 +28,27 @@
     })
   });
 
+  $: {
+    console.log("beforeUpdate!!~ params.id = ", params.id)
+    let parseResult = parseInt(params.id);
+    if (!isNaN(parseResult)) {
+      let docId = parseResult;
+      docsStore.navigateToDoc(docId);
+    } else {
+      // TODO: do something?
+    }
+  }
+
+  $: currentTree = (function() {
+    console.log("updating currentTree, currentDocId = ", $docsStore.currentDocId);
+    return $docsStore.currentDocId !== null
+      ? $docsStore.documents[$docsStore.currentDocId].tree
+      : null;
+  })();
+
+  $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
+
+
   let docTitleText = $docsStore.docName;
 
   $: docTitle = $docsStore.docName;
@@ -45,12 +68,6 @@
 
   $: docIsEditingName = $docsStore.docIsEditingName;
 
-  $: currentTree =
-    $docsStore.currentDocId !== null
-      ? $docsStore.documents[$docsStore.currentDocId].tree
-      : null;
-
-  $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
 
   // TODO: move into getBacklinks?
   $: backlinks = (function() {
