@@ -1,12 +1,4 @@
 <script>
-  export let tree,
-    flowyTreeNode,
-    docTitle,
-    docCursorEntryId,
-    docCursorColId,
-    backlinks,
-    docIsEditingName;
-
   import BacklinksDisplay from "./BacklinksDisplay.svelte";
   import Header from './Header.svelte';
   import Node from "./Node.svelte";
@@ -35,6 +27,8 @@
   });
 
 
+  $: docTitle = $docsStore.docName;
+
   let docTitleText = docTitle;
 
   $: handleSaveName = () => docsStore.saveEditingDocName(docTitleText);
@@ -48,6 +42,36 @@
     docTitleText = docTitle;
     docsStore.startEditingDocName();
   };
+
+  $: docIsEditingName = $docsStore.docIsEditingName;
+
+  $: currentTree =
+    $docsStore.currentDocId !== null
+      ? $docsStore.documents[$docsStore.currentDocId].tree
+      : null;
+
+  $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
+
+  // TODO: move into getBacklinks?
+  $: backlinks = (function() {
+    let backlinks = $docsStore.linkGraph.getBacklinks($docsStore.currentDocId);
+    let backlinksObj = {};
+    for (let [[docId, entryId], _] of backlinks.entries()) {
+      if (!(docId in backlinksObj)) {
+        backlinksObj[docId] = {
+          id: docId,
+          name: $docsStore.documents[docId].name,
+          entries: {}
+        };
+      }
+      backlinksObj[docId].entries[entryId] = {
+        id: entryId,
+        text: $docsStore.documents[docId].tree.getEntryText(entryId)
+      };
+    }
+    return backlinksObj;
+  })();
+
 </script>
 
 <style>
@@ -120,10 +144,10 @@
   {/if}
 
   <Node
-    {tree}
-    {flowyTreeNode}
-    {docCursorEntryId}
-    {docCursorColId}
+    tree={currentTree}
+    flowyTreeNode={currentTreeRoot}
+    docCursorEntryId={$docsStore.cursorEntryId}
+    docCursorColId={$docsStore.cursorColId}
 
     handleCollapseEntry={docsStore.collapseEntry}
     handleDedent={docsStore.dedentEntry}

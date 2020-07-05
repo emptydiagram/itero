@@ -171,38 +171,11 @@
   }
 
 
-  // TODO: move into getBacklinks?
-  $: backlinks = (function() {
-    let backlinks = $docsStore.linkGraph.getBacklinks($docsStore.currentDocId);
-    let backlinksObj = {};
-    for (let [[docId, entryId], _] of backlinks.entries()) {
-      if (!(docId in backlinksObj)) {
-        backlinksObj[docId] = {
-          id: docId,
-          name: $docsStore.documents[docId].name,
-          entries: {}
-        };
-      }
-      backlinksObj[docId].entries[entryId] = {
-        id: entryId,
-        text: $docsStore.documents[docId].tree.getEntryText(entryId)
-      };
-    }
-    return backlinksObj;
-  })();
-
   // save the latest document
   $: dataMgr.saveDocuments($docsStore.documents);
 
   $: isAtTop = $machineState.matches("flowiki.top");
 
-
-  $: currentTree =
-    $docsStore.currentDocId !== null
-      ? $docsStore.documents[$docsStore.currentDocId].tree
-      : null;
-
-  $: currentTreeRoot = (currentTree && currentTree.getRoot()) || null;
 
   $: if (history.location.pathname === "/create" && typeof $docsStore.currentDocId === "number") {
     history.replace(`/${$docsStore.currentDocId}`);
@@ -226,15 +199,7 @@
 {#if isAtTop}
   <Top />
 {:else}
-  <Document
-    tree={currentTree}
-    flowyTreeNode={currentTreeRoot}
-    docCursorEntryId={$docsStore.cursorEntryId}
-    docCursorColId={$docsStore.cursorColId}
-    docTitle={$docsStore.docName}
-    backlinks={backlinks}
-    docIsEditingName={$docsStore.docIsEditingName}
-    />
+  <Document />
 {/if}
 
 <div id="actions-bar">
