@@ -17,15 +17,13 @@
     handleIndent,
     handleDedent,
     handleMultilinePaste,
-    handleStartEditingDocName,
-    handleCancelEditingDocName,
-    handleSaveDocName,
     handleSaveCursorColId,
     handleUpdateEntryLinks;
 
   import BacklinksDisplay from "./BacklinksDisplay.svelte";
   import Header from './Header.svelte';
   import Node from "./Node.svelte";
+  import { docsStore } from "./stores.js";
 
   import { afterUpdate } from 'svelte';
   import Icon from 'svelte-awesome';
@@ -52,16 +50,16 @@
 
   let docTitleText = docTitle;
 
-  $: handleSaveName = () => handleSaveDocName(docTitleText);
+  $: handleSaveName = () => docsStore.saveEditingDocName(docTitleText);
 
   $: handleEditingCancel = () => {
     docTitleText = docTitle;
-    handleCancelEditingDocName();
+    docsStore.cancelEditingDocName();
   };
 
   $: handleStartEditing = () => {
     docTitleText = docTitle;
-    handleStartEditingDocName();
+    docsStore.startEditingDocName();
   };
 </script>
 
