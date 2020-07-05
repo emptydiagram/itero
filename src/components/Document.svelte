@@ -23,9 +23,11 @@
     handleSaveCursorColId,
     handleUpdateEntryLinks;
 
-  import { afterUpdate } from 'svelte';
-  import Node from "./Node.svelte";
   import BacklinksDisplay from "./BacklinksDisplay.svelte";
+  import Header from './Header.svelte';
+  import Node from "./Node.svelte";
+
+  import { afterUpdate } from 'svelte';
   import Icon from 'svelte-awesome';
   import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
@@ -107,6 +109,8 @@
     font-size: 1em;
   }
 </style>
+
+<Header isTop={false} />
 
 <div id="document">
   {#if docIsEditingName}

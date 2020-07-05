@@ -1,6 +1,8 @@
 <script>
   export let displayDocs, createDoc;
 
+  import Header from './Header.svelte';
+
   import Icon from 'svelte-awesome';
   import { faPlus } from '@fortawesome/free-solid-svg-icons';
 </script>
@@ -18,6 +20,7 @@
   }
 </style>
 
+<Header isTop={true} />
 <button on:click={createDoc}><Icon data={faPlus} scale="1" /></button>
 
 <ul id="docsList">
