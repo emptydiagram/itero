@@ -234,19 +234,6 @@
     docTitle={$docsStore.docName}
     backlinks={backlinks}
     docIsEditingName={$docsStore.docIsEditingName}
-    handleGoUp={docsStore.entryGoUp}
-    handleGoDown={docsStore.entryGoDown}
-    handleSaveFullCursor={docsStore.saveCursor}
-    handleSaveCursorColId={docsStore.saveCursorColId}
-    handleIndent={docsStore.indentEntry}
-    handleDedent={docsStore.dedentEntry}
-    handleSplitEntry={docsStore.splitEntry}
-    handleEntryBackspace={docsStore.backspaceEntry}
-    handleMultilinePaste={docsStore.savePastedEntries}
-    handleUpdateEntryLinks={docsStore.updateEntryLinks}
-    handleCollapseEntry={docsStore.collapseEntry}
-    handleExpandEntry={docsStore.expandEntry}
-    handleSaveDocEntry={docsStore.saveCurrentPageDocEntry}
     />
 {/if}
 

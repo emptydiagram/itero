@@ -6,19 +6,6 @@
     docCursorColId,
     backlinks,
     docIsEditingName;
-  export let handleSaveDocEntry,
-    handleSaveFullCursor,
-    handleGoUp,
-    handleGoDown,
-    handleEntryBackspace,
-    handleCollapseEntry,
-    handleExpandEntry,
-    handleSplitEntry,
-    handleIndent,
-    handleDedent,
-    handleMultilinePaste,
-    handleSaveCursorColId,
-    handleUpdateEntryLinks;
 
   import BacklinksDisplay from "./BacklinksDisplay.svelte";
   import Header from './Header.svelte';
@@ -137,19 +124,20 @@
     {flowyTreeNode}
     {docCursorEntryId}
     {docCursorColId}
-    {handleSaveDocEntry}
-    {handleSaveFullCursor}
-    {handleGoUp}
-    {handleGoDown}
-    {handleCollapseEntry}
-    {handleExpandEntry}
-    {handleSplitEntry}
-    {handleEntryBackspace}
-    {handleIndent}
-    {handleDedent}
-    {handleMultilinePaste}
-    {handleSaveCursorColId}
-    {handleUpdateEntryLinks}
+
+    handleCollapseEntry={docsStore.collapseEntry}
+    handleDedent={docsStore.dedentEntry}
+    handleEntryBackspace={docsStore.backspaceEntry}
+    handleExpandEntry={docsStore.expandEntry}
+    handleGoDown={docsStore.entryGoDown}
+    handleGoUp={docsStore.entryGoUp}
+    handleIndent={docsStore.indentEntry}
+    handleMultilinePaste={docsStore.savePastedEntries}
+    handleSaveCursorColId={docsStore.saveCursorColId}
+    handleSaveDocEntry={docsStore.saveCurrentPageDocEntry}
+    handleSaveFullCursor={docsStore.saveCursor}
+    handleSplitEntry={docsStore.splitEntry}
+    handleUpdateEntryLinks={docsStore.updateEntryLinks}
   />
 
   <BacklinksDisplay
