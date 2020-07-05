@@ -26,10 +26,10 @@
     })
   });
 
+  let docTitleText = $docsStore.docName;
 
   $: docTitle = $docsStore.docName;
 
-  let docTitleText = docTitle;
 
   $: handleSaveName = () => docsStore.saveEditingDocName(docTitleText);
 
