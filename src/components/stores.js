@@ -48,6 +48,8 @@ function createDocsStore() {
       let newDocName = 'New document'
       let newDoc = createNewDocument(newDocName, 'TODO', store.documents);
       let newId = newDoc.id;
+      // append the new doc id for uniqueness(-ish)
+      newDoc.name += ` ${newId}`;
       store.documents[newId] = newDoc;
 
       // add entry into docIdLookup
