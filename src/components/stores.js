@@ -182,6 +182,7 @@ function createDocsStore() {
         prevNode.appendChildItem(currItem);
         let parentId = prevNode.getId();
         currItem.value.setParentId(parentId);
+        store.documents[docId].lastUpdated = getNowISO8601();
       }
 
       return store;
@@ -198,6 +199,7 @@ function createDocsStore() {
         parentItem.append(currItem);
         let parentParentId = parentItem.value.getParentId();
         currItem.value.setParentId(parentParentId);
+        store.documents[docId].lastUpdated = getNowISO8601();
       }
 
       return store;
