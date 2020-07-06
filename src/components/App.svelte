@@ -95,7 +95,7 @@
         let newFileUploadObj = JSON.parse(docsStr);
 
         Object.entries(newFileUploadObj).forEach(([id, doc]) => {
-          newFileUploadObj[id] = makeDoc(doc.id, doc.name, doc.tree.entries, doc.tree.node);
+          newFileUploadObj[id] = makeDoc(doc.id, doc.name, doc.lastUpdated, doc.tree.entries, doc.tree.node);
         })
 
         // TODO: verify that it has the required fields in the object

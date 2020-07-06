@@ -18,24 +18,53 @@
 
 <style>
   #docsList {
-    border-top: 1px solid #000;
-    padding: 0;
-    list-style-type: none;
+    border-collapse: collapse;
+    border: 0;
+    width: 100%;
   }
 
-  #docsList li {
-    padding: 0.5em 0;
-    border-bottom: 1px solid #000;
+  #docsList tr {
+    border-top: 1px solid #e9e9e9;
+  }
+
+  #docsList td {
+    padding: 0.4em;
+  }
+
+  #docsListHeader {
+    background-color: #e9e9e9;
+  }
+
+  #docsListHeader th {
+    padding: 0.4em;
+  }
+
+  #doc-name-header {
+    text-align: left;
+    width: 75%;
+  }
+
+  .last-updated {
+    font-size: 0.9em;
+    color: #404040;
+    text-align: center;
   }
 </style>
 
 <Header isTop={true} />
 <button on:click={createDoc}><Icon data={faPlus} scale="1" /></button>
 
-<ul id="docsList">
+<table id="docsList">
+  <tr id="docsListHeader">
+    <th id="doc-name-header">name</th>
+    <th>last updated</th>
+  </tr>
   {#each displayDocs as doc}
-    <li>
-      <a href={'#/doc/' + doc.id}>{doc.name}</a>
-    </li>
+    <tr>
+      <td>
+        <a href={'#/doc/' + doc.id}>{doc.name}</a>
+      </td>
+      <td class="last-updated">{new Date(doc.lastUpdated).toLocaleString()}</td>
+    </tr>
   {/each}
-</ul>
+</table>
