@@ -9,7 +9,7 @@ export const EntryDisplayState = Object.freeze({
     EXPANDED: Symbol("Colors.EXPANDED"),
 });
 
-function getNowISO8601() {
+export function getNowISO8601() {
   return new Date(Date.now()).toISOString();
 }
 

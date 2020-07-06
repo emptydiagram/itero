@@ -1,4 +1,4 @@
-import { EntryDisplayState, createNewDocument } from "../data.js";
+import { EntryDisplayState, createNewDocument, getNowISO8601 } from "../data.js";
 import FlowyTree from '../FlowyTree.js';
 
 import { writable } from 'svelte/store';
@@ -91,6 +91,7 @@ function createDocsStore() {
       let currDoc = store.documents[docId];
       let oldDocName = currDoc.name;
       currDoc.name = newDocName;
+      currDoc.lastUpdated = getNowISO8601();
 
       // remove old entry, add new in docIdLookup
       delete store.docIdLookupByDocName[oldDocName];
@@ -101,6 +102,7 @@ function createDocsStore() {
       let i = store.currentDocId;
       let currDoc = store.documents[i];
       currDoc.tree.setEntryText(store.cursorEntryId, newDocEntryText);
+      currDoc.lastUpdated = getNowISO8601();
       store.cursorColId = newColId;
       return store;
     }),
