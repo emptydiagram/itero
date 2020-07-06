@@ -9,6 +9,10 @@ export const EntryDisplayState = Object.freeze({
     EXPANDED: Symbol("Colors.EXPANDED"),
 });
 
+function getNowISO8601() {
+  return new Date(Date.now()).toISOString();
+}
+
 export function createNewDocument(newDocName, initEntryText, docs) {
   let existingIds = Object.keys(docs).map(id => parseInt(id));
   let newId = (Math.max(...existingIds) + 1).toString();
@@ -19,6 +23,7 @@ export function createNewDocument(newDocName, initEntryText, docs) {
   return {
     id: newId,
     name: newDocName,
+    lastUpdated: getNowISO8601(),
     tree: newTree,
   };
 }
@@ -69,6 +74,9 @@ export class DataManager {
       let deserDocs = {};
       Object.entries(treeObjDocs).forEach(([entryId, doc]) => {
         let newDoc = {...doc};
+        if (!('lastUpdated' in doc)) {
+          newDoc.lastUpdated = getNowISO8601();
+        }
         newDoc.tree = new FlowyTree(deserializeEntries(doc.tree.entries), FlowyTreeNode.fromTreeObj(doc.tree.node));
         deserDocs[entryId] = newDoc;
       });
@@ -137,11 +145,12 @@ export function makeInitContextFromDocuments(docs) {
   };
 }
 
-export function makeDoc(id, name, entries, root) {
+export function makeDoc(id, name, lastUpdated, entries, root) {
   return {
     id: id,
     name: name,
     tree: makeTree(entries, root),
+    lastUpdated: lastUpdated || getNowISO8601(),
   };
 }
 
@@ -196,6 +205,7 @@ function makeInitDocuments() {
         { 22: [{ 23: [24] }, 25] }
       ]}
   ];
+  let introLastUpdated ="2020-07-05T19:47:11.000Z";
   let similar = [
     {
       0: { text: 'svelte for components/state' },
@@ -207,8 +217,9 @@ function makeInitDocuments() {
     },
     { root: [0, 1, 2, 3, 4, 5] }
   ];
+  let similarLastUpdated ="2020-07-05T19:43:44.000Z";
   return {
-    '1': makeDoc(1, 'hello and what is this', intro[0], intro[1]),
-    '2': makeDoc(2, 'implementation details', similar[0], similar[1])
+    '1': makeDoc(1, 'hello and what is this', introLastUpdated, intro[0], intro[1]),
+    '2': makeDoc(2, 'implementation details', similarLastUpdated, similar[0], similar[1])
   };
 }
