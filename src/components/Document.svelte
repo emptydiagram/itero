@@ -136,7 +136,7 @@
   }
 </style>
 
-<Header isTop={false} />
+<Header />
 
 <div id="document">
   {#if docIsEditingName}

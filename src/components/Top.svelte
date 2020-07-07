@@ -1,5 +1,4 @@
 <script>
-  import Header from './Header.svelte';
   import { docsStore } from "./stores.js";
 
   import { replace } from 'svelte-spa-router';
@@ -11,9 +10,63 @@
     replace("/create-doc");
   }
 
+  function sortNameAsc(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    } else if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
+  function sortNameDesc(a, b) {
+    if (a.name > b.name) {
+      return -1;
+    } else if (a.name < b.name) {
+      return 1;
+    }
+    return 0;
+  }
+  function sortLastUpdatedAsc(a, b) {
+    if (a.lastUpdated < b.lastUpdated) {
+      return -1;
+    } else if (a.lastUpdated > b.lastUpdated) {
+      return 1;
+    }
+    return 0;
+  }
+  function sortLastUpdatedDesc(a, b) {
+    if (a.lastUpdated > b.lastUpdated) {
+      return -1;
+    } else if (a.lastUpdated < b.lastUpdated) {
+      return 1;
+    }
+    return 0;
+  }
+
+  let selectedSort = null;
+
+  $: sortFunction = (function() {
+    if (selectedSort) {
+      switch (selectedSort) {
+        case "name-asc":
+          return sortNameAsc;
+        case "name-desc":
+          return sortNameDesc;
+        case "updated-asc":
+          return sortLastUpdatedAsc;
+        case "updated-desc":
+          return sortLastUpdatedDesc;
+        default:
+          console.log("TODO: sort selection has an unrecognized value");
+          return null;
+      }
+    }
+    return sortNameAsc;
+  })();
+
   $: displayDocs = $docsStore.docsDisplayList.map(id => {
     return $docsStore.documents[id];
-  });
+  }).sort(sortFunction);
 </script>
 
 <style>
@@ -49,10 +102,21 @@
     color: #404040;
     text-align: center;
   }
+
+  #top-control {
+    margin-top: 1em;
+  }
 </style>
 
-<Header isTop={true} />
-<button on:click={createDoc}><Icon data={faPlus} scale="1" /></button>
+<div id="top-control">
+  <select id="sort-select" bind:value={selectedSort}>
+    <option value="name-asc" selected>Sort by name ↑</option>
+    <option value="name-desc">Sort by name ↓</option>
+    <option value="updated-asc">Sort by last updated ↑</option>
+    <option value="updated-desc">Sort by last updated ↓</option>
+  </select>
+  <button on:click={createDoc}><Icon data={faPlus} scale="1" /></button>
+</div>
 
 <table id="docsList">
   <tr id="docsListHeader">
