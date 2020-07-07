@@ -1,6 +1,6 @@
 BSD 0-Clause License (0BSD)
 
-Copyright (C) 2020 oh, almanacs
+Copyright (C) 2020 llamachannel
 
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.
 
