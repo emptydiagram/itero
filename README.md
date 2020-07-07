@@ -1,6 +1,6 @@
 # itero
 
-![Node.js CI](https://github.com/ohalmanacs/innecto/workflows/Node.js%20CI/badge.svg?branch=master)
+![Node.js CI](https://github.com/llamachannel/itero/workflows/Node.js%20CI/badge.svg?branch=master)
 
 -----
 
