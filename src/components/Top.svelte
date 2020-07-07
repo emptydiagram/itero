@@ -110,10 +110,10 @@
 
 <div id="top-control">
   <select id="sort-select" bind:value={selectedSort}>
-    <option value="name-asc" selected>Sort by name ↑</option>
-    <option value="name-desc">Sort by name ↓</option>
-    <option value="updated-asc">Sort by last updated ↑</option>
-    <option value="updated-desc">Sort by last updated ↓</option>
+    <option value="name-asc" selected>Sort by name ↓</option>
+    <option value="name-desc">Sort by name ↑</option>
+    <option value="updated-asc">Sort by last updated ↓</option>
+    <option value="updated-desc">Sort by last updated ↑</option>
   </select>
   <button on:click={createDoc}><Icon data={faPlus} scale="1" /></button>
 </div>
