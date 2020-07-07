@@ -1,6 +1,3 @@
-<script>
-  export let isTop;
-</script>
 <style>
   header {
     font-size: 1.1em;
@@ -20,12 +17,8 @@
 </style>
 
 <header>
-  {#if isTop}
-    <span class="home">🏠</span>
-  {:else}
-    <span class="home">
-      <a href="#/">🏠</a>
-    </span>
-    &gt;
-  {/if}
+  <span class="home">
+    <a href="#/">🏠</a>
+  </span>
+  &gt;
 </header>
