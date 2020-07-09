@@ -12,7 +12,9 @@
     handleDedent,
     handleMultilinePaste,
     handleSaveCursorColId,
-    handleUpdateEntryLinks;
+    handleUpdateEntryLinks,
+    handleSwapWithAboveEntry,
+    handleSwapWithBelowEntry;
 
   import Icon from 'svelte-awesome';
   import { faCircle,faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -110,7 +112,10 @@
         {handleIndent}
         {handleDedent}
         {handleMultilinePaste}
-        {handleSaveCursorColId} />
+        {handleSaveCursorColId}
+        {handleSwapWithAboveEntry}
+        {handleSwapWithBelowEntry}
+        />
       {:else}
         <RenderedEntry
           entryId={currEntryId}
@@ -143,6 +148,8 @@
           {handleMultilinePaste}
           {handleSaveCursorColId}
           {handleUpdateEntryLinks}
+          {handleSwapWithAboveEntry}
+          {handleSwapWithBelowEntry}
           />
       </li>
     {/each}

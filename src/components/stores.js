@@ -369,6 +369,33 @@ function createDocsStore() {
       return store;
     }),
 
+    swapWithAboveEntry: () => update(store => {
+      let cursorEntryId = store.cursorEntryId;
+      let currDoc = store.documents[store.currentDocId];
+      let currTree = currDoc.tree;
+
+      if (currTree.hasPrevSibling(cursorEntryId)) {
+        let prevSiblingNode =  currTree.getPrevSiblingNode(cursorEntryId);
+        let prevSiblingId = prevSiblingNode.getId();
+        currTree.swapAdjacentSiblings(prevSiblingId, cursorEntryId);
+        currDoc.lastUpdated = getNowISO8601();
+      }
+      return store;
+    }),
+    swapWithBelowEntry: () => update(store => {
+      let cursorEntryId = store.cursorEntryId;
+      let currDoc = store.documents[store.currentDocId];
+      let currTree = currDoc.tree;
+
+      if (currTree.hasNextSibling(cursorEntryId)) {
+        let nextSiblingNode =  currTree.getNextSiblingNode(cursorEntryId);
+        let nextSiblingId = nextSiblingNode.getId();
+        currTree.swapAdjacentSiblings(cursorEntryId, nextSiblingId);
+        currDoc.lastUpdated = getNowISO8601();
+      }
+      return store;
+    }),
+
   }
 }
 
