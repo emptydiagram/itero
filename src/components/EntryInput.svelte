@@ -16,7 +16,9 @@
     handleMultilinePaste,
     handleSaveCursorColId,
     handleSaveDocEntry,
-    handleSaveFullCursor;
+    handleSaveFullCursor,
+    handleSwapWithAboveEntry,
+    handleSwapWithBelowEntry;
 
   import { afterUpdate, tick } from "svelte";
 
@@ -82,6 +84,8 @@
       if (ev.ctrlKey) {
         // TODO: Guard?
         handleCollapseEntry(entryId);
+      } else if (ev.shiftKey && ev.altKey) {
+        handleSwapWithAboveEntry(entryId);
       } else {
         if (isEntryAbove) {
           handleGoUp();
@@ -93,6 +97,8 @@
       if (ev.ctrlKey) {
         // TODO: Guard?
         handleExpandEntry(entryId);
+      } else if (ev.shiftKey && ev.altKey) {
+        handleSwapWithBelowEntry(entryId);
       } else {
         if (isEntryBelow) {
           handleGoDown();

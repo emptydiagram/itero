@@ -179,6 +179,8 @@
     handleSaveFullCursor={docsStore.saveCursor}
     handleSplitEntry={docsStore.splitEntry}
     handleUpdateEntryLinks={docsStore.updateEntryLinks}
+    handleSwapWithAboveEntry={docsStore.swapWithAboveEntry}
+    handleSwapWithBelowEntry={docsStore.swapWithBelowEntry}
   />
 
   <BacklinksDisplay

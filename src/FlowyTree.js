@@ -206,8 +206,6 @@ export default class FlowyTree {
     this.entryItems[newId] = newNode;
   }
 
-  // returns: the id of the new entry (the one just inserted)
-
   removeEntry(entryId) {
     let item = this.entryItems[entryId];
     delete this.entries[entryId];
@@ -221,8 +219,25 @@ export default class FlowyTree {
   hasPrevSibling(entryId) {
     return this.entryItems[entryId].prev !== null;
   }
+  hasNextSibling(entryId) {
+    return this.entryItems[entryId].next !== null;
+  }
 
   getPrevSiblingNode(entryId) {
     return this.entryItems[entryId].prev.value;
+  }
+  getNextSiblingNode(entryId) {
+    return this.entryItems[entryId].next.value;
+  }
+
+  // (entryIdA, entryIdB) must be (previous, next)
+  swapAdjacentSiblings(entryIdA, entryIdB) {
+    let itemA = this.getEntryItem(entryIdA);
+    let itemB = this.getEntryItem(entryIdB);
+    if (itemA.next !== itemB) {
+      return
+    }
+    itemA.detach();
+    itemB.append(itemA);
   }
 }
