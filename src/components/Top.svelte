@@ -109,18 +109,28 @@
 
   #top-control {
     margin-top: 1em;
+    display: flex;
+    flex-direction: row;
+  }
+
+  #top-control-sort {
+    margin-left: auto;
   }
 </style>
 
 <div id="top-control">
-  <button on:click={() => null}><Icon data={faTrashAlt} scale="1" /></button>
-  <button on:click={createDoc}><Icon data={faPlus} scale="1" /></button>
-  <select id="sort-select" bind:value={selectedSort}>
-    <option value="name-asc" selected>Sort by name ↓</option>
-    <option value="name-desc">Sort by name ↑</option>
-    <option value="updated-asc">Sort by last updated ↓</option>
-    <option value="updated-desc">Sort by last updated ↑</option>
-  </select>
+  <div id="top-control-button-bar">
+    <button on:click={() => null}><Icon data={faTrashAlt} scale="1" /></button>
+    <button on:click={createDoc}><Icon data={faPlus} scale="1" /></button>
+  </div>
+  <div id="top-control-sort">
+    <select id="sort-select" bind:value={selectedSort}>
+      <option value="name-asc" selected>Sort by name ↓</option>
+      <option value="name-desc">Sort by name ↑</option>
+      <option value="updated-asc">Sort by last updated ↓</option>
+      <option value="updated-desc">Sort by last updated ↑</option>
+    </select>
+  </div>
 </div>
 
 <table id="docsList">
