@@ -60,4 +60,13 @@ export default class LinkGraph {
       this.outAdjacency[docIdFrom][entryId].add(docIdTo);
       this.inAdjacency[docIdTo].add(this.convertToInAdjElement(docIdFrom, entryId));
     }
+
+    removeDoc(docId) {
+      if (docId in this.outAdjacency) {
+        delete this.outAdjacency[docId];
+      }
+      if (docId in this.inAdjacency) {
+        delete this.inAdjacency[docId];
+      }
+    }
 }

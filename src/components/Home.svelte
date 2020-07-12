@@ -10,7 +10,26 @@
     replace("/create-doc");
   }
 
+  function deleteDocs() {
+    // FIXME: linear scan non-ideal
+    let toDelete = Object.entries($docsStore.docsDisplay)
+      .filter(([_docId, docDisplay]) => docDisplay.isSelected)
+      .map(([docId, _docDisplay]) => docId);
+    const numDocs = n => n == 1 ? "document" : `${n} documents`;
+    let confirmMessage = `Are you sure you want to delete the selected ${numDocs(toDelete.length)}?`;
+    let confirmResult = window.confirm(confirmMessage);
+    if (confirmResult) {
+      docsStore.deleteDocs(toDelete);
+    }
+  }
+
+  function handleDocSelectionToggle(docId, event) {
+    docsStore.docsDisplaySetSelection(docId, event.target.checked);
+  }
+
   function sortNameAsc(a, b) {
+    a = a.doc;
+    b = b.doc;
     if (a.name < b.name) {
       return -1;
     } else if (a.name > b.name) {
@@ -19,6 +38,8 @@
     return 0;
   }
   function sortNameDesc(a, b) {
+    a = a.doc;
+    b = b.doc;
     if (a.name > b.name) {
       return -1;
     } else if (a.name < b.name) {
@@ -27,6 +48,8 @@
     return 0;
   }
   function sortLastUpdatedAsc(a, b) {
+    a = a.doc;
+    b = b.doc;
     if (a.lastUpdated < b.lastUpdated) {
       return -1;
     } else if (a.lastUpdated > b.lastUpdated) {
@@ -35,6 +58,8 @@
     return 0;
   }
   function sortLastUpdatedDesc(a, b) {
+    a = a.doc;
+    b = b.doc;
     if (a.lastUpdated > b.lastUpdated) {
       return -1;
     } else if (a.lastUpdated < b.lastUpdated) {
@@ -57,16 +82,29 @@
         case "updated-desc":
           return sortLastUpdatedDesc;
         default:
-          console.log("TODO: sort selection has an unrecognized value");
-          return null;
+          return sortNameAsc;
       }
     }
     return sortNameAsc;
   })();
 
-  $: displayDocs = $docsStore.docsDisplayList.map(id => {
-    return $docsStore.documents[id];
-  }).sort(sortFunction);
+
+  let atLeastOneSelected = false;
+
+  // docsDisplay is Map<string, {docId: string, isSelected: boolean }>
+  // returns a {doc: Document, isSelected: boolean }
+  $: displayDocs = (function() {
+    let newOneSelected = false;
+    let displayList = Object.entries($docsStore.docsDisplay).map(([docId, docDisplay]) => {
+      newOneSelected = newOneSelected || docDisplay.isSelected;
+      return {
+        doc: $docsStore.documents[docId],
+        isSelected: docDisplay.isSelected,
+      };
+    }).sort(sortFunction);
+    atLeastOneSelected = newOneSelected;
+    return displayList;
+  })();
 </script>
 
 <style>
@@ -116,11 +154,15 @@
   #top-control-sort {
     margin-left: auto;
   }
+
+  .selected-doc {
+    background-color:#e6fcf1
+  }
 </style>
 
 <div id="top-control">
   <div id="top-control-button-bar">
-    <button on:click={() => null}><Icon data={faTrashAlt} scale="1" /></button>
+    <button on:click={deleteDocs} disabled={!atLeastOneSelected}><Icon data={faTrashAlt} scale="1" /></button>
     <button on:click={createDoc}><Icon data={faPlus} scale="1" /></button>
   </div>
   <div id="top-control-sort">
@@ -136,20 +178,19 @@
 <table id="docsList">
   <tr id="docsListHeader">
     <th>
-      <input type="checkbox" />
     </th>
     <th id="doc-name-header">name</th>
     <th>last updated</th>
   </tr>
   {#each displayDocs as doc}
-    <tr>
+    <tr class={doc.isSelected ? "selected-doc" : ""}>
       <td class="doc-select">
-        <input type="checkbox" />
+        <input type="checkbox" checked={doc.isSelected} on:change={(ev) => handleDocSelectionToggle(doc.doc.id, ev)} />
       </td>
       <td>
-        <a href={'#/doc/' + doc.id}>{doc.name}</a>
+        <a href={'#/doc/' + doc.doc.id}>{doc.doc.name}</a>
       </td>
-      <td class="last-updated">{new Date(doc.lastUpdated).toLocaleString()}</td>
+      <td class="last-updated">{new Date(doc.doc.lastUpdated).toLocaleString()}</td>
     </tr>
   {/each}
 </table>
