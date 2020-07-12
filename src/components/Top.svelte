@@ -3,7 +3,7 @@
 
   import { replace } from 'svelte-spa-router';
   import Icon from 'svelte-awesome';
-  import { faPlus } from '@fortawesome/free-solid-svg-icons';
+  import { faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
   function createDoc() {
     // navigate to #/create
@@ -103,28 +103,39 @@
     text-align: center;
   }
 
+  .doc-select {
+    text-align: center;
+  }
+
   #top-control {
     margin-top: 1em;
   }
 </style>
 
 <div id="top-control">
+  <button on:click={() => null}><Icon data={faTrashAlt} scale="1" /></button>
+  <button on:click={createDoc}><Icon data={faPlus} scale="1" /></button>
   <select id="sort-select" bind:value={selectedSort}>
     <option value="name-asc" selected>Sort by name ↓</option>
     <option value="name-desc">Sort by name ↑</option>
     <option value="updated-asc">Sort by last updated ↓</option>
     <option value="updated-desc">Sort by last updated ↑</option>
   </select>
-  <button on:click={createDoc}><Icon data={faPlus} scale="1" /></button>
 </div>
 
 <table id="docsList">
   <tr id="docsListHeader">
+    <th>
+      <input type="checkbox" />
+    </th>
     <th id="doc-name-header">name</th>
     <th>last updated</th>
   </tr>
   {#each displayDocs as doc}
     <tr>
+      <td class="doc-select">
+        <input type="checkbox" />
+      </td>
       <td>
         <a href={'#/doc/' + doc.id}>{doc.name}</a>
       </td>
