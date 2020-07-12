@@ -29,15 +29,23 @@ function createDocsStore() {
     cursorEntryId: null,
     docName: '',
     docIsEditingName: false,
-    docsDisplayList: [],
+    docsDisplay: {},
     docIdLookupByDocName: {},
     documents: {},
   });
 
+  function createDocsDisplayEntry(newId) {
+    return { docId: newId, isSelected: false };
+  }
+
   return {
     subscribe,
     init: (documents, docIdLookupByDocName, linkGraph) => update(store => {
-      store.docsDisplayList = Object.keys(documents);
+      let initDocsDisplay = {};
+      Object.keys(documents).forEach(docId => {
+        initDocsDisplay[docId] = createDocsDisplayEntry(docId)
+      });
+      store.docsDisplay = initDocsDisplay
       store.docIdLookupByDocName = docIdLookupByDocName;
       store.documents = documents;
       store.linkGraph = linkGraph;
@@ -59,9 +67,24 @@ function createDocsStore() {
       store.docName = newDocName;
       store.cursorColId = null;
       store.cursorEntryId = 0;
-      store.docsDisplayList.push(newId);
+      store.docsDisplay[newId] = createDocsDisplayEntry(newId);
       return store;
     }),
+
+    docsDisplaySetSelection: (docId, newSelectionValue) => update(store => {
+      store.docsDisplay[docId].isSelected = newSelectionValue;
+      return store;
+    }),
+
+    deleteDocs: (docIdList) => update(store => {
+      docIdList.forEach(docId => {
+        delete store.documents[docId];
+        delete store.docsDisplay[docId];
+        store.linkGraph.removeDoc(docId);
+      });
+      return store;
+    }),
+
 
     navigateToDoc: (docId) => update(store => {
       let doc = store.documents[docId];
@@ -349,7 +372,7 @@ function createDocsStore() {
         let newDoc = createNewDocument(page, 'TODO', store.documents);
         let newId = newDoc.id;
         store.documents[newId] = newDoc;
-        store.docsDisplayList.push(newId);
+        store.docsDisplay[newId] = createDocsDisplayEntry(newId);
         store.docIdLookupByDocName[page] = newId;
         return newId;
       });
