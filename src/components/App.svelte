@@ -7,7 +7,7 @@
 
   import { docsStore } from "./stores.js";
   import Document from "./Document.svelte";
-  import Top from "./Top.svelte";
+  import Home from "./Home.svelte";
   import Page from "./Page.svelte";
   import CreateDoc from "./CreateDoc.svelte";
   import NotFound from "./NotFound.svelte";
@@ -115,8 +115,7 @@
 
 
   const routes = {
-    '/': Top,
-    '/docs': Top,
+    '/': Home,
     '/doc/:id': Document,
     '/create-doc': CreateDoc,
     '/page/:name': Page,
