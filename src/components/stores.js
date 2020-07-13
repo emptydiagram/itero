@@ -119,6 +119,18 @@ function createDocsStore() {
       // remove old entry, add new in docIdLookup
       delete store.docIdLookupByDocName[oldDocName];
       store.docIdLookupByDocName[newDocName] = docId;
+
+      // scan in-adjacency list. for each node, update all the internal links
+      // NOTE: dont update lastUpdated for the in-neighbors.
+      let inAdj = store.linkGraph.inAdjacency[docId];
+      if (inAdj) {
+        inAdj.forEach(backLinkEntry => {
+          const [backLinkDocId, backLinkEntryId] = backLinkEntry.split('-');
+          const currText = store.documents[backLinkDocId].tree.getEntryText(backLinkEntryId);
+          store.documents[backLinkDocId].tree.setEntryText(
+            backLinkEntryId, currText.replace(`[[${oldDocName}]]`, `[[${newDocName}]]`));
+        });
+      }
       return store;
     }),
     saveCurrentPageDocEntry: (newDocEntryText, newColId) => update(store => {
