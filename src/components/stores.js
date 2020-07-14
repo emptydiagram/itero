@@ -273,14 +273,26 @@ function createDocsStore() {
       return store;
     }),
 
-    backspaceEntry: () => update(store => {
+    backspaceEntry: (selStart, selEnd) => update(store => {
       let currentDoc = store.documents[store.currentDocId];
       let colId = store.cursorColId;
       let entryId = store.cursorEntryId;
 
+      // delete single-entry selection
+      if (selStart && selEnd && selStart !== selEnd) {
+        let currEntryText = currentDoc.tree.getEntryText(entryId);
+        let newEntry = currEntryText.substring(0, selStart) + currEntryText.substring(selEnd);
+        currentDoc.tree.setEntryText(entryId, newEntry);
+        // NOTE: for some reason it currently works with no update to cursorColId
+        // TODO: set cursorColId
+        return store;
+      }
+
+
       if (colId > 0) {
         let currEntryText = currentDoc.tree.getEntryText(entryId);
         let currTextLength = currEntryText.length;
+        // FIXME
         // colId might be larger than the text length, so handle it
         let actualColId = Math.min(colId, currTextLength);
         let newEntry =

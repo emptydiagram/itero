@@ -106,7 +106,11 @@
       }
     } else if (ev.key === "Backspace") {
       ev.preventDefault();
-      handleEntryBackspace();
+      if (ev.target.selectionStart !== ev.target.selectionEnd) {
+        handleEntryBackspace(ev.target.selectionStart, ev.target.selectionEnd);
+      } else {
+        handleEntryBackspace();
+      }
     } else if (ev.key === "Enter") {
       ev.preventDefault();
       handleSplitEntry();
