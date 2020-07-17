@@ -16,7 +16,7 @@
   }
 </style>
 
-<header>
+<header id="doc-header">
   <span class="home">
     <a href="#/">🏠</a>
   </span>

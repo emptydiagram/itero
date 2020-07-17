@@ -2,7 +2,7 @@
   export let backlinks;
   import RenderedEntry from "./RenderedEntry.svelte";
 
-  console.log(backlinks);
+  console.log("backlinks = ", backlinks);
   $: existsBacklinks = Object.keys(backlinks).length;
 </script>
 

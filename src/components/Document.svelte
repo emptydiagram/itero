@@ -139,6 +139,7 @@
 <Header />
 
 <div id="document">
+  <div id="doc-name-container">
   {#if docIsEditingName}
     <div>
       <input
@@ -159,6 +160,7 @@
       </span>
     </div>
   {/if}
+  </div>
 
   <Node
     tree={currentTree}
