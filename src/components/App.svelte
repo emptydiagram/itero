@@ -29,6 +29,17 @@
       let sel = document.getSelection();
       const renderedEntryNode = findRenderedEntryParent(sel.anchorNode);
       if (renderedEntryNode == null) {
+        let docHeader = document.getElementById("doc-header");
+        if (docHeader) {
+          let docName = document.getElementById("doc-name-container");
+          let docRefs = document.getElementById("doc-references");
+          let actionsBar = document.getElementById("actions-bar");
+
+          if (docHeader.contains(sel.anchorNode) || docName.contains(sel.anchorNode)
+              || docRefs.contains(sel.anchorNode) || actionsBar.contains(sel.anchorNode)) {
+            docsStore.saveCursorEntryId(null);
+          }
+        }
         return;
       }
 

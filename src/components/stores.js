@@ -65,6 +65,7 @@ function createDocsStore() {
 
       store.currentDocId = newId;
       store.docName = newDocName;
+      // TODO: how can this be null?
       store.cursorColId = null;
       store.cursorEntryId = 0;
       store.docsDisplay[newId] = createDocsDisplayEntry(newId);
@@ -88,10 +89,11 @@ function createDocsStore() {
 
     navigateToDoc: (docId) => update(store => {
       let doc = store.documents[docId];
-      let initEntryId = doc.tree.getTopEntryId();
+      // let initEntryId = doc.tree.getTopEntryId();
       store.currentDocId = docId;
       store.docName = doc.name;
-      store.cursorEntryId = initEntryId;
+      // store.cursorEntryId = initEntryId;
+      store.cursorEntryId = null;
       return store;
     }),
 
@@ -148,6 +150,10 @@ function createDocsStore() {
     }),
     saveCursorColId: (newColId) => update(store => {
       store.cursorColId = newColId;
+      return store;
+    }),
+    saveCursorEntryId: (newEntryId) => update(store => {
+      store.cursorEntryId = newEntryId;
       return store;
     }),
 
