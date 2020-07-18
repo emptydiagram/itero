@@ -410,7 +410,6 @@ function createDocsStore() {
 
       // diff currLinks, newLinks
       let [removed, added] = diffSets(currLinks, newLinks);
-      console.log("updateEntryLinks, (removed, added) = ", removed, added);
 
       removed.forEach(docId => {
         store.linkGraph.removeLink(store.currentDocId, entryId, docId);
