@@ -1,6 +1,7 @@
 <script>
   export let entryId,
     entryValue,
+    entryHeadingSize,
     docCursorEntryId,
     docCursorColId,
     isEntryAbove,
@@ -18,7 +19,8 @@
     handleSaveDocEntry,
     handleSaveFullCursor,
     handleSwapWithAboveEntry,
-    handleSwapWithBelowEntry;
+    handleSwapWithBelowEntry,
+    handleCycleEntryHeadingSize;
 
   import { afterUpdate, tick } from "svelte";
 
@@ -120,6 +122,11 @@
       ev.preventDefault();
 
       handleCursorMove(this.selectionStart, this.value.length);
+    } else if (ev.key == "H") {
+      ev.preventDefault();
+      if (ev.ctrlKey && ev.shiftKey) {
+        handleCycleEntryHeadingSize(entryId);
+      }
     } else {
       return;
     }
@@ -156,17 +163,40 @@
   .entry-input {
     margin: 0;
     padding: 0;
-    border: 0;
+    /* FIXME: this is a load-bearing border for a minor layout issue */
+    border: 1px solid rgba(1.0, 1.0, 1.0, 0.0);
     width: 100%;
   }
   .highlighted {
     background-color: #e6fcf1;
   }
+
+  .heading-1 {
+    font-size: 1.2em;
+    font-weight: 800;
+    margin: 0.04em 0;
+  }
+
+  .heading-2 {
+    font-size: 1.13em;
+    font-weight: 700;
+    margin: 0.02em 0;
+  }
+
+  .heading-3 {
+    font-size: 1.06em;
+    font-weight: 600;
+    margin: 0.01em 0;
+  }
+
+  .heading-0 {
+    font-size: 1em;
+  }
 </style>
 
 <input
   type="text"
-  class="entry-input"
+  class={`entry-input heading-${entryHeadingSize}`}
   class:highlighted={entryId === docCursorEntryId}
   value={entryValue}
   bind:this={theInput}

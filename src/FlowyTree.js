@@ -3,9 +3,8 @@ import FlowyTreeNode from './FlowyTreeNode.js'
 import Queue from "./Queue.js";
 import { EntryDisplayState } from "./data.js";
 
-// TODO: handle full trees
 export default class FlowyTree {
-  // entries: Map<EntryId, { text: String, (displayState: EntryDisplayState)? }>
+  // entries: Map<EntryId, { text: String, (displayState: EntryDisplayState)?, (headingLevel: number)? }>
   // root: FlowyTreeNode
   // entryItems: Map<EntryId, LinkedListItem<FlowyTreeNode>>
   constructor(entries, root) {
@@ -157,6 +156,10 @@ export default class FlowyTree {
     return val;
   }
 
+  getEntryHeadingSize(entryId) {
+    return this.entries[entryId].headingSize || 0;
+  }
+
   getEntryItem(entryId) {
     return this.entryItems[entryId];
   }
@@ -239,5 +242,13 @@ export default class FlowyTree {
     }
     itemA.detach();
     itemB.append(itemA);
+  }
+
+  cycleEntryHeadingSize(entryId) {
+    if (!(entryId in this.entries)) {
+      return;
+    }
+    let currHeadingSize = this.entries[entryId].headingSize || 0;
+    this.entries[entryId].headingSize = (currHeadingSize + 1) % 4;
   }
 }
