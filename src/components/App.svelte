@@ -146,9 +146,15 @@
   #actions-bar > button {
     font-size: 0.9em;
   }
+
+  main {
+    font-size: 1.25em;
+  }
 </style>
 
-<Router {routes} />
+<main>
+  <Router {routes} />
+</main>
 
 <div id="actions-bar">
   <Icon data={faHammer} scale="1" />

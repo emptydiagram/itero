@@ -105,7 +105,7 @@
   }
 
   #doc-name-display {
-    font-size: 1.2em;
+    font-size: 1.4em;
     font-weight: bold;
   }
   #doc-name-edit {
@@ -121,7 +121,7 @@
     margin: 0;
     padding: 0.2em 0;
     border: 0;
-    font-size: 1.2em;
+    font-size: 1.4em;
     font-weight: bold;
     background-color: #f0f0ea;
     width: calc(98% - 7em);
@@ -132,7 +132,6 @@
       "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono",
       "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier,
       monospace;
-    font-size: 1em;
   }
 </style>
 
@@ -183,6 +182,7 @@
     handleUpdateEntryLinks={docsStore.updateEntryLinks}
     handleSwapWithAboveEntry={docsStore.swapWithAboveEntry}
     handleSwapWithBelowEntry={docsStore.swapWithBelowEntry}
+    handleCycleEntryHeadingSize={docsStore.cycleEntryHeadingSize}
   />
 
   <BacklinksDisplay

@@ -1,6 +1,7 @@
 <script>
   export let entryId,
     entryText,
+    entryHeadingSize,
     handleUpdateEntryLinks;
 
   import { MarkupParser } from "../markup/MarkupParser.js";
@@ -26,7 +27,26 @@
 .rendered-entry {
   white-space: pre-wrap;
 }
+
+.heading-1 {
+  font-size: 1.2em;
+  font-weight: 800;
+}
+
+.heading-2 {
+  font-size: 1.13em;
+  font-weight: 700;
+}
+
+.heading-3 {
+  font-size: 1.06em;
+  font-weight: 600;
+}
+
+.heading-0 {
+  font-size: 1em;
+}
 </style>
 
-<div class="rendered-entry" bind:this={theDiv} data-entry-id={entryId}>
+<div class={`rendered-entry heading-${entryHeadingSize}`} bind:this={theDiv} data-entry-id={entryId}>
 </div>

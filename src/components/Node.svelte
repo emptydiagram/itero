@@ -14,7 +14,8 @@
     handleSaveCursorColId,
     handleUpdateEntryLinks,
     handleSwapWithAboveEntry,
-    handleSwapWithBelowEntry;
+    handleSwapWithBelowEntry,
+    handleCycleEntryHeadingSize;
 
   import Icon from 'svelte-awesome';
   import { faCircle,faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -62,7 +63,7 @@
   .tree-node-list li {
     display: flex;
     flex-direction: column;
-    line-height: 1.5em;
+    line-height: 1.6em;
   }
 
   .entry-display {
@@ -97,6 +98,7 @@
       <EntryInput
         entryId={currEntryId}
         entryValue={tree.getEntryText(currEntryId)}
+        entryHeadingSize={tree.getEntryHeadingSize(currEntryId)}
         {docCursorEntryId}
         {docCursorColId}
         isEntryAbove={tree.hasEntryAbove(currEntryId)}
@@ -115,11 +117,13 @@
         {handleSaveCursorColId}
         {handleSwapWithAboveEntry}
         {handleSwapWithBelowEntry}
+        {handleCycleEntryHeadingSize}
         />
       {:else}
         <RenderedEntry
           entryId={currEntryId}
           entryText={tree.getEntryText(currEntryId)}
+          entryHeadingSize={tree.getEntryHeadingSize(currEntryId)}
           {handleUpdateEntryLinks}
           />
       {/if}
@@ -150,6 +154,7 @@
           {handleUpdateEntryLinks}
           {handleSwapWithAboveEntry}
           {handleSwapWithBelowEntry}
+          {handleCycleEntryHeadingSize}
           />
       </li>
     {/each}

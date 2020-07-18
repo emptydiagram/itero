@@ -448,6 +448,14 @@ function createDocsStore() {
       return store;
     }),
 
+    // "1, 2, 3, 0"
+    cycleEntryHeadingSize: (entryId) => update(store => {
+      let currDoc = store.documents[store.currentDocId];
+      let currTree = currDoc.tree;
+      currTree.cycleEntryHeadingSize(entryId);
+      return store;
+    }),
+
   }
 }
 
