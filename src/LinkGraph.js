@@ -51,6 +51,9 @@ export default class LinkGraph {
     }
 
     addLink(docIdFrom, entryId, docIdTo) {
+      if (!(docIdFrom in this.outAdjacency)) {
+        this.outAdjacency[docIdFrom] = {};
+      }
       if (!(entryId in this.outAdjacency[docIdFrom])) {
         this.outAdjacency[docIdFrom][entryId] = new Set();
       }
