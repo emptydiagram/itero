@@ -44,10 +44,10 @@
       }
 
       let colResult = findChildNodeSerializedCursorPosFromSelection(renderedEntryNode, sel, 0);
-      let newColId = colResult.pos;
+      let newCursorPos = colResult.pos;
 
       let newEntryId = parseInt(renderedEntryNode.dataset.entryId);
-      docsStore.saveCursor(newEntryId, newColId);
+      docsStore.saveCursor(newEntryId, newCursorPos, newCursorPos);
     });
   });
 

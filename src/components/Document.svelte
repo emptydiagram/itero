@@ -163,7 +163,8 @@
     tree={currentTree}
     flowyTreeNode={currentTreeRoot}
     docCursorEntryId={$docsStore.cursorEntryId}
-    docCursorColId={$docsStore.cursorColId}
+    docCursorSelStart={$docsStore.cursorSelectionStart}
+    docCursorSelEnd={$docsStore.cursorSelectionEnd}
 
     handleCollapseEntry={docsStore.collapseEntry}
     handleDedent={docsStore.dedentEntry}
@@ -173,7 +174,10 @@
     handleGoUp={docsStore.entryGoUp}
     handleIndent={docsStore.indentEntry}
     handleMultilinePaste={docsStore.savePastedEntries}
-    handleSaveCursorColId={docsStore.saveCursorColId}
+
+    handleMoveCursorLeft={docsStore.moveCursorLeft}
+    handleMoveCursorRight={docsStore.moveCursorRight}
+    handleSaveCursorPos={docsStore.saveCursorPos}
     handleSaveDocEntry={docsStore.saveCurrentPageDocEntry}
     handleSaveFullCursor={docsStore.saveCursor}
     handleSplitEntry={docsStore.splitEntry}

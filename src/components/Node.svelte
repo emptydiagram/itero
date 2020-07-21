@@ -1,6 +1,10 @@
 <script>
-  export let tree, flowyTreeNode, docCursorEntryId, docCursorColId;
-  export let handleSaveDocEntry,
+  export let tree,
+    flowyTreeNode,
+    docCursorEntryId,
+    docCursorSelStart,
+    docCursorSelEnd,
+    handleSaveDocEntry,
     handleSaveFullCursor,
     handleGoUp,
     handleGoDown,
@@ -11,7 +15,9 @@
     handleIndent,
     handleDedent,
     handleMultilinePaste,
-    handleSaveCursorColId,
+    handleMoveCursorLeft,
+    handleMoveCursorRight,
+    handleSaveCursorPos,
     handleUpdateEntryLinks,
     handleSwapWithAboveEntry,
     handleSwapWithBelowEntry,
@@ -100,7 +106,8 @@
         entryValue={tree.getEntryText(currEntryId)}
         entryHeadingSize={tree.getEntryHeadingSize(currEntryId)}
         {docCursorEntryId}
-        {docCursorColId}
+        {docCursorSelStart}
+        {docCursorSelEnd}
         isEntryAbove={tree.hasEntryAbove(currEntryId)}
         isEntryBelow={tree.hasEntryBelow(currEntryId)}
         {handleSaveDocEntry}
@@ -114,7 +121,9 @@
         {handleIndent}
         {handleDedent}
         {handleMultilinePaste}
-        {handleSaveCursorColId}
+        {handleMoveCursorLeft}
+        {handleMoveCursorRight}
+        {handleSaveCursorPos}
         {handleSwapWithAboveEntry}
         {handleSwapWithBelowEntry}
         {handleCycleEntryHeadingSize}
@@ -138,7 +147,8 @@
           {tree}
           flowyTreeNode={child.value}
           {docCursorEntryId}
-          {docCursorColId}
+          {docCursorSelStart}
+          {docCursorSelEnd}
           {handleSaveDocEntry}
           {handleSaveFullCursor}
           {handleGoUp}
@@ -150,7 +160,9 @@
           {handleIndent}
           {handleDedent}
           {handleMultilinePaste}
-          {handleSaveCursorColId}
+          {handleMoveCursorLeft}
+          {handleMoveCursorRight}
+          {handleSaveCursorPos}
           {handleUpdateEntryLinks}
           {handleSwapWithAboveEntry}
           {handleSwapWithBelowEntry}

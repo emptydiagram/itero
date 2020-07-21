@@ -3,7 +3,8 @@
     entryValue,
     entryHeadingSize,
     docCursorEntryId,
-    docCursorColId,
+    docCursorSelStart,
+    docCursorSelEnd,
     isEntryAbove,
     isEntryBelow;
   export let handleGoUp,
@@ -15,7 +16,9 @@
     handleIndent,
     handleDedent,
     handleMultilinePaste,
-    handleSaveCursorColId,
+    handleMoveCursorLeft,
+    handleMoveCursorRight,
+    handleSaveCursorPos,
     handleSaveDocEntry,
     handleSaveFullCursor,
     handleSwapWithAboveEntry,
@@ -42,30 +45,26 @@
       }
       // select all classes entry-input
       if (entryId === docCursorEntryId) {
-        theInput.setSelectionRange(docCursorColId, docCursorColId);
+        theInput.setSelectionRange(docCursorSelStart, docCursorSelEnd);
       }
     }
   });
 
   function handleCursorMove(colId, entryValueSize) {
-    let newColId = colId;
-
     switch (event.key) {
       case "ArrowLeft":
-        newColId = Math.max(0, colId - 1);
-        break;
+        handleMoveCursorLeft();
+        return;
       case "ArrowRight":
-        newColId = Math.min(entryValueSize, colId + 1);
-        break;
+        handleMoveCursorRight(entryValueSize);
+        return;
       case "Home":
-        newColId = 0;
-        break;
+        handleSaveCursorPos(0);
+        return;
       case "End":
-        newColId = entryValueSize;
-        break;
+        handleSaveCursorPos(entryValueSize);
+        return;
     }
-
-    handleSaveCursorColId(newColId);
   }
 
   async function handleKeydown(ev) {
@@ -108,11 +107,7 @@
       }
     } else if (ev.key === "Backspace") {
       ev.preventDefault();
-      if (ev.target.selectionStart !== ev.target.selectionEnd) {
-        handleEntryBackspace(ev.target.selectionStart, ev.target.selectionEnd);
-      } else {
-        handleEntryBackspace();
-      }
+      handleEntryBackspace();
     } else if (ev.key === "Enter") {
       ev.preventDefault();
       handleSplitEntry();
@@ -122,31 +117,29 @@
       ev.preventDefault();
 
       handleCursorMove(this.selectionStart, this.value.length);
-    } else if (ev.key == "H") {
+    } else if (ev.key == "H" && ev.ctrlKey && ev.shiftKey) {
       ev.preventDefault();
-      if (ev.ctrlKey && ev.shiftKey) {
-        handleCycleEntryHeadingSize(entryId);
-      }
+      handleCycleEntryHeadingSize(entryId);
     } else {
       return;
     }
     await tick();
-    this.selectionStart = docCursorColId;
-    this.selectionEnd = docCursorColId;
+    this.selectionStart = docCursorSelStart;
+    this.selectionEnd = docCursorSelEnd;
   }
 
   $: handleEntryInputClick = (index, ev) => {
-    let colId = ev.target.selectionStart;
-    if (docCursorEntryId !== index || docCursorColId != colId) {
-      handleSaveFullCursor(index, colId);
+    let newSelStart = ev.target.selectionStart;
+    let newSelEnd = ev.target.selectionEnd;
+    if (docCursorEntryId !== index || docCursorSelStart != newSelStart || docCursorSelEnd != newSelEnd) {
+      handleSaveFullCursor(index, newSelStart, newSelEnd);
     }
   };
 
   $: handleInput = ev => {
     console.log("EntryInput, input event");
-    let colId = ev.target.selectionStart;
     let entryText = ev.target.value;
-    handleSaveDocEntry(entryText, colId);
+    handleSaveDocEntry(entryText, ev.target.selectionStart, ev.target.selectionEnd);
   };
 
   $: handlePaste = ev => {
