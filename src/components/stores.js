@@ -25,7 +25,8 @@ function diffSets(a, b) {
 function createDocsStore() {
   let { subscribe, update } = writable({
     currentDocId: null,
-    cursorColId: 0,
+    cursorSelectionStart: 0,
+    cursorSelectionEnd: 0,
     cursorEntryId: null,
     docName: '',
     docIsEditingName: false,
@@ -66,7 +67,8 @@ function createDocsStore() {
       store.currentDocId = newId;
       store.docName = newDocName;
       // TODO: how can this be null?
-      store.cursorColId = null;
+      store.cursorSelectionStart = null;
+      store.cursorSelectionEnd = null;
       store.cursorEntryId = 0;
       store.docsDisplay[newId] = createDocsDisplayEntry(newId);
       return store;
@@ -135,21 +137,42 @@ function createDocsStore() {
       }
       return store;
     }),
-    saveCurrentPageDocEntry: (newDocEntryText, newColId) => update(store => {
+    saveCurrentPageDocEntry: (newDocEntryText, newCursorSelStart, newCursorSelEnd) => update(store => {
       let i = store.currentDocId;
       let currDoc = store.documents[i];
       currDoc.tree.setEntryText(store.cursorEntryId, newDocEntryText);
       currDoc.lastUpdated = getNowISO8601();
-      store.cursorColId = newColId;
+      store.cursorSelectionStart = newCursorSelStart;
+      store.cursorSelectionEnd = newCursorSelEnd;
       return store;
     }),
-    saveCursor: (newEntryId, newColId) => update(store => {
-      store.cursorColId = newColId;
+    saveCursor: (newEntryId, newCursorSelStart, newCursorSelEnd) => update(store => {
+      store.cursorSelectionStart = newCursorSelStart;
+      store.cursorSelectionEnd = newCursorSelEnd;
       store.cursorEntryId = newEntryId;
       return store;
     }),
-    saveCursorColId: (newColId) => update(store => {
-      store.cursorColId = newColId;
+    moveCursorLeft: () => update(store => {
+      if (store.cursorSelectionStart === store.cursorSelectionEnd) {
+        store.cursorSelectionStart = Math.max(0, store.cursorSelectionStart - 1);
+        store.cursorSelectionEnd = store.cursorSelectionStart;
+      } else {
+        store.cursorSelectionEnd = store.cursorSelectionStart;
+      }
+      return store;
+    }),
+    moveCursorRight: (entryValueSize) => update(store => {
+      if (store.cursorSelectionStart === store.cursorSelectionEnd) {
+        store.cursorSelectionStart = Math.min(entryValueSize, store.cursorSelectionStart + 1);
+        store.cursorSelectionEnd = store.cursorSelectionStart;
+      } else {
+        store.cursorSelectionStart = store.cursorSelectionEnd;
+      }
+      return store;
+    }),
+    saveCursorPosition: (pos) => update(store => {
+      store.cursorSelectionStart = pos;
+      store.cursorSelectionEnd = pos;
       return store;
     }),
     saveCursorEntryId: (newEntryId) => update(store => {
@@ -248,7 +271,7 @@ function createDocsStore() {
     splitEntry: () => update(store => {
       let docId = store.currentDocId;
       let entryId = store.cursorEntryId;
-      let colId = store.cursorColId;
+      let cursorPos = store.cursorSelectionStart;
 
       // TODO: only update documents if there's a docId (is this possible?)
       let currDoc = store.documents[docId];
@@ -256,56 +279,64 @@ function createDocsStore() {
       let currEntryText = currTree.getEntryText(entryId);
       let parentId = currTree.getParentId(entryId);
 
-      // let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-      // currDoc.tree = newTree;
+
+      // presto-removo the selected text
+      if (store.cursorSelectionStart !== store.cursorSelectionEnd) {
+        currEntryText = currEntryText.substring(0, store.cursorSelectionStart) + currEntryText.substring(store.cursorSelectionEnd);
+        console.log(" >> split, (entryId, text) = ", entryId, currEntryText);
+        currTree.setEntryText(entryId, currEntryText);
+        store.cursorSelectionEnd = store.cursorSelectionStart;
+      }
 
       // if at the end of a collapsed item, make a next sibling with empty text
       if (currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED
-          && colId === currEntryText.length) {
+          && cursorPos === currEntryText.length) {
 
         let newId = currDoc.tree.insertEntryBelow(entryId, parentId, '');
         store.cursorEntryId = newId;
-        store.cursorColId = 0;
+        store.cursorSelectionStart = 0;
         return store;
       }
 
-      let newEntryText = currEntryText.substring(0, colId);
-      let updatedCurrEntry = currEntryText.substring(colId, currEntryText.length);
+      let newEntryText = currEntryText.substring(0, cursorPos);
+      let updatedCurrEntry = currEntryText.substring(cursorPos, currEntryText.length);
       currDoc.tree.setEntryText(entryId, updatedCurrEntry);
       currDoc.tree.insertEntryAbove(entryId, parentId, newEntryText);
 
-      store.cursorColId = 0;
+      store.cursorSelectionStart = 0;
+      store.cursorSelectionEnd = store.cursorSelectionStart;
 
       return store;
     }),
 
-    backspaceEntry: (selStart, selEnd) => update(store => {
+    backspaceEntry: () => update(store => {
       let currentDoc = store.documents[store.currentDocId];
-      let colId = store.cursorColId;
+      let cursorPos = store.cursorSelectionStart;
       let entryId = store.cursorEntryId;
 
       // delete single-entry selection
-      if (selStart && selEnd && selStart !== selEnd) {
+      if (store.cursorSelectionStart !== store.cursorSelectionEnd) {
         let currEntryText = currentDoc.tree.getEntryText(entryId);
-        let newEntry = currEntryText.substring(0, selStart) + currEntryText.substring(selEnd);
+        let newEntry = currEntryText.substring(0, store.cursorSelectionStart) + currEntryText.substring(store.cursorSelectionEnd);
         currentDoc.tree.setEntryText(entryId, newEntry);
-        // NOTE: for some reason it currently works with no update to cursorColId
-        // TODO: set cursorColId
+        store.cursorSelectionEnd = store.cursorSelectionStart;
         return store;
       }
 
 
-      if (colId > 0) {
+
+      if (cursorPos > 0) {
         let currEntryText = currentDoc.tree.getEntryText(entryId);
         let currTextLength = currEntryText.length;
         // FIXME
         // colId might be larger than the text length, so handle it
-        let actualColId = Math.min(colId, currTextLength);
+        let effectiveCursorPos = Math.min(cursorPos, currTextLength);
         let newEntry =
-          currEntryText.substring(0, actualColId - 1) + currEntryText.substring(actualColId);
+          currEntryText.substring(0, effectiveCursorPos - 1) + currEntryText.substring(effectiveCursorPos);
         currentDoc.tree.setEntryText(entryId, newEntry);
 
-        store.cursorColId = actualColId - 1;
+        store.cursorSelectionStart = effectiveCursorPos - 1;
+        store.cursorSelectionEnd = store.cursorSelectionStart;
         return store;
       }
 
@@ -328,7 +359,7 @@ function createDocsStore() {
 
         let currEntryText = currentDoc.tree.getEntryText(entryId);
 
-        let newEntryId, newColId;
+        let newEntryId, newCursorPos;
         if (!currItem.value.hasChildren()) {
           // if current has no children, we delete current and append current's text
           // to previous entry.
@@ -340,7 +371,7 @@ function createDocsStore() {
           );
           currentDoc.tree.removeEntry(entryId);
           newEntryId = prevEntryId;
-          newColId = prevRowOrigEntryText.length;
+          newCursorPos = prevRowOrigEntryText.length;
 
         } else {
           // otherwise, current has children, and so if we had (prevItem == null || prevItem.value.hasChildren()), then
@@ -356,11 +387,12 @@ function createDocsStore() {
           );
           currentDoc.tree.removeEntry(prevEntryId);
           newEntryId = entryId;
-          newColId = prevRowOrigEntryText.length;
+          newCursorPos = prevRowOrigEntryText.length;
         }
 
         store.cursorEntryId = newEntryId;
-        store.cursorColId = newColId;
+        store.cursorSelectionStart = newCursorPos;
+        store.cursorSelectionEnd = store.cursorSelectionStart;
       }
 
       return store;
