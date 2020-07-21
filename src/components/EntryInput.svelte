@@ -137,7 +137,6 @@
   };
 
   $: handleInput = ev => {
-    console.log("EntryInput, input event");
     let entryText = ev.target.value;
     handleSaveDocEntry(entryText, ev.target.selectionStart, ev.target.selectionEnd);
   };
@@ -166,19 +165,19 @@
 
   .heading-1 {
     font-size: 1.2em;
-    font-weight: 800;
+    font-weight: bold;
     margin: 0.04em 0;
   }
 
   .heading-2 {
     font-size: 1.13em;
-    font-weight: 700;
+    font-weight: bold;
     margin: 0.02em 0;
   }
 
   .heading-3 {
     font-size: 1.06em;
-    font-weight: 600;
+    font-weight: bold;
     margin: 0.01em 0;
   }
 

@@ -29,7 +29,6 @@
   });
 
   $: {
-    console.log("beforeUpdate!!~ params.id = ", params.id)
     let parseResult = parseInt(params.id);
     if (!isNaN(parseResult)) {
       let docId = parseResult;
@@ -40,7 +39,6 @@
   }
 
   $: currentTree = (function() {
-    console.log("updating currentTree, currentDocId = ", $docsStore.currentDocId);
     return $docsStore.currentDocId !== null
       ? $docsStore.documents[$docsStore.currentDocId].tree
       : null;
