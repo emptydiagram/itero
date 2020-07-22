@@ -23,12 +23,17 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.svelte$/,
+        test: /\.(html|svelte)$/,
         use: {
           loader: 'svelte-loader',
           options: {
             emitCss: true,
-            hotReload: true
+            hotReload: true,
+            onwarn: function (warning, handleWarning) {
+              if (warning.code === 'a11y-no-onchange') { return }
+              // process as usual
+              handleWarning(warning);
+            }
           }
         }
       },
