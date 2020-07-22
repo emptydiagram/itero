@@ -33,6 +33,7 @@ function createDocsStore() {
     docsDisplay: {},
     docIdLookupByDocName: {},
     documents: {},
+    sortMode: 'name-asc',
   });
 
   function createDocsDisplayEntry(newId) {
@@ -88,6 +89,10 @@ function createDocsStore() {
       return store;
     }),
 
+    changeSort: (newSortMode) => update(store => {
+      store.sortMode = newSortMode;
+      return store;
+    }),
 
     navigateToDoc: (docId) => update(store => {
       let doc = store.documents[docId];
