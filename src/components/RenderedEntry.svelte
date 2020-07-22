@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
   export let entryId,
-    entryText,
+    entryText: string,
     entryHeadingSize,
     handleUpdateEntryLinks;
 

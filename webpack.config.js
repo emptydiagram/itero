@@ -33,7 +33,9 @@ module.exports = {
               if (warning.code === 'a11y-no-onchange') { return }
               // process as usual
               handleWarning(warning);
-            }
+            },
+            preprocess: require('svelte-preprocess')({
+            })
           }
         }
       },
