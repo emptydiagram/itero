@@ -23,6 +23,10 @@
     }
   }
 
+  function changeSort(ev) {
+    docsStore.changeSort(ev.target.value);
+  }
+
   function handleDocSelectionToggle(docId, event) {
     docsStore.docsDisplaySetSelection(docId, event.target.checked);
   }
@@ -68,22 +72,18 @@
     return 0;
   }
 
-  let selectedSort = null;
-
   $: sortFunction = (function() {
-    if (selectedSort) {
-      switch (selectedSort) {
-        case "name-asc":
-          return sortNameAsc;
-        case "name-desc":
-          return sortNameDesc;
-        case "updated-asc":
-          return sortLastUpdatedAsc;
-        case "updated-desc":
-          return sortLastUpdatedDesc;
-        default:
-          return sortNameAsc;
-      }
+    switch ($docsStore.sortMode) {
+      case "name-asc":
+        return sortNameAsc;
+      case "name-desc":
+        return sortNameDesc;
+      case "updated-asc":
+        return sortLastUpdatedAsc;
+      case "updated-desc":
+        return sortLastUpdatedDesc;
+      default:
+        return sortNameAsc;
     }
     return sortNameAsc;
   })();
@@ -166,11 +166,11 @@
     <button on:click={createDoc}><Icon data={faPlus} scale="1" /></button>
   </div>
   <div id="top-control-sort">
-    <select id="sort-select" bind:value={selectedSort}>
-      <option value="name-asc" selected>Sort by name ↓</option>
-      <option value="name-desc">Sort by name ↑</option>
-      <option value="updated-asc">Sort by last updated ↓</option>
-      <option value="updated-desc">Sort by last updated ↑</option>
+    <select id="sort-select" on:change={changeSort}>
+      <option value="name-asc" selected={$docsStore.sortMode === 'name-asc'}>Sort by name ↓</option>
+      <option value="name-desc" selected={$docsStore.sortMode === 'name-desc'}>Sort by name ↑</option>
+      <option value="updated-asc" selected={$docsStore.sortMode === 'updated-asc'}>Sort by last updated ↓</option>
+      <option value="updated-desc" selected={$docsStore.sortMode === 'updated-desc'}>Sort by last updated ↑</option>
     </select>
   </div>
 </div>
