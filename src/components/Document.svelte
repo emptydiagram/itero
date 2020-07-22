@@ -175,7 +175,7 @@
 
     handleMoveCursorLeft={docsStore.moveCursorLeft}
     handleMoveCursorRight={docsStore.moveCursorRight}
-    handleSaveCursorPos={docsStore.saveCursorPos}
+    handleSaveCursorPos={docsStore.saveCursorPosition}
     handleSaveDocEntry={docsStore.saveCurrentPageDocEntry}
     handleSaveFullCursor={docsStore.saveCursor}
     handleSplitEntry={docsStore.splitEntry}
