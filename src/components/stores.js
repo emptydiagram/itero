@@ -1,4 +1,4 @@
-import { EntryDisplayState, createNewDocument, getNowISO8601 } from "../data.js";
+import { EntryDisplayState, createNewDocument, getNowISO8601 } from "../data.ts";
 import FlowyTree from '../FlowyTree.js';
 
 import { writable } from 'svelte/store';

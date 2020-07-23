@@ -33,7 +33,7 @@
   import { LinkedListItem } from "../LinkedList";
   import RenderedEntry from "./RenderedEntry.svelte";
   import Node from "./Node.svelte";
-  import { EntryDisplayState } from "../data.js";
+  import { EntryDisplayState } from "../data.ts";
 
 
   function nodeIsCollapsed(node) {

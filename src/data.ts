@@ -1,8 +1,20 @@
 import { deserializeEntries, serializeEntries } from "./serialization.js";
+import DataStore from "./DataStore.js";
 import FlowyTree from "./FlowyTree.js";
 import FlowyTreeNode from "./FlowyTreeNode.js";
 import { MarkupParser } from "./markup/MarkupParser.js";
 import LinkGraph from "./LinkGraph.js";
+
+export interface Document {
+  id: string,
+  name: string,
+  tree: FlowyTree,
+  lastUpdated: Date
+}
+
+export interface DocumentsCollection {
+  [id: string]: Document;
+}
 
 export const EntryDisplayState = Object.freeze({
     COLLAPSED: Symbol("Colors.COLLAPSED"),
@@ -37,7 +49,9 @@ function makeTree(entries, treeObj) {
 const LS_KEY = "itero-docs";
 
 export class DataManager {
-  constructor(dataStore) {
+  dataStore: DataStore;
+
+  constructor(dataStore: DataStore) {
     this.dataStore = dataStore;
   }
 
@@ -63,7 +77,7 @@ export class DataManager {
     return val;
   }
 
-  getDocuments() {
+  getDocuments(): DocumentsCollection {
     const val = this.dataStore.get(LS_KEY);
     let docs;
     if (val == null) {
@@ -73,11 +87,11 @@ export class DataManager {
       let treeObjDocs = JSON.parse(val);
       let deserDocs = {};
       Object.entries(treeObjDocs).forEach(([entryId, doc]) => {
-        let newDoc = {...doc};
-        if (!('lastUpdated' in doc)) {
+        let newDoc = {...(doc as any)};
+        if (!('lastUpdated' in (doc as any))) {
           newDoc.lastUpdated = getNowISO8601();
         }
-        newDoc.tree = new FlowyTree(deserializeEntries(doc.tree.entries), FlowyTreeNode.fromTreeObj(doc.tree.node));
+        newDoc.tree = new FlowyTree(deserializeEntries((doc as any).tree.entries), FlowyTreeNode.fromTreeObj((doc as any).tree.node));
         deserDocs[entryId] = newDoc;
       });
       docs = deserDocs;
@@ -87,7 +101,7 @@ export class DataManager {
 
   // documents: Map<EntryId, Document>
   // where type Document = {id: EntryId, name: String, tree: FlowyTree }
-  saveDocuments(documents) {
+  saveDocuments(documents: DocumentsCollection) {
     let serDocs = {};
     Object.entries(documents).forEach(([entryId, doc]) => {
       serDocs[entryId] = this.documentToSerializationObject(doc);
@@ -103,7 +117,7 @@ function makeDocIdLookup(docs) {
 
   let docIdLookup = {};
   Object.entries(docs).forEach(([docId, doc]) => {
-    docIdLookup[doc.name] = docId;
+    docIdLookup[(doc as any).name] = docId;
   });
   return docIdLookup;
 }
@@ -114,8 +128,8 @@ function makeLinkGraph(docs, docIdLookup) {
   Object.entries(docs).forEach(([docId, doc]) => {
     outAdjacency[docId] = {};
     let currDocEntries = outAdjacency[docId];
-    Object.entries(doc.tree.getEntries()).forEach(([entryId, entry]) => {
-      let parseResult = MarkupParser.Text.tryParse(entry.text);
+    Object.entries((doc as any).tree.getEntries()).forEach(([entryId, entry]) => {
+      let parseResult = MarkupParser.Text.tryParse((entry as any).text);
       parseResult.linkedPages.forEach(page => {
         if (!(entryId in currDocEntries)) {
            currDocEntries[entryId] = new Set();
@@ -145,7 +159,7 @@ export function makeInitContextFromDocuments(docs) {
   };
 }
 
-export function makeDoc(id, name, lastUpdated, entries, root) {
+export function makeDoc(id, name, lastUpdated, entries, root): Document {
   return {
     id: id,
     name: name,
@@ -154,7 +168,7 @@ export function makeDoc(id, name, lastUpdated, entries, root) {
   };
 }
 
-function makeInitDocuments() {
+function makeInitDocuments(): DocumentsCollection {
   // 0: { text: 'this is a note taking app', displayState: EntryDisplayState.COLLAPSED },
   let intro = [
       {

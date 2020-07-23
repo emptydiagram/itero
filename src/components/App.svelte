@@ -12,7 +12,7 @@
   import CreateDoc from "./CreateDoc.svelte";
   import NotFound from "./NotFound.svelte";
   import DataStore from "../DataStore.js";
-  import { DataManager, makeInitContextFromDocuments, makeDoc } from "../data.js";
+  import { DataManager, makeInitContextFromDocuments, makeDoc } from "../data.ts";
   import { findChildNodeSerializedCursorPosFromSelection } from "../markup/util.js";
 
   function stringIncludesOne(str, values) {
