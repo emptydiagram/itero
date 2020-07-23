@@ -128,20 +128,20 @@
     this.selectionEnd = docCursorSelEnd;
   }
 
-  $: handleEntryInputClick = (index, ev) => {
+  function handleEntryInputClick(index, ev) {
     let newSelStart = ev.target.selectionStart;
     let newSelEnd = ev.target.selectionEnd;
     if (docCursorEntryId !== index || docCursorSelStart != newSelStart || docCursorSelEnd != newSelEnd) {
       handleSaveFullCursor(index, newSelStart, newSelEnd);
     }
-  };
+  }
 
-  $: handleInput = ev => {
+  function handleInput(ev) {
     let entryText = ev.target.value;
     handleSaveDocEntry(entryText, ev.target.selectionStart, ev.target.selectionEnd);
-  };
+  }
 
-  $: handlePaste = ev => {
+  function handlePaste(ev) {
     let pastedText = (ev.clipboardData || window.clipboardData).getData('text');
     let pastedLines = pastedText.split('\n');
     if (pastedLines.length > 1) {
