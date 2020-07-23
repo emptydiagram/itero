@@ -50,7 +50,7 @@
     }
   });
 
-  function handleCursorMove(colId, entryValueSize) {
+  function handleCursorMove(event, colId, entryValueSize) {
     switch (event.key) {
       case "ArrowLeft":
         handleMoveCursorLeft();
@@ -116,7 +116,7 @@
     ) {
       ev.preventDefault();
 
-      handleCursorMove(this.selectionStart, this.value.length);
+      handleCursorMove(ev, this.selectionStart, this.value.length);
     } else if (ev.key == "H" && ev.ctrlKey && ev.shiftKey) {
       ev.preventDefault();
       handleCycleEntryHeadingSize(entryId);
