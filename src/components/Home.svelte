@@ -85,7 +85,6 @@
       default:
         return sortNameAsc;
     }
-    return sortNameAsc;
   })();
 
 
