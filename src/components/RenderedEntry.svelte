@@ -1,7 +1,7 @@
 <script lang="ts">
   export let entryId,
     entryText: string,
-    entryHeadingSize,
+    entryHeadingSize: number,
     handleUpdateEntryLinks;
 
   import { MarkupParser } from "../markup/MarkupParser.js";

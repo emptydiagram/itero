@@ -1,6 +1,6 @@
-<script>
-  export let tree,
-    flowyTreeNode,
+<script lang="ts">
+  export let tree: FlowyTree,
+    flowyTreeNode: FlowyTreeNode,
     docCursorEntryId,
     docCursorSelStart,
     docCursorSelEnd,
@@ -26,7 +26,11 @@
   import Icon from 'svelte-awesome';
   import { faCircle,faPlus } from '@fortawesome/free-solid-svg-icons';
 
+  import FlowyTree from '../FlowyTree';
+  import FlowyTreeNode from '../FlowyTreeNode';
   import EntryInput from "./EntryInput.svelte";
+
+  import { LinkedListItem } from "../LinkedList";
   import RenderedEntry from "./RenderedEntry.svelte";
   import Node from "./Node.svelte";
   import { EntryDisplayState } from "../data.js";
@@ -45,14 +49,20 @@
     }
   }
 
+  let currEntryId: number;
   $: currEntryId = flowyTreeNode.getId();
 
+  let childItemArray: Array<LinkedListItem>;
   $: childItemArray = flowyTreeNode.getChildNodeArray();
+
+  let currNodeHasChildren: boolean;
   $: currNodeHasChildren = childItemArray.length > 0;
 
+  let isCollapsed: boolean;
   $: isCollapsed = currNodeHasChildren
     && tree.getEntryDisplayState(currEntryId) == EntryDisplayState.COLLAPSED;
 
+  let isCurrentEntry: boolean;
   $: isCurrentEntry = (currEntryId != null) && currEntryId === docCursorEntryId;
 
 </script>

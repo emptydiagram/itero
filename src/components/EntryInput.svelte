@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
   export let entryId,
-    entryValue,
-    entryHeadingSize,
+    entryValue: string,
+    entryHeadingSize: number,
     docCursorEntryId,
     docCursorSelStart,
     docCursorSelEnd,

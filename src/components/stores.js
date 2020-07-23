@@ -23,7 +23,7 @@ function diffSets(a, b) {
 
 
 function createDocsStore() {
-  let { subscribe, update } = writable({
+  let initState = {
     currentDocId: null,
     cursorSelectionStart: 0,
     cursorSelectionEnd: 0,
@@ -34,7 +34,9 @@ function createDocsStore() {
     docIdLookupByDocName: {},
     documents: {},
     sortMode: 'name-asc',
-  });
+  };
+
+  let { subscribe, update } = writable(initState);
 
   function createDocsDisplayEntry(newId) {
     return { docId: newId, isSelected: false };

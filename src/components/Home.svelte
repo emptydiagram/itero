@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { docsStore } from "./stores.js";
 
   import { replace } from 'svelte-spa-router';
@@ -88,7 +88,7 @@
   })();
 
 
-  let atLeastOneSelected = false;
+  let atLeastOneSelected: boolean = false;
 
   // docsDisplay is Map<string, {docId: string, isSelected: boolean }>
   // returns a {doc: Document, isSelected: boolean }
