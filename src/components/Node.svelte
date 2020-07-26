@@ -91,7 +91,7 @@
 </style>
 
 {#if currEntryId !== null}
-  <div class="entry-display">
+  <div class="entry-display" data-entry-id={currEntryId}>
     <span class="icon-container" on:click={() => handleToggle(currEntryId, nodeIsCollapsed(flowyTreeNode))}>
       {#if nodeIsCollapsed(flowyTreeNode)}
         <Icon data={faPlus} scale="0.51" />

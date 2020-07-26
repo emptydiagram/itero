@@ -15,39 +15,92 @@
   import { DataManager, makeInitContextFromDocuments, makeDoc } from "../data.js";
   import { findChildNodeSerializedCursorPosFromSelection } from "../markup/util.js";
 
-  function findRenderedEntryParent(initNode) {
-    let currNode = initNode;
-    while (currNode != null
-        && !(currNode.className != null && currNode.className.includes("rendered-entry"))) {
-      currNode = currNode.parentNode;
+  function stringIncludesOne(str, values) {
+    for (var i = 0; i < values.length; i++) {
+      if (str.includes(values[i])) {
+        return values[i];
+      }
     }
-    return currNode;
+    return false;
+  }
+
+  // TODO: findDocContentElement
+  function findDocContentElement(initNode) {
+    let currNode = initNode;
+    let currLocatedClassName;
+    let classNames = ["rendered-entry", "icon-container", "entry-display"];
+
+    function calcCurrLocatedClassName() {
+      currLocatedClassName = stringIncludesOne(currNode.className, classNames);
+      return currLocatedClassName;
+    }
+
+
+    // while:
+    //  - node isnt null
+    //  - and either:
+    //     - no className (how?)
+    //     - or, className doesn't include "rendered-entry"
+    // do:
+    //  - currNode <- currNode's parent
+    while (currNode
+        && (!currNode.className || !currNode.className.includes || !calcCurrLocatedClassName())) {
+      currNode = currNode.parentNode;
+      if (currNode && currNode.className && currNode.className.includes) {
+        calcCurrLocatedClassName();
+      }
+    }
+    return {
+      node: currNode,
+      className: currLocatedClassName,
+    }
   }
 
   onMount(() => {
     document.addEventListener('selectionchange', () => {
       let sel = document.getSelection();
-      const renderedEntryNode = findRenderedEntryParent(sel.anchorNode);
-      if (renderedEntryNode == null) {
-        let docHeader = document.getElementById("doc-header");
-        if (docHeader) {
-          let docName = document.getElementById("doc-name-container");
-          let docRefs = document.getElementById("doc-references");
-          let actionsBar = document.getElementById("actions-bar");
 
-          if (docHeader.contains(sel.anchorNode) || docName.contains(sel.anchorNode)
-              || docRefs.contains(sel.anchorNode) || actionsBar.contains(sel.anchorNode)) {
-            docsStore.saveCursorEntryId(null);
-          }
-        }
+      if (sel.anchorNode.className && sel.anchorNode.className.includes && sel.anchorNode.className.includes("entry-display")) {
+        // FIXME: tee hee, I don't know why these selectionchange events on entry-display are occurring
         return;
       }
 
-      let colResult = findChildNodeSerializedCursorPosFromSelection(renderedEntryNode, sel, 0);
-      let newCursorPos = colResult.pos;
+      let docHeader = document.getElementById("doc-header");
+      if (!docHeader) {
+        // TODO: find a better way to detect whether we're on doc page
+        return;
+      }
 
-      let newEntryId = parseInt(renderedEntryNode.dataset.entryId);
-      docsStore.saveCursor(newEntryId, newCursorPos, newCursorPos);
+      let docContent = document.getElementById("doc-content");
+
+      if (!docContent.contains(sel.anchorNode)) {
+        docsStore.saveCursorEntryId(null);
+        return;
+      }
+
+      let docContentResult = findDocContentElement(sel.anchorNode);
+      if (docContentResult.className === "icon-container") {
+        docsStore.saveCursorEntryId(null);
+        return;
+      }
+
+      if (docContentResult.className === "rendered-entry") {
+        const renderedEntryNode = docContentResult.node;
+        let colResult = findChildNodeSerializedCursorPosFromSelection(renderedEntryNode, sel, 0);
+        let newCursorPos = colResult.pos;
+
+        let newEntryId = parseInt(renderedEntryNode.dataset.entryId);
+        docsStore.saveCursor(newEntryId, newCursorPos, newCursorPos);
+        return;
+      }
+
+      // if we've made it here, then it's (a) inside #doc-content, but (b) outside an .entry-display
+      if (!docContentResult.node) {
+        docsStore.saveCursorEntryId(null);
+        return;
+      }
+
+      docsStore.saveCursor(parseInt(docContentResult.node.dataset.entryId), 0, 0);
     });
   });
 
