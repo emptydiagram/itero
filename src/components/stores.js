@@ -218,6 +218,7 @@ function createDocsStore() {
           newTree.setEntryDisplayState(entryId, EntryDisplayState.COLLAPSED)
           currDoc.tree = newTree;
         }
+        store.cursorEntryId = null;
       }
       return store;
     }),
@@ -235,6 +236,7 @@ function createDocsStore() {
           newTree.setEntryDisplayState(entryId, EntryDisplayState.EXPANDED)
           currDoc.tree = newTree;
         }
+        store.cursorEntryId = null;
       }
       return store;
     }),
