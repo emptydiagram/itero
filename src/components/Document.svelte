@@ -157,33 +157,35 @@
   {/if}
   </div>
 
-  <Node
-    tree={currentTree}
-    flowyTreeNode={currentTreeRoot}
-    docCursorEntryId={$docsStore.cursorEntryId}
-    docCursorSelStart={$docsStore.cursorSelectionStart}
-    docCursorSelEnd={$docsStore.cursorSelectionEnd}
+  <div id="doc-content">
+    <Node
+      tree={currentTree}
+      flowyTreeNode={currentTreeRoot}
+      docCursorEntryId={$docsStore.cursorEntryId}
+      docCursorSelStart={$docsStore.cursorSelectionStart}
+      docCursorSelEnd={$docsStore.cursorSelectionEnd}
 
-    handleCollapseEntry={docsStore.collapseEntry}
-    handleDedent={docsStore.dedentEntry}
-    handleEntryBackspace={docsStore.backspaceEntry}
-    handleExpandEntry={docsStore.expandEntry}
-    handleGoDown={docsStore.entryGoDown}
-    handleGoUp={docsStore.entryGoUp}
-    handleIndent={docsStore.indentEntry}
-    handleMultilinePaste={docsStore.savePastedEntries}
+      handleCollapseEntry={docsStore.collapseEntry}
+      handleDedent={docsStore.dedentEntry}
+      handleEntryBackspace={docsStore.backspaceEntry}
+      handleExpandEntry={docsStore.expandEntry}
+      handleGoDown={docsStore.entryGoDown}
+      handleGoUp={docsStore.entryGoUp}
+      handleIndent={docsStore.indentEntry}
+      handleMultilinePaste={docsStore.savePastedEntries}
 
-    handleMoveCursorLeft={docsStore.moveCursorLeft}
-    handleMoveCursorRight={docsStore.moveCursorRight}
-    handleSaveCursorPos={docsStore.saveCursorPosition}
-    handleSaveDocEntry={docsStore.saveCurrentPageDocEntry}
-    handleSaveFullCursor={docsStore.saveCursor}
-    handleSplitEntry={docsStore.splitEntry}
-    handleUpdateEntryLinks={docsStore.updateEntryLinks}
-    handleSwapWithAboveEntry={docsStore.swapWithAboveEntry}
-    handleSwapWithBelowEntry={docsStore.swapWithBelowEntry}
-    handleCycleEntryHeadingSize={docsStore.cycleEntryHeadingSize}
-  />
+      handleMoveCursorLeft={docsStore.moveCursorLeft}
+      handleMoveCursorRight={docsStore.moveCursorRight}
+      handleSaveCursorPos={docsStore.saveCursorPosition}
+      handleSaveDocEntry={docsStore.saveCurrentPageDocEntry}
+      handleSaveFullCursor={docsStore.saveCursor}
+      handleSplitEntry={docsStore.splitEntry}
+      handleUpdateEntryLinks={docsStore.updateEntryLinks}
+      handleSwapWithAboveEntry={docsStore.swapWithAboveEntry}
+      handleSwapWithBelowEntry={docsStore.swapWithBelowEntry}
+      handleCycleEntryHeadingSize={docsStore.cycleEntryHeadingSize}
+    />
+  </div>
 
   <BacklinksDisplay
     {backlinks}
