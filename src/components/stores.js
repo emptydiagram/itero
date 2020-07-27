@@ -156,9 +156,13 @@ function createDocsStore() {
       store.cursorEntryId = newEntryId;
       return store;
     }),
-    moveCursorLeft: () => update(store => {
-      if (store.cursorSelectionStart === store.cursorSelectionEnd) {
-        store.cursorSelectionStart = Math.max(0, store.cursorSelectionStart - 1);
+    moveCursorLeft: (entryValueSize) => update(store => {
+      let selStart = store.cursorSelectionStart > entryValueSize
+        ? entryValueSize
+        : store.cursorSelectionStart;
+
+      if (selStart !== store.cursorSelectionStart || selStart === store.cursorSelectionEnd) {
+        store.cursorSelectionStart = Math.max(0, selStart - 1);
         store.cursorSelectionEnd = store.cursorSelectionStart;
       } else {
         store.cursorSelectionEnd = store.cursorSelectionStart;
