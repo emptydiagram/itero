@@ -53,7 +53,7 @@
   function handleCursorMove(event, colId, entryValueSize) {
     switch (event.key) {
       case "ArrowLeft":
-        handleMoveCursorLeft();
+        handleMoveCursorLeft(entryValueSize);
         return;
       case "ArrowRight":
         handleMoveCursorRight(entryValueSize);
