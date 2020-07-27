@@ -66,6 +66,22 @@
   let isCurrentEntry: boolean;
   $: isCurrentEntry = (currEntryId != null) && currEntryId === docCursorEntryId;
 
+
+
+  // use entryValue and docCursorSelStart to see if cursor start is immediately after opening [[
+  let shouldShowDocNameAutocomplete: boolean;
+  $: shouldShowDocNameAutocomplete = (function() {
+    if (isCurrentEntry) {
+      let entryValue = tree.getEntryText(currEntryId);
+      let returnVal = entryValue && docCursorSelStart >= 2
+        && entryValue.substring(docCursorSelStart - 2, docCursorSelStart) === "[["
+        && !(docCursorSelStart > 2 && entryValue[docCursorSelStart - 3] === "\\");
+
+      console.log("::: returning = ", returnVal);
+      return returnVal;
+    }
+    return false;
+  })()
 </script>
 
 <style>
@@ -98,6 +114,16 @@
 
   .icon-container:hover {
     cursor: pointer;
+  }
+
+  #doc-name-autocomplete {
+    position: absolute;
+    z-index: 5;
+    margin-top: 1.75em;
+    margin-left: 1.5em;
+    background-color: #fff;
+    width: 25em;
+    box-shadow: 3px 3px 5px #363636;
   }
 </style>
 
@@ -148,6 +174,9 @@
           />
       {/if}
   </div>
+  {#if shouldShowDocNameAutocomplete}
+    <div id="doc-name-autocomplete">TODO. </div>
+  {/if}
 {/if}
 
 {#if currNodeHasChildren && !isCollapsed}
