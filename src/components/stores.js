@@ -143,8 +143,7 @@ function createDocsStore() {
       return store;
     }),
     saveCurrentPageDocEntry: (newDocEntryText, newCursorSelStart, newCursorSelEnd) => update(store => {
-      let i = store.currentDocId;
-      let currDoc = store.documents[i];
+      let currDoc = store.documents[store.currentDocId];
       currDoc.tree.setEntryText(store.cursorEntryId, newDocEntryText);
       currDoc.lastUpdated = getNowISO8601();
       store.cursorSelectionStart = newCursorSelStart;
