@@ -66,6 +66,10 @@
     docsStore.startEditingDocName();
   }
 
+  function findRelevantDocNames(text) {
+    return ['TODO1', 'AbC-2'];
+  }
+
   $: docIsEditingName = $docsStore.docIsEditingName;
 
 
@@ -167,6 +171,7 @@
       docCursorSelStart={$docsStore.cursorSelectionStart}
       docCursorSelEnd={$docsStore.cursorSelectionEnd}
 
+      {findRelevantDocNames}
       handleCollapseEntry={docsStore.collapseEntry}
       handleDedent={docsStore.dedentEntry}
       handleEntryBackspace={docsStore.backspaceEntry}

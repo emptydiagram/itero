@@ -29,10 +29,12 @@ function createDocsStore() {
     cursorSelectionEnd: 0,
     cursorEntryId: null,
     docName: '',
+    docNameInvIndex: {},
     docIsEditingName: false,
     docsDisplay: {},
     docIdLookupByDocName: {},
     documents: {},
+    linkGraph: null,
     sortMode: 'name-asc',
   };
 
@@ -44,7 +46,7 @@ function createDocsStore() {
 
   return {
     subscribe,
-    init: (documents, docIdLookupByDocName, linkGraph) => update(store => {
+    init: (documents, docIdLookupByDocName, linkGraph, docNameInvIndex) => update(store => {
       let initDocsDisplay = {};
       Object.keys(documents).forEach(docId => {
         initDocsDisplay[docId] = createDocsDisplayEntry(docId)
@@ -52,6 +54,7 @@ function createDocsStore() {
       store.docsDisplay = initDocsDisplay
       store.docIdLookupByDocName = docIdLookupByDocName;
       store.documents = documents;
+      store.docNameInvIndex = docNameInvIndex;
       store.linkGraph = linkGraph;
       return store;
     }),

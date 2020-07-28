@@ -145,7 +145,6 @@ function makeLinkGraph(docs, docIdLookup) {
       });
     });
   });
-  console.log(" !! makeLinkGraph, outAdj = ", outAdjacency);
   return { linkGraph: new LinkGraph(outAdjacency), documents: newDocs };
 }
 
@@ -154,10 +153,27 @@ function makeLinkGraph(docs, docIdLookup) {
 export function makeInitContextFromDocuments(docs: DocumentsCollection) {
   let docIdLookup = makeDocIdLookup(docs);
   let { linkGraph, documents } = makeLinkGraph(docs, docIdLookup);
+
+  // for each page:
+  //   split name by whitespace
+  //   for each word in split result:
+  //     add page.id to invInd[word]
+  let docNameInvIndex: { [word: string]: string[] } = {};
+  Object.entries(documents).forEach(([docId, doc]: [string, Document]) => {
+    let splitByWs = doc.name.split(/\s+/);
+    splitByWs.forEach(word => {
+      if (!(word in docNameInvIndex)) {
+        docNameInvIndex[word] = [];
+      }
+      docNameInvIndex[word].push(docId);
+    });
+  });
+
   return {
-    documents: documents,
+    documents,
     docIdLookupByDocName: docIdLookup,
-    linkGraph: linkGraph
+    linkGraph,
+    docNameInvIndex
   };
 }
 

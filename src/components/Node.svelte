@@ -4,6 +4,7 @@
     docCursorEntryId,
     docCursorSelStart: number,
     docCursorSelEnd: number,
+    findRelevantDocNames: (text: string) => string[],
     handleGoUp: () => void,
     handleGoDown: () => void,
     handleEntryBackspace: () => void,
@@ -69,6 +70,7 @@
 
 
   // use entryValue and docCursorSelStart to see if cursor start is immediately after opening [[
+  // TODO: move to a derived store?
   let shouldShowDocNameAutocomplete: boolean;
   $: shouldShowDocNameAutocomplete = (function() {
     if (isCurrentEntry) {
@@ -77,7 +79,22 @@
         && entryValue.substring(docCursorSelStart - 2, docCursorSelStart) === "[["
         && !(docCursorSelStart > 2 && entryValue[docCursorSelStart - 3] === "\\");
 
-      console.log("::: returning = ", returnVal);
+      // check if there is a closing "]]". if yes, take the interior of [[...]],
+      // if no, take to the end of the entry. use this to search the page title inverted
+      // index.
+      if (returnVal) {
+        let closingBrackets = new RegExp('(?![\])]]');
+        let entryAfterOpening = entryValue.substring(docCursorSelStart);
+        let match = closingBrackets.exec(entryAfterOpening);
+        let pageTitleText;
+        if (match !== null) {
+          pageTitleText = entryValue.substring(docCursorSelStart, docCursorSelStart + match.index);
+        } else {
+          pageTitleText = entryAfterOpening;
+        }
+        let relevantDocNames: string[] = findRelevantDocNames(pageTitleText);
+      }
+
       return returnVal;
     }
     return false;
@@ -189,6 +206,7 @@
           {docCursorEntryId}
           {docCursorSelStart}
           {docCursorSelEnd}
+          {findRelevantDocNames}
           {handleSaveDocEntry}
           {handleSaveFullCursor}
           {handleGoUp}

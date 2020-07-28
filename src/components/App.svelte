@@ -108,7 +108,7 @@
   /*** service and state ***/
 
   function initDocStoreFromInitContext(initContext) {
-    docsStore.init(initContext.documents, initContext.docIdLookupByDocName, initContext.linkGraph);
+    docsStore.init(initContext.documents, initContext.docIdLookupByDocName, initContext.linkGraph, initContext.docNameInvIndex);
   }
 
   let dataMgr = new DataManager(new DataStore);
