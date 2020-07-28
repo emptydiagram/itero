@@ -67,7 +67,22 @@
   }
 
   function findRelevantDocNames(text) {
-    return ['TODO1', 'AbC-2'];
+    let docNames = [];
+
+    let splitResult = text.split(/\s+/);
+    text.split(/\s+/).forEach(word => {
+      Object.keys($docsStore.docNameInvIndex).forEach((word2) => {
+        if (word2.includes(word)) {
+          $docsStore.docNameInvIndex[word2].forEach(docId => {
+            if (!docNames.includes($docsStore.documents[docId].name)) {
+              docNames.push($docsStore.documents[docId].name);
+            }
+          });
+        }
+      })
+    });
+
+    return docNames;
   }
 
   $: docIsEditingName = $docsStore.docIsEditingName;

@@ -71,8 +71,8 @@
 
   // use entryValue and docCursorSelStart to see if cursor start is immediately after opening [[
   // TODO: move to a derived store?
-  let shouldShowDocNameAutocomplete: boolean;
-  $: shouldShowDocNameAutocomplete = (function() {
+  let autoCompleteDocNames: string[];
+  $: autoCompleteDocNames = (function() {
     if (isCurrentEntry) {
       let entryValue = tree.getEntryText(currEntryId);
       let returnVal = entryValue && docCursorSelStart >= 2
@@ -93,12 +93,14 @@
           pageTitleText = entryAfterOpening;
         }
         let relevantDocNames: string[] = findRelevantDocNames(pageTitleText);
+        return relevantDocNames;
       }
-
-      return returnVal;
     }
-    return false;
+    return null;
   })()
+
+  let shouldShowDocNameAutocomplete: boolean;
+  $: shouldShowDocNameAutocomplete = autoCompleteDocNames !== null;
 </script>
 
 <style>
@@ -192,7 +194,11 @@
       {/if}
   </div>
   {#if shouldShowDocNameAutocomplete}
-    <div id="doc-name-autocomplete">TODO. </div>
+    <div id="doc-name-autocomplete">
+      {#each autoCompleteDocNames as docName}
+        <div>{docName}</div>
+      {/each}
+    </div>
   {/if}
 {/if}
 
