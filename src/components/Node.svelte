@@ -141,7 +141,8 @@
     margin-top: 1.75em;
     margin-left: 1.5em;
     background-color: #fff;
-    width: 25em;
+    width: 20em;
+    padding: 0.5em;
     box-shadow: 3px 3px 5px #363636;
   }
 </style>
