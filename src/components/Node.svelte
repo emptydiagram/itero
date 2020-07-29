@@ -69,30 +69,25 @@
 
 
 
-  // use entryValue and docCursorSelStart to see if cursor start is immediately after opening [[
   // TODO: move to a derived store?
   let autoCompleteDocNames: string[];
   $: autoCompleteDocNames = (function() {
-    if (isCurrentEntry) {
+    if (isCurrentEntry && docCursorSelStart === docCursorSelEnd) {
       let entryValue = tree.getEntryText(currEntryId);
-      let returnVal = entryValue && docCursorSelStart >= 2
-        && entryValue.substring(docCursorSelStart - 2, docCursorSelStart) === "[["
-        && !(docCursorSelStart > 2 && entryValue[docCursorSelStart - 3] === "\\");
+      let [entryBefore, entryAfter] = [entryValue.substring(0, docCursorSelStart), entryValue.substring(docCursorSelStart)];
+      let entryBeforeRev = [...entryBefore].reverse().join("");
+      let prevOpeningRev = /^([^\[\]]*)\[\[(?!\\)/g;
+      let prevOpeningRevResult = entryBeforeRev.match(prevOpeningRev);
+      let nextClosing = /^(.{0}|([^\[\]]*[^\]\\]))]]/g;
+      let nextClosingResult = entryAfter.match(nextClosing);
 
-      // check if there is a closing "]]". if yes, take the interior of [[...]],
-      // if no, take to the end of the entry. use this to search the page title inverted
-      // index.
-      if (returnVal) {
-        let closingBrackets = new RegExp('(?![\])]]');
-        let entryAfterOpening = entryValue.substring(docCursorSelStart);
-        let match = closingBrackets.exec(entryAfterOpening);
-        let pageTitleText;
-        if (match !== null) {
-          pageTitleText = entryValue.substring(docCursorSelStart, docCursorSelStart + match.index);
-        } else {
-          pageTitleText = entryAfterOpening;
-        }
-        let relevantDocNames: string[] = findRelevantDocNames(pageTitleText);
+      if (prevOpeningRevResult != null && nextClosingResult != null) {
+        let prevLinkRev = prevOpeningRevResult[0];
+        let prevPageRev = prevLinkRev.substring(0, prevLinkRev.length - 2);
+        let prevPage = [...prevPageRev].reverse().join("");
+        let pageTitleText = prevPage  + nextClosingResult[0].substring(0, nextClosingResult[0].length - 2);
+        let relevantDocNames: string[] = pageTitleText.length > 0
+          ? findRelevantDocNames(pageTitleText) : [];
         return relevantDocNames;
       }
     }
@@ -145,6 +140,10 @@
     padding: 0.5em;
     box-shadow: 3px 3px 5px #363636;
   }
+
+  #doc-name-autocomplete-default {
+    color: #7f7f7f;
+  }
 </style>
 
 {#if currEntryId !== null}
@@ -196,9 +195,13 @@
   </div>
   {#if shouldShowDocNameAutocomplete}
     <div id="doc-name-autocomplete">
-      {#each autoCompleteDocNames as docName}
-        <div>{docName}</div>
-      {/each}
+      {#if autoCompleteDocNames.length > 0}
+        {#each autoCompleteDocNames as docName}
+          <div>{docName}</div>
+        {/each}
+      {:else}
+        <div id="doc-name-autocomplete-default"><em>Search page titles</em></div>
+      {/if}
     </div>
   {/if}
 {/if}
