@@ -22,7 +22,8 @@
     handleSwapWithAboveEntry: (entryId: number) => void,
     handleSwapWithBelowEntry: (entryId: number) => void,
     handleUpdateEntryLinks,
-    handleCycleEntryHeadingSize;
+    handleCycleEntryHeadingSize,
+    handleReplaceEntryTextAroundCursor: (newText: string) => void;
 
 
   import Icon from 'svelte-awesome';
@@ -49,6 +50,12 @@
     } else {
       handleCollapseEntry(entryId);
     }
+  }
+
+  function handleDocNameAutocompleteClick(event: Event) {
+    event.preventDefault();
+    let el: HTMLElement = event.target as HTMLElement;
+    handleReplaceEntryTextAroundCursor(el.textContent);
   }
 
   let currEntryId: number | null;
@@ -141,6 +148,10 @@
     box-shadow: 3px 3px 5px #363636;
   }
 
+  .doc-name-autocomplete-option {
+    cursor: pointer;
+  }
+
   #doc-name-autocomplete-default {
     color: #7f7f7f;
   }
@@ -197,7 +208,7 @@
     <div id="doc-name-autocomplete">
       {#if autoCompleteDocNames.length > 0}
         {#each autoCompleteDocNames as docName}
-          <div>{docName}</div>
+          <div class="doc-name-autocomplete-option" on:click={handleDocNameAutocompleteClick}>{docName}</div>
         {/each}
       {:else}
         <div id="doc-name-autocomplete-default"><em>Search page titles</em></div>
@@ -235,6 +246,7 @@
           {handleSwapWithAboveEntry}
           {handleSwapWithBelowEntry}
           {handleCycleEntryHeadingSize}
+          {handleReplaceEntryTextAroundCursor}
           />
       </li>
     {/each}

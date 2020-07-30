@@ -503,6 +503,39 @@ function createDocsStore() {
       return store;
     }),
 
+    replaceEntryTextAroundCursor: (newText) => update(store => {
+      console.log(" >> handleReplaceEntryTextARoundCursor, (new, selStart) = ", newText, store.cursorSelectionStart);
+
+      let currentTree = store.documents[store.currentDocId].tree ;
+
+      let docCursorSelStart = store.cursorSelectionStart;
+      let docCursorSelEnd = store.cursorSelectionEnd;
+      if (docCursorSelStart === docCursorSelEnd) {
+        // TODO: duplication w/ Node autocomplete code
+        let entryValue = currentTree.getEntryText(store.cursorEntryId);
+        let [entryBefore, entryAfter] = [entryValue.substring(0, docCursorSelStart), entryValue.substring(docCursorSelStart)];
+        let entryBeforeRev = [...entryBefore].reverse().join("");
+        let prevOpeningRev = /^([^\[\]]*)\[\[(?!\\)/g;
+        let prevOpeningRevResult = entryBeforeRev.match(prevOpeningRev);
+        let nextClosing = /^(.{0}|([^\[\]]*[^\]\\]))]]/g;
+        let nextClosingResult = entryAfter.match(nextClosing);
+
+        if (prevOpeningRevResult != null && nextClosingResult != null) {
+          let prevLinkRev = prevOpeningRevResult[0];
+          let prevPageRev = prevLinkRev.substring(0, prevLinkRev.length - 2);
+          let prevPage = [...prevPageRev].reverse().join("");
+          let nextPage = nextClosingResult[0].substring(0, nextClosingResult[0].length - 2);
+
+          let replaceStart = docCursorSelStart - prevPage.length;
+          let replaceEnd = docCursorSelEnd + nextPage.length;
+
+          let newEntryText = entryValue.substring(0, replaceStart) + newText + entryValue.substring(replaceEnd);
+          store.documents[store.currentDocId].tree.setEntryText(store.cursorEntryId, newEntryText);
+        }
+      }
+      return store;
+    }),
+
   }
 }
 

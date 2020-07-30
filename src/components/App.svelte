@@ -73,6 +73,12 @@
 
       let docContent = document.getElementById("doc-content");
 
+      let autocomplete = document.getElementById("doc-name-autocomplete");
+      if (autocomplete && autocomplete.contains(sel.anchorNode)) {
+        // clicked on autocomplete, ignore
+        return;
+      }
+
       if (!docContent.contains(sel.anchorNode)) {
         docsStore.saveCursorEntryId(null);
         return;

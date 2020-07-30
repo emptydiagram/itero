@@ -206,6 +206,7 @@
       handleSwapWithAboveEntry={docsStore.swapWithAboveEntry}
       handleSwapWithBelowEntry={docsStore.swapWithBelowEntry}
       handleCycleEntryHeadingSize={docsStore.cycleEntryHeadingSize}
+      handleReplaceEntryTextAroundCursor={docsStore.replaceEntryTextAroundCursor}
     />
   </div>
 
