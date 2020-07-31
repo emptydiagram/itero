@@ -1,12 +1,12 @@
-<script>
-  export let entryId,
-    entryText,
-    entryHeadingSize,
-    handleUpdateEntryLinks;
+<script lang="ts">
+  export let entryId: number,
+    entryText: string,
+    entryHeadingSize: number,
+    handleUpdateEntryLinks: (entryId: number, linkedPages: string[]) => void;
 
   import { MarkupParser } from "../markup/MarkupParser.js";
 
-  let theDiv;
+  let theDiv: HTMLElement;
 
   $: {
     if (theDiv) {

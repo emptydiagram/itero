@@ -1,7 +1,7 @@
 import { LinkedListItem } from "./LinkedList.js";
 import FlowyTreeNode from './FlowyTreeNode.js'
 import Queue from "./Queue.js";
-import { EntryDisplayState } from "./data.js";
+import { EntryDisplayState } from "./data.ts";
 
 export default class FlowyTree {
   // entries: Map<EntryId, { text: String, (displayState: EntryDisplayState)?, (headingLevel: number)? }>

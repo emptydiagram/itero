@@ -1,33 +1,36 @@
 {
   "name": "itero",
   "version": "0.0.16-dev",
-  "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.10.1",
-    "cross-env": "^5.2.0",
-    "css-loader": "^2.1.1",
-    "eslint": "^7.1.0",
-    "eslint-plugin-jest": "^23.13.2",
-    "eslint-plugin-svelte3": "^2.7.3",
-    "jest": "^26.0.1",
-    "mini-css-extract-plugin": "^0.6.0",
-    "serve": "^11.3.2",
-    "style-loader": "^0.23.1",
-    "svelte": "^3.24.0",
-    "svelte-loader": "2.13.6",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.0",
-    "webpack-dev-server": "^3.11.0"
-  },
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack",
-    "dev": "webpack-dev-server --content-base public",
-    "test": "cross-env NODE_ENV=test jest"
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "start": "sirv public",
+    "test": "jest",
+    "validate": "svelte-check"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+    "@rollup/plugin-commonjs": "^12.0.0",
+    "@rollup/plugin-node-resolve": "^8.0.0",
+    "@rollup/plugin-typescript": "^4.0.0",
+    "@tsconfig/svelte": "^1.0.0",
+    "jest": "^26.2.1",
+    "rollup": "^2.3.4",
+    "rollup-plugin-livereload": "^1.0.0",
+    "rollup-plugin-svelte": "^5.0.3",
+    "rollup-plugin-terser": "^5.1.2",
+    "svelte": "^3.0.0",
+    "svelte-check": "^1.0.0",
+    "svelte-preprocess": "^4.0.0",
+    "tslib": "^2.0.0",
+    "typescript": "^3.9.3"
   },
   "dependencies": {
-    "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "linked-list": "^2.1.0",
     "mathjax": "^3.0.5",
-    "parsimmon": "^1.13.0",
+    "parsimmon": "^1.15.0",
+    "sirv-cli": "^1.0.0",
     "svelte-awesome": "^2.3.0",
     "svelte-spa-router": "^2.2.0"
   }

@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
   import { docsStore } from "./stores.js";
+  import type { Document } from "../data";
 
   import { replace } from 'svelte-spa-router';
   import Icon from 'svelte-awesome';
@@ -13,9 +14,9 @@
   function deleteDocs() {
     // FIXME: linear scan non-ideal
     let toDelete = Object.entries($docsStore.docsDisplay)
-      .filter(([_docId, docDisplay]) => docDisplay.isSelected)
+      .filter(([_docId, docDisplay]) => (docDisplay as any).isSelected)
       .map(([docId, _docDisplay]) => docId);
-    const numDocs = n => n == 1 ? "document" : `${n} documents`;
+    const numDocs = (n: number) => n == 1 ? "document" : `${n} documents`;
     let confirmMessage = `Are you sure you want to delete the selected ${numDocs(toDelete.length)}?`;
     let confirmResult = window.confirm(confirmMessage);
     if (confirmResult) {
@@ -23,17 +24,17 @@
     }
   }
 
-  function changeSort(ev) {
-    docsStore.changeSort(ev.target.value);
+  function changeSort(ev: Event) {
+    docsStore.changeSort((ev.target as HTMLSelectElement).value);
   }
 
-  function handleDocSelectionToggle(docId, event) {
-    docsStore.docsDisplaySetSelection(docId, event.target.checked);
+  function handleDocSelectionToggle(event: Event, docId: string) {
+    docsStore.docsDisplaySetSelection(docId, (event.target as HTMLInputElement).checked);
   }
 
-  function sortNameAsc(a, b) {
-    a = a.doc;
-    b = b.doc;
+  function sortNameAsc(aEntry: DocsDisplayEntry, bEntry: DocsDisplayEntry) {
+    let a: Document = aEntry.doc;
+    let b: Document = bEntry.doc;
     if (a.name < b.name) {
       return -1;
     } else if (a.name > b.name) {
@@ -41,9 +42,9 @@
     }
     return 0;
   }
-  function sortNameDesc(a, b) {
-    a = a.doc;
-    b = b.doc;
+  function sortNameDesc(aEntry: DocsDisplayEntry, bEntry: DocsDisplayEntry) {
+    let a: Document = aEntry.doc;
+    let b: Document = bEntry.doc;
     if (a.name > b.name) {
       return -1;
     } else if (a.name < b.name) {
@@ -51,9 +52,9 @@
     }
     return 0;
   }
-  function sortLastUpdatedAsc(a, b) {
-    a = a.doc;
-    b = b.doc;
+  function sortLastUpdatedAsc(aEntry: DocsDisplayEntry, bEntry: DocsDisplayEntry) {
+    let a: Document = aEntry.doc;
+    let b: Document = bEntry.doc;
     if (a.lastUpdated < b.lastUpdated) {
       return -1;
     } else if (a.lastUpdated > b.lastUpdated) {
@@ -61,9 +62,9 @@
     }
     return 0;
   }
-  function sortLastUpdatedDesc(a, b) {
-    a = a.doc;
-    b = b.doc;
+  function sortLastUpdatedDesc(aEntry: DocsDisplayEntry, bEntry: DocsDisplayEntry) {
+    let a: Document = aEntry.doc;
+    let b: Document = bEntry.doc;
     if (a.lastUpdated > b.lastUpdated) {
       return -1;
     } else if (a.lastUpdated < b.lastUpdated) {
@@ -72,6 +73,7 @@
     return 0;
   }
 
+  let sortFunction: (ea: DocsDisplayEntry, eb: DocsDisplayEntry) => number;
   $: sortFunction = (function() {
     switch ($docsStore.sortMode) {
       case "name-asc":
@@ -88,17 +90,23 @@
   })();
 
 
-  let atLeastOneSelected = false;
+  let atLeastOneSelected: boolean = false;
+
+  interface DocsDisplayEntry {
+    doc: Document,
+    isSelected: boolean
+  }
 
   // docsDisplay is Map<string, {docId: string, isSelected: boolean }>
   // returns a {doc: Document, isSelected: boolean }
+  let displayDocs: DocsDisplayEntry[];
   $: displayDocs = (function() {
     let newOneSelected = false;
-    let displayList = Object.entries($docsStore.docsDisplay).map(([docId, docDisplay]) => {
-      newOneSelected = newOneSelected || docDisplay.isSelected;
+    let displayList: DocsDisplayEntry[] = Object.entries($docsStore.docsDisplay).map(([docId, docDisplay]) => {
+      newOneSelected = newOneSelected || (docDisplay as any).isSelected;
       return {
         doc: $docsStore.documents[docId],
-        isSelected: docDisplay.isSelected,
+        isSelected: (docDisplay as any).isSelected,
       };
     }).sort(sortFunction);
     atLeastOneSelected = newOneSelected;
@@ -184,7 +192,7 @@
   {#each displayDocs as doc}
     <tr class={doc.isSelected ? "selected-doc" : ""}>
       <td class="doc-select">
-        <input type="checkbox" checked={doc.isSelected} on:change={(ev) => handleDocSelectionToggle(doc.doc.id, ev)} />
+        <input type="checkbox" checked={doc.isSelected} on:change={(ev) => handleDocSelectionToggle(ev, doc.doc.id)} />
       </td>
       <td>
         <a href={'#/doc/' + doc.doc.id}>{doc.doc.name}</a>

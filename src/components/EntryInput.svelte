@@ -1,33 +1,33 @@
-<script>
-  export let entryId,
-    entryValue,
-    entryHeadingSize,
+<script lang="ts">
+  export let entryId: number,
+    entryValue: string,
+    entryHeadingSize: number,
     docCursorEntryId,
-    docCursorSelStart,
-    docCursorSelEnd,
-    isEntryAbove,
-    isEntryBelow;
-  export let handleGoUp,
-    handleGoDown,
-    handleEntryBackspace,
-    handleCollapseEntry,
-    handleExpandEntry,
-    handleSplitEntry,
-    handleIndent,
-    handleDedent,
-    handleMultilinePaste,
-    handleMoveCursorLeft,
-    handleMoveCursorRight,
-    handleSaveCursorPos,
-    handleSaveDocEntry,
-    handleSaveFullCursor,
-    handleSwapWithAboveEntry,
-    handleSwapWithBelowEntry,
-    handleCycleEntryHeadingSize;
+    docCursorSelStart: number,
+    docCursorSelEnd: number,
+    isEntryAbove: boolean,
+    isEntryBelow: boolean,
+    handleGoUp: () => void,
+    handleGoDown: () => void,
+    handleEntryBackspace: () => void,
+    handleCollapseEntry: (entryId: number) => void,
+    handleExpandEntry: (entryId: number) => void,
+    handleSplitEntry: () => void,
+    handleIndent: () => void,
+    handleDedent: () => void,
+    handleMultilinePaste: (text: string) => void,
+    handleMoveCursorLeft: (entryTextLength: number) => void,
+    handleMoveCursorRight: (entryTextLength: number) => void,
+    handleSaveCursorPos: (pos: number) => void,
+    handleSaveDocEntry: (entryText: string, selStart: number, selEnd: number) => void,
+    handleSaveFullCursor: (entryId: number, selStart: number, selEnd: number) => void,
+    handleSwapWithAboveEntry: (entryId: number) => void,
+    handleSwapWithBelowEntry: (entryId: number) => void,
+    handleCycleEntryHeadingSize: (entryId: number) => void;
 
   import { afterUpdate, tick } from "svelte";
 
-  let theInput;
+  let theInput: any;
 
   afterUpdate(async () => {
     let nni = document.getElementById("node-name-input");
@@ -50,7 +50,7 @@
     }
   });
 
-  function handleCursorMove(event, colId, entryValueSize) {
+  function handleCursorMove(event: KeyboardEvent, entryValueSize: number) {
     switch (event.key) {
       case "ArrowLeft":
         handleMoveCursorLeft(entryValueSize);
@@ -67,7 +67,7 @@
     }
   }
 
-  async function handleKeydown(ev) {
+  async function handleKeydown(ev: KeyboardEvent) {
     if (ev.key === "Tab") {
       ev.preventDefault();
 
@@ -116,7 +116,7 @@
     ) {
       ev.preventDefault();
 
-      handleCursorMove(ev, this.selectionStart, this.value.length);
+      handleCursorMove(ev, this.value.length);
     } else if (ev.key == "H" && ev.ctrlKey && ev.shiftKey) {
       ev.preventDefault();
       handleCycleEntryHeadingSize(entryId);
@@ -128,21 +128,23 @@
     this.selectionEnd = docCursorSelEnd;
   }
 
-  function handleEntryInputClick(index, ev) {
-    let newSelStart = ev.target.selectionStart;
-    let newSelEnd = ev.target.selectionEnd;
-    if (docCursorEntryId !== index || docCursorSelStart != newSelStart || docCursorSelEnd != newSelEnd) {
-      handleSaveFullCursor(index, newSelStart, newSelEnd);
+  function handleEntryInputClick(ev: Event, entryId: number) {
+    let target: HTMLInputElement = ev.target as HTMLInputElement;
+    let newSelStart = target.selectionStart;
+    let newSelEnd = target.selectionEnd;
+    if (docCursorEntryId !== entryId || docCursorSelStart != newSelStart || docCursorSelEnd != newSelEnd) {
+      handleSaveFullCursor(entryId, newSelStart, newSelEnd);
     }
   }
 
-  function handleInput(ev) {
-    let entryText = ev.target.value;
-    handleSaveDocEntry(entryText, ev.target.selectionStart, ev.target.selectionEnd);
+  function handleInput(ev: Event) {
+    let target: HTMLInputElement = ev.target as HTMLInputElement;
+    let entryText = target.value;
+    handleSaveDocEntry(entryText, target.selectionStart, target.selectionEnd);
   }
 
-  function handlePaste(ev) {
-    let pastedText = (ev.clipboardData || window.clipboardData).getData('text');
+  function handlePaste(ev: ClipboardEvent) {
+    let pastedText = (ev.clipboardData || (window as any).clipboardData).getData('text');
     let pastedLines = pastedText.split('\n');
     if (pastedLines.length > 1) {
       ev.preventDefault();
@@ -193,6 +195,6 @@
   value={entryValue}
   bind:this={theInput}
   on:input={handleInput}
-  on:click={e => handleEntryInputClick(entryId, e)}
+  on:click={e => handleEntryInputClick(e, entryId)}
   on:keydown={handleKeydown}
   on:paste={handlePaste} />

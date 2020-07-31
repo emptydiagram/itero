@@ -12,7 +12,7 @@
   import CreateDoc from "./CreateDoc.svelte";
   import NotFound from "./NotFound.svelte";
   import DataStore from "../DataStore.js";
-  import { DataManager, makeInitContextFromDocuments, makeDoc } from "../data.js";
+  import { DataManager, makeInitContextFromDocuments, makeDoc } from "../data.ts";
   import { findChildNodeSerializedCursorPosFromSelection } from "../markup/util.js";
 
   function stringIncludesOne(str, values) {
@@ -73,6 +73,12 @@
 
       let docContent = document.getElementById("doc-content");
 
+      let autocomplete = document.getElementById("doc-name-autocomplete");
+      if (autocomplete && autocomplete.contains(sel.anchorNode)) {
+        // clicked on autocomplete, ignore
+        return;
+      }
+
       if (!docContent.contains(sel.anchorNode)) {
         docsStore.saveCursorEntryId(null);
         return;
@@ -108,7 +114,7 @@
   /*** service and state ***/
 
   function initDocStoreFromInitContext(initContext) {
-    docsStore.init(initContext.documents, initContext.docIdLookupByDocName, initContext.linkGraph);
+    docsStore.init(initContext.documents, initContext.docIdLookupByDocName, initContext.linkGraph, initContext.docNameInvIndex);
   }
 
   let dataMgr = new DataManager(new DataStore);
@@ -124,7 +130,7 @@
       // then we convert the percent encodings into raw bytes which
       // can be fed into btoa.
       return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-          function toSolidBytes(match, p1) {
+          function toSolidBytes(_match, p1) {
               return String.fromCharCode('0x' + p1);
       }));
   }
