@@ -53,7 +53,7 @@
   $: isCollapsed = currNodeHasChildren
     && tree.getEntryDisplayState(currEntryId) == EntryDisplayState.COLLAPSED;
 
-  $: isCurrentEntry = currEntryId && currEntryId === docCursorEntryId;
+  $: isCurrentEntry = (currEntryId != null) && currEntryId === docCursorEntryId;
 
 </script>
 
