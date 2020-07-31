@@ -1,4 +1,4 @@
-import { EntryDisplayState, createNewDocument, getNowISO8601 } from "../data.js";
+import { EntryDisplayState, createNewDocument, getNowISO8601 } from "../data.ts";
 import FlowyTree from '../FlowyTree.js';
 
 import { writable } from 'svelte/store';
@@ -23,18 +23,22 @@ function diffSets(a, b) {
 
 
 function createDocsStore() {
-  let { subscribe, update } = writable({
+  let initState = {
     currentDocId: null,
     cursorSelectionStart: 0,
     cursorSelectionEnd: 0,
     cursorEntryId: null,
     docName: '',
+    docNameInvIndex: {},
     docIsEditingName: false,
     docsDisplay: {},
     docIdLookupByDocName: {},
     documents: {},
+    linkGraph: null,
     sortMode: 'name-asc',
-  });
+  };
+
+  let { subscribe, update } = writable(initState);
 
   function createDocsDisplayEntry(newId) {
     return { docId: newId, isSelected: false };
@@ -42,7 +46,7 @@ function createDocsStore() {
 
   return {
     subscribe,
-    init: (documents, docIdLookupByDocName, linkGraph) => update(store => {
+    init: (documents, docIdLookupByDocName, linkGraph, docNameInvIndex) => update(store => {
       let initDocsDisplay = {};
       Object.keys(documents).forEach(docId => {
         initDocsDisplay[docId] = createDocsDisplayEntry(docId)
@@ -50,6 +54,7 @@ function createDocsStore() {
       store.docsDisplay = initDocsDisplay
       store.docIdLookupByDocName = docIdLookupByDocName;
       store.documents = documents;
+      store.docNameInvIndex = docNameInvIndex;
       store.linkGraph = linkGraph;
       return store;
     }),
@@ -495,6 +500,39 @@ function createDocsStore() {
       let currDoc = store.documents[store.currentDocId];
       let currTree = currDoc.tree;
       currTree.cycleEntryHeadingSize(entryId);
+      return store;
+    }),
+
+    replaceEntryTextAroundCursor: (newText) => update(store => {
+      console.log(" >> handleReplaceEntryTextARoundCursor, (new, selStart) = ", newText, store.cursorSelectionStart);
+
+      let currentTree = store.documents[store.currentDocId].tree ;
+
+      let docCursorSelStart = store.cursorSelectionStart;
+      let docCursorSelEnd = store.cursorSelectionEnd;
+      if (docCursorSelStart === docCursorSelEnd) {
+        // TODO: duplication w/ Node autocomplete code
+        let entryValue = currentTree.getEntryText(store.cursorEntryId);
+        let [entryBefore, entryAfter] = [entryValue.substring(0, docCursorSelStart), entryValue.substring(docCursorSelStart)];
+        let entryBeforeRev = [...entryBefore].reverse().join("");
+        let prevOpeningRev = /^([^\[\]]*)\[\[(?!\\)/g;
+        let prevOpeningRevResult = entryBeforeRev.match(prevOpeningRev);
+        let nextClosing = /^(.{0}|([^\[\]]*[^\]\\]))]]/g;
+        let nextClosingResult = entryAfter.match(nextClosing);
+
+        if (prevOpeningRevResult != null && nextClosingResult != null) {
+          let prevLinkRev = prevOpeningRevResult[0];
+          let prevPageRev = prevLinkRev.substring(0, prevLinkRev.length - 2);
+          let prevPage = [...prevPageRev].reverse().join("");
+          let nextPage = nextClosingResult[0].substring(0, nextClosingResult[0].length - 2);
+
+          let replaceStart = docCursorSelStart - prevPage.length;
+          let replaceEnd = docCursorSelEnd + nextPage.length;
+
+          let newEntryText = entryValue.substring(0, replaceStart) + newText + entryValue.substring(replaceEnd);
+          store.documents[store.currentDocId].tree.setEntryText(store.cursorEntryId, newEntryText);
+        }
+      }
       return store;
     }),
 

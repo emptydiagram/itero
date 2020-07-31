@@ -1,4 +1,4 @@
-import { EntryDisplayState } from './data.js';
+import { EntryDisplayState } from './data.ts';
 
 export function deserializeEntries(entriesObj) {
   let entries = { ...entriesObj };

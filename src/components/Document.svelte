@@ -52,17 +52,37 @@
   $: docTitle = $docsStore.docName;
 
 
-  $: handleSaveName = () => docsStore.saveEditingDocName(docTitleText);
+  function handleSaveName() {
+    docsStore.saveEditingDocName(docTitleText);
+  }
 
-  $: handleEditingCancel = () => {
+  function handleEditingCancel() {
     docTitleText = docTitle;
     docsStore.cancelEditingDocName();
-  };
+  }
 
-  $: handleStartEditing = () => {
+  function handleStartEditing() {
     docTitleText = docTitle;
     docsStore.startEditingDocName();
-  };
+  }
+
+  function findRelevantDocNames(text) {
+    let docNames = [];
+
+    text.split(/\s+/).forEach(word => {
+      Object.keys($docsStore.docNameInvIndex).forEach((word2) => {
+        if (word2.includes(word)) {
+          $docsStore.docNameInvIndex[word2].forEach(docId => {
+            if (!docNames.includes($docsStore.documents[docId].name)) {
+              docNames.push($docsStore.documents[docId].name);
+            }
+          });
+        }
+      })
+    });
+
+    return docNames;
+  }
 
   $: docIsEditingName = $docsStore.docIsEditingName;
 
@@ -165,6 +185,7 @@
       docCursorSelStart={$docsStore.cursorSelectionStart}
       docCursorSelEnd={$docsStore.cursorSelectionEnd}
 
+      {findRelevantDocNames}
       handleCollapseEntry={docsStore.collapseEntry}
       handleDedent={docsStore.dedentEntry}
       handleEntryBackspace={docsStore.backspaceEntry}
@@ -184,6 +205,7 @@
       handleSwapWithAboveEntry={docsStore.swapWithAboveEntry}
       handleSwapWithBelowEntry={docsStore.swapWithBelowEntry}
       handleCycleEntryHeadingSize={docsStore.cycleEntryHeadingSize}
+      handleReplaceEntryTextAroundCursor={docsStore.replaceEntryTextAroundCursor}
     />
   </div>
 

@@ -1,43 +1,50 @@
-<script>
-  export let tree,
-    flowyTreeNode,
+<script lang="ts">
+  export let tree: FlowyTree,
+    flowyTreeNode: FlowyTreeNode,
     docCursorEntryId,
-    docCursorSelStart,
-    docCursorSelEnd,
-    handleSaveDocEntry,
-    handleSaveFullCursor,
-    handleGoUp,
-    handleGoDown,
-    handleCollapseEntry,
-    handleExpandEntry,
-    handleSplitEntry,
-    handleEntryBackspace,
-    handleIndent,
-    handleDedent,
-    handleMultilinePaste,
-    handleMoveCursorLeft,
-    handleMoveCursorRight,
-    handleSaveCursorPos,
-    handleUpdateEntryLinks,
-    handleSwapWithAboveEntry,
-    handleSwapWithBelowEntry,
-    handleCycleEntryHeadingSize;
+    docCursorSelStart: number,
+    docCursorSelEnd: number,
+    findRelevantDocNames: (text: string) => string[],
+    handleGoUp: () => void,
+    handleGoDown: () => void,
+    handleEntryBackspace: () => void,
+    handleCollapseEntry: (entryId: number) => void,
+    handleExpandEntry: (entryId: number) => void,
+    handleSplitEntry: () => void,
+    handleIndent: () => void,
+    handleDedent: () => void,
+    handleMultilinePaste: (text: string) => void,
+    handleMoveCursorLeft: () => void,
+    handleMoveCursorRight: (entryTextLength: number) => void,
+    handleSaveCursorPos: (pos: number) => void,
+    handleSaveDocEntry: (entryText: string, selStart: number, selEnd: number) => void,
+    handleSaveFullCursor: (entryId: number, selStart: number, selEnd: number) => void,
+    handleSwapWithAboveEntry: (entryId: number) => void,
+    handleSwapWithBelowEntry: (entryId: number) => void,
+    handleUpdateEntryLinks: (entryId: number, linkedPages: string[]) => void,
+    handleCycleEntryHeadingSize: (entryId: number) => void,
+    handleReplaceEntryTextAroundCursor: (newText: string) => void;
+
 
   import Icon from 'svelte-awesome';
   import { faCircle,faPlus } from '@fortawesome/free-solid-svg-icons';
 
+  import type FlowyTree from '../FlowyTree';
+  import type FlowyTreeNode from '../FlowyTreeNode';
   import EntryInput from "./EntryInput.svelte";
+
+  import type { LinkedListItem } from "../LinkedList";
   import RenderedEntry from "./RenderedEntry.svelte";
   import Node from "./Node.svelte";
-  import { EntryDisplayState } from "../data.js";
+  import { EntryDisplayState } from "../data";
 
 
-  function nodeIsCollapsed(node) {
+  function nodeIsCollapsed(node: FlowyTreeNode): boolean {
     return node.hasChildren()
       && tree.getEntryDisplayState(node.getId()) === EntryDisplayState.COLLAPSED;
   }
 
-  function handleToggle(entryId, isCollapsed) {
+  function handleToggle(entryId: number, isCollapsed: boolean) {
     if (isCollapsed) {
       handleExpandEntry(entryId);
     } else {
@@ -45,16 +52,57 @@
     }
   }
 
+  function handleDocNameAutocompleteClick(event: Event) {
+    event.preventDefault();
+    let el: HTMLElement = event.target as HTMLElement;
+    handleReplaceEntryTextAroundCursor(el.textContent);
+  }
+
+  let currEntryId: number | null;
   $: currEntryId = flowyTreeNode.getId();
 
+  let childItemArray: Array<LinkedListItem>;
   $: childItemArray = flowyTreeNode.getChildNodeArray();
+
+  let currNodeHasChildren: boolean;
   $: currNodeHasChildren = childItemArray.length > 0;
 
+  let isCollapsed: boolean;
   $: isCollapsed = currNodeHasChildren
     && tree.getEntryDisplayState(currEntryId) == EntryDisplayState.COLLAPSED;
 
+  let isCurrentEntry: boolean;
   $: isCurrentEntry = (currEntryId != null) && currEntryId === docCursorEntryId;
 
+
+
+  // TODO: move to a derived store?
+  let autoCompleteDocNames: string[];
+  $: autoCompleteDocNames = (function() {
+    if (isCurrentEntry && docCursorSelStart === docCursorSelEnd) {
+      let entryValue = tree.getEntryText(currEntryId);
+      let [entryBefore, entryAfter] = [entryValue.substring(0, docCursorSelStart), entryValue.substring(docCursorSelStart)];
+      let entryBeforeRev = [...entryBefore].reverse().join("");
+      let prevOpeningRev = /^([^\[\]]*)\[\[(?!\\)/g;
+      let prevOpeningRevResult = entryBeforeRev.match(prevOpeningRev);
+      let nextClosing = /^(.{0}|([^\[\]]*[^\]\\]))]]/g;
+      let nextClosingResult = entryAfter.match(nextClosing);
+
+      if (prevOpeningRevResult != null && nextClosingResult != null) {
+        let prevLinkRev = prevOpeningRevResult[0];
+        let prevPageRev = prevLinkRev.substring(0, prevLinkRev.length - 2);
+        let prevPage = [...prevPageRev].reverse().join("");
+        let pageTitleText = prevPage  + nextClosingResult[0].substring(0, nextClosingResult[0].length - 2);
+        let relevantDocNames: string[] = pageTitleText.length > 0
+          ? findRelevantDocNames(pageTitleText) : [];
+        return relevantDocNames;
+      }
+    }
+    return null;
+  })()
+
+  let shouldShowDocNameAutocomplete: boolean;
+  $: shouldShowDocNameAutocomplete = autoCompleteDocNames !== null;
 </script>
 
 <style>
@@ -87,6 +135,25 @@
 
   .icon-container:hover {
     cursor: pointer;
+  }
+
+  #doc-name-autocomplete {
+    position: absolute;
+    z-index: 5;
+    margin-top: 1.75em;
+    margin-left: 1.5em;
+    background-color: #fff;
+    width: 20em;
+    padding: 0.5em;
+    box-shadow: 3px 3px 5px #363636;
+  }
+
+  .doc-name-autocomplete-option {
+    cursor: pointer;
+  }
+
+  #doc-name-autocomplete-default {
+    color: #7f7f7f;
   }
 </style>
 
@@ -137,11 +204,22 @@
           />
       {/if}
   </div>
+  {#if shouldShowDocNameAutocomplete}
+    <div id="doc-name-autocomplete">
+      {#if autoCompleteDocNames.length > 0}
+        {#each autoCompleteDocNames as docName}
+          <div class="doc-name-autocomplete-option" on:click={handleDocNameAutocompleteClick}>{docName}</div>
+        {/each}
+      {:else}
+        <div id="doc-name-autocomplete-default"><em>Search page titles</em></div>
+      {/if}
+    </div>
+  {/if}
 {/if}
 
 {#if currNodeHasChildren && !isCollapsed}
   <ul class="tree-node-list">
-    {#each childItemArray as child, i}
+    {#each childItemArray as child}
       <li>
         <Node
           {tree}
@@ -149,6 +227,7 @@
           {docCursorEntryId}
           {docCursorSelStart}
           {docCursorSelEnd}
+          {findRelevantDocNames}
           {handleSaveDocEntry}
           {handleSaveFullCursor}
           {handleGoUp}
@@ -167,6 +246,7 @@
           {handleSwapWithAboveEntry}
           {handleSwapWithBelowEntry}
           {handleCycleEntryHeadingSize}
+          {handleReplaceEntryTextAroundCursor}
           />
       </li>
     {/each}
