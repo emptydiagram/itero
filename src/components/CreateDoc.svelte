@@ -1,5 +1,5 @@
 <script>
-  import { docsStore } from "./stores.js";
+  import { docsStore } from "../stores.ts";
   import { replace } from 'svelte-spa-router'
 
   docsStore.createNewDocument();

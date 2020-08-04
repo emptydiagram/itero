@@ -1,9 +1,9 @@
 <script lang="ts">
   export let tree: FlowyTree,
     flowyTreeNode: FlowyTreeNode,
-    docCursorEntryId,
-    docCursorSelStart: number,
-    docCursorSelEnd: number,
+    docCursorEntryId: number | null,
+    docCursorSelStart: number | null,
+    docCursorSelEnd: number | null,
     findRelevantDocNames: (text: string) => string[],
     handleGoUp: () => void,
     handleGoDown: () => void,

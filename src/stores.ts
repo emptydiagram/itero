@@ -1,11 +1,11 @@
-import { EntryDisplayState, createNewDocument, getNowISO8601 } from "../data.ts";
-import FlowyTree from '../FlowyTree.js';
+import { EntryDisplayState, createNewDocument, getNowISO8601 } from "./data";
+import FlowyTree from './FlowyTree.js';
 
 import { writable } from 'svelte/store';
 
 // given: sets a, b
 // returns: [elements removed from a, elements added to a]
-function diffSets(a, b) {
+function diffSets(a: Set<string>, b: Set<string>) {
   let removed = [];
   let added = [];
   for (let [entry, _] of a.entries()) {
@@ -80,12 +80,12 @@ function createDocsStore() {
       return store;
     }),
 
-    docsDisplaySetSelection: (docId, newSelectionValue) => update(store => {
+    docsDisplaySetSelection: (docId: string, newSelectionValue: boolean) => update(store => {
       store.docsDisplay[docId].isSelected = newSelectionValue;
       return store;
     }),
 
-    deleteDocs: (docIdList) => update(store => {
+    deleteDocs: (docIdList: string[]) => update(store => {
       docIdList.forEach(docId => {
         delete store.documents[docId];
         delete store.docsDisplay[docId];
@@ -94,12 +94,12 @@ function createDocsStore() {
       return store;
     }),
 
-    changeSort: (newSortMode) => update(store => {
+    changeSort: (newSortMode: string) => update(store => {
       store.sortMode = newSortMode;
       return store;
     }),
 
-    navigateToDoc: (docId) => update(store => {
+    navigateToDoc: (docId: string) => update(store => {
       let doc = store.documents[docId];
       // let initEntryId = doc.tree.getTopEntryId();
       store.currentDocId = docId;
@@ -119,7 +119,7 @@ function createDocsStore() {
       store.docIsEditingName = true;
       return store;
     }),
-    saveEditingDocName: (newDocName) => update(store => {
+    saveEditingDocName: (newDocName: string) => update(store => {
       // sync page's doc name display
       store.docName = newDocName;
       store.docIsEditingName = false;
@@ -147,7 +147,7 @@ function createDocsStore() {
       }
       return store;
     }),
-    saveCurrentPageDocEntry: (newDocEntryText, newCursorSelStart, newCursorSelEnd) => update(store => {
+    saveCurrentPageDocEntry: (newDocEntryText: string, newCursorSelStart: number, newCursorSelEnd: number) => update(store => {
       let currDoc = store.documents[store.currentDocId];
       currDoc.tree.setEntryText(store.cursorEntryId, newDocEntryText);
       currDoc.lastUpdated = getNowISO8601();
@@ -155,13 +155,13 @@ function createDocsStore() {
       store.cursorSelectionEnd = newCursorSelEnd;
       return store;
     }),
-    saveCursor: (newEntryId, newCursorSelStart, newCursorSelEnd) => update(store => {
+    saveCursor: (newEntryId: number | null, newCursorSelStart: number | null, newCursorSelEnd: number | null) => update(store => {
       store.cursorSelectionStart = newCursorSelStart;
       store.cursorSelectionEnd = newCursorSelEnd;
       store.cursorEntryId = newEntryId;
       return store;
     }),
-    moveCursorLeft: (entryValueSize) => update(store => {
+    moveCursorLeft: (entryValueSize: number) => update(store => {
       let selStart = store.cursorSelectionStart > entryValueSize
         ? entryValueSize
         : store.cursorSelectionStart;
@@ -174,7 +174,7 @@ function createDocsStore() {
       }
       return store;
     }),
-    moveCursorRight: (entryValueSize) => update(store => {
+    moveCursorRight: (entryValueSize: number) => update(store => {
       if (store.cursorSelectionStart === store.cursorSelectionEnd) {
         store.cursorSelectionStart = Math.min(entryValueSize, store.cursorSelectionStart + 1);
         store.cursorSelectionEnd = store.cursorSelectionStart;
@@ -186,10 +186,6 @@ function createDocsStore() {
     saveCursorPosition: (pos) => update(store => {
       store.cursorSelectionStart = pos;
       store.cursorSelectionEnd = pos;
-      return store;
-    }),
-    saveCursorEntryId: (newEntryId) => update(store => {
-      store.cursorEntryId = newEntryId;
       return store;
     }),
 
@@ -212,40 +208,35 @@ function createDocsStore() {
       return store;
     }),
 
-    collapseEntry: (entryId) => update(store => {
-      // check if display state is collapsed, and, if so, expand
-      if (entryId != null) {
-        let docId = store.currentDocId;
+    collapseEntry: (entryId: number) => update(store => {
+      let docId = store.currentDocId;
 
-        let currDoc = store.documents[docId];
-        let currTree = currDoc.tree;
-        let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
+      let currDoc = store.documents[docId];
+      let currTree = currDoc.tree;
+      let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
 
-        if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.EXPANDED) {
-          let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-          newTree.setEntryDisplayState(entryId, EntryDisplayState.COLLAPSED)
-          currDoc.tree = newTree;
-        }
-        store.cursorEntryId = null;
+      if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.EXPANDED) {
+        let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
+        newTree.setEntryDisplayState(entryId, EntryDisplayState.COLLAPSED)
+        currDoc.tree = newTree;
       }
+      store.cursorEntryId = null;
       return store;
     }),
 
-    expandEntry: (entryId) => update(store => {
-      if (entryId != null) {
-        let docId = store.currentDocId;
+    expandEntry: (entryId: number) => update(store => {
+      let docId = store.currentDocId;
 
-        let currDoc = store.documents[docId];
-        let currTree = currDoc.tree;
-        let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
+      let currDoc = store.documents[docId];
+      let currTree = currDoc.tree;
+      let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
 
-        if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED) {
-          let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-          newTree.setEntryDisplayState(entryId, EntryDisplayState.EXPANDED)
-          currDoc.tree = newTree;
-        }
-        store.cursorEntryId = null;
+      if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED) {
+        let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
+        newTree.setEntryDisplayState(entryId, EntryDisplayState.EXPANDED)
+        currDoc.tree = newTree;
       }
+      store.cursorEntryId = null;
       return store;
     }),
 
@@ -414,7 +405,7 @@ function createDocsStore() {
 
     }),
 
-    savePastedEntries: (newDocEntryText) => update(store => {
+    savePastedEntries: (newDocEntryText: string) => update(store => {
       console.log(" saved pasted entries act");
       let i = store.currentDocId;
       let entryId = store.cursorEntryId;
@@ -436,10 +427,10 @@ function createDocsStore() {
     //     - whenever we find a page name with no doc id, need to automatically create
     // for each removed and added link in the entry, update the link graph
     // return { updated LinkGraph, updated documents object }
-    updateEntryLinks: (entryId, pageNames) => update(store => {
+    updateEntryLinks: (entryId: number, pageNames: string[]) => update(store => {
       let currLinks = store.linkGraph.getLinks(store.currentDocId, entryId);
 
-      let newLinksArray = pageNames.map(page => {
+      let newLinksArray: string[] = pageNames.map(page => {
         let lookupResult = store.docIdLookupByDocName[page];
         if (lookupResult) {
           return lookupResult;
@@ -496,14 +487,14 @@ function createDocsStore() {
     }),
 
     // "1, 2, 3, 0"
-    cycleEntryHeadingSize: (entryId) => update(store => {
+    cycleEntryHeadingSize: (entryId: number) => update(store => {
       let currDoc = store.documents[store.currentDocId];
       let currTree = currDoc.tree;
       currTree.cycleEntryHeadingSize(entryId);
       return store;
     }),
 
-    replaceEntryTextAroundCursor: (newText) => update(store => {
+    replaceEntryTextAroundCursor: (newText: string) => update(store => {
       console.log(" >> handleReplaceEntryTextARoundCursor, (new, selStart) = ", newText, store.cursorSelectionStart);
 
       let currentTree = store.documents[store.currentDocId].tree ;

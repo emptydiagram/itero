@@ -3,7 +3,7 @@
 
   import { replace } from 'svelte-spa-router'
 
-  import { docsStore } from "./stores.js";
+  import { docsStore } from "../stores.ts";
 
   let pageName = decodeURI(params.name);
   if (pageName in $docsStore.docIdLookupByDocName) {

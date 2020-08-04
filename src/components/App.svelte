@@ -5,7 +5,7 @@
   import Router from "svelte-spa-router";
   import { push } from "svelte-spa-router";
 
-  import { docsStore } from "./stores.js";
+  import { docsStore } from "../stores.ts";
   import Document from "./Document.svelte";
   import Home from "./Home.svelte";
   import Page from "./Page.svelte";
@@ -80,13 +80,13 @@
       }
 
       if (!docContent.contains(sel.anchorNode)) {
-        docsStore.saveCursorEntryId(null);
+        docsStore.saveCursor(null, null, null);
         return;
       }
 
       let docContentResult = findDocContentElement(sel.anchorNode);
       if (docContentResult.className === "icon-container") {
-        docsStore.saveCursorEntryId(null);
+        docsStore.saveCursor(null, null, null);
         return;
       }
 
@@ -102,7 +102,7 @@
 
       // if we've made it here, then it's (a) inside #doc-content, but (b) outside an .entry-display
       if (!docContentResult.node) {
-        docsStore.saveCursorEntryId(null);
+        docsStore.saveCursor(null, null, null);
         return;
       }
 

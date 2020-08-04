@@ -4,7 +4,7 @@
   import BacklinksDisplay from "./BacklinksDisplay.svelte";
   import Header from './Header.svelte';
   import Node from "./Node.svelte";
-  import { docsStore } from "./stores.js";
+  import { docsStore } from "../stores.ts";
 
   import { afterUpdate } from 'svelte';
   import Icon from 'svelte-awesome';
