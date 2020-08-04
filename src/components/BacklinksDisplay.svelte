@@ -11,7 +11,7 @@
     margin-top: 1em;
   }
 
-  #backlinks-page-display {
+  .backlinks-page-display {
     background-color: #f9f9f9;
   }
 
@@ -29,7 +29,7 @@
 {#if existsBacklinks}
   <h2>References</h2>
   {#each Object.values(backlinks) as doc}
-    <div id="backlinks-page-display">
+    <div class="backlinks-page-display">
       <h3><a href={`#/doc/${doc.id}`}>{doc.name}</a></h3>
       <ul>
       {#each Object.values(doc.entries) as entry}

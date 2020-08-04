@@ -154,7 +154,6 @@ test('Parses internal link inside strong', () => {
 
 test('Parses internal link inside emph', () => {
     const input = "__4 harmonic [[corner days]] rotate simultaneously__";
-    console.log(" ===================== internal inside emph");
     expect(IteroParser.Text.tryParse(input).html)
     .toBe(`<em>4 harmonic <span class="internal-link">[[<a data-markup-link-type="internal" href="#/page/corner%20days">corner days</a>]]</span> rotate simultaneously</em>`);
 })

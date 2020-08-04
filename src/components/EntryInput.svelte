@@ -197,4 +197,6 @@
   on:input={handleInput}
   on:click={e => handleEntryInputClick(e, entryId)}
   on:keydown={handleKeydown}
-  on:paste={handlePaste} />
+  on:paste={handlePaste}
+  data-testid="entry-input"
+/>
