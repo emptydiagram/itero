@@ -1,13 +1,27 @@
 import { LinkedListItem } from "./LinkedList.js";
 import FlowyTreeNode from './FlowyTreeNode.js'
 import Queue from "./Queue.js";
-import { EntryDisplayState } from "./data.ts";
+import { EntryDisplayState } from "./data";
+
+export interface FlowyTreeEntry {
+  text: string,
+  displayState?: EntryDisplayState,
+  headingSize?: number
+}
+
+export interface FlowyTreeEntriesCollection {
+  [entryId: number]: FlowyTreeEntry
+}
 
 export default class FlowyTree {
+  entries: FlowyTreeEntriesCollection;
+  root: FlowyTreeNode;
+  entryItems: { [entryId: number]: LinkedListItem }
+
   // entries: Map<EntryId, { text: String, (displayState: EntryDisplayState)?, (headingLevel: number)? }>
   // root: FlowyTreeNode
   // entryItems: Map<EntryId, LinkedListItem<FlowyTreeNode>>
-  constructor(entries, root) {
+  constructor(entries: FlowyTreeEntriesCollection, root: FlowyTreeNode) {
     this.entries = entries;
     // this.root = new FlowyTreeNode(null, null, entriesList);
     this.root = root;
@@ -29,11 +43,11 @@ export default class FlowyTree {
     return this.root.getChildren().head.value.getId();
   }
 
-  getEntries() {
+  getEntries(): FlowyTreeEntriesCollection {
     return this.entries;
   }
 
-  getRoot() {
+  getRoot(): FlowyTreeNode {
     return this.root;
   }
 
@@ -90,7 +104,7 @@ export default class FlowyTree {
 
     while (currId != null) {
       // check if current is collapsed
-      if (this.getEntryDisplayState(currId) === EntryDisplayState.COLLAPSED) {
+      if (this.getEntryDisplayState(currId) === EntryDisplayState.Collapsed) {
         oldestId = currId;
       }
       currId = this.getEntryItem(currId).value.getParentId();
@@ -109,7 +123,7 @@ export default class FlowyTree {
 
   getEntryIdBelowWithCollapse(entryId) {
     // if entry is collapsed ignore children
-    if (this.getEntryDisplayState(entryId) !== EntryDisplayState.COLLAPSED) {
+    if (this.getEntryDisplayState(entryId) !== EntryDisplayState.Collapsed) {
       // return first child id, if it exists
       let ch = this.entryItems[entryId].value.getChildren();
       if (ch.size > 0) {
@@ -151,8 +165,8 @@ export default class FlowyTree {
     return this.entries[entryId].text;
   }
 
-  getEntryDisplayState(entryId) {
-    let val = (this.entries[entryId] != null) && this.entries[entryId].displayState || EntryDisplayState.EXPANDED;
+  getEntryDisplayState(entryId): EntryDisplayState {
+    let val = (this.entries[entryId] != null) && this.entries[entryId].displayState || EntryDisplayState.Expanded;
     return val;
   }
 
@@ -166,14 +180,15 @@ export default class FlowyTree {
 
   setEntryText(entryId, value) {
     if (this.entries[entryId] == null) {
-      this.entries[entryId] = {};
+      this.entries[entryId] = { text: value };
     }
     this.entries[entryId].text = value;
   }
 
   setEntryDisplayState(entryId, newState) {
     if (this.entries[entryId] == null) {
-      this.entries[entryId] = {};
+      console.log(" ##$#$@%@@ setEntryDisplayState was called with the entry not found!!!!!");
+      return;
     }
     this.entries[entryId].displayState = newState;
   }
@@ -213,10 +228,6 @@ export default class FlowyTree {
     let item = this.entryItems[entryId];
     delete this.entries[entryId];
     item.detach();
-  }
-
-  size() {
-    return this.entries.length;
   }
 
   hasPrevSibling(entryId) {

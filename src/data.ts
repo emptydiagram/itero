@@ -1,9 +1,35 @@
-import { deserializeEntries, serializeEntries } from "./serialization.js";
 import type DataStore from "./DataStore.js";
-import FlowyTree from "./FlowyTree.js";
+import type { FlowyTreeEntry, FlowyTreeEntriesCollection } from "./FlowyTree";
+import FlowyTree from "./FlowyTree";
 import FlowyTreeNode from "./FlowyTreeNode.js";
 import { MarkupParser } from "./markup/MarkupParser.js";
 import LinkGraph from "./LinkGraph.js";
+
+
+interface SerializedFlowyTreeEntry {
+  text: string,
+  displayState?: string,
+  headingSize?: number
+}
+
+interface SerializedFlowyTreeEntriesCollection {
+  [entryId: number]: SerializedFlowyTreeEntry
+}
+
+type TreeObj = number | { [key: string]: Array<TreeObj> }
+
+interface SerializedFlowyTree {
+  entries: SerializedFlowyTreeEntriesCollection,
+  node: TreeObj,
+}
+
+export interface SerializedDocument {
+  id: string,
+  name: string,
+  tree: SerializedFlowyTree,
+  lastUpdated: string
+}
+
 
 export interface Document {
   id: string,
@@ -19,10 +45,10 @@ export interface DocumentsCollection {
 interface DocIdLookup { [name: string]: string }
 
 
-export const EntryDisplayState = Object.freeze({
-    COLLAPSED: Symbol("Colors.COLLAPSED"),
-    EXPANDED: Symbol("Colors.EXPANDED"),
-});
+export enum EntryDisplayState {
+  Collapsed,
+  Expanded,
+}
 
 export function getNowISO8601() {
   return new Date(Date.now()).toISOString();
@@ -58,17 +84,22 @@ export class DataManager {
     this.dataStore = dataStore;
   }
 
-  treeToSerializationObject(tree) {
+  treeToSerializationObject(tree: FlowyTree): SerializedFlowyTree {
     return {
       entries: serializeEntries(tree.getEntries()),
       node: tree.getRoot().toTreeObj()
     };
   }
 
-  documentToSerializationObject(doc) {
-    let newDoc = { ...doc };
-    newDoc.tree = this.treeToSerializationObject(newDoc.tree);
-    return newDoc;
+
+  documentToSerializationObject(doc: Document): SerializedDocument {
+    let newDoc: any = { ...doc };
+    return {
+      id: doc.id,
+      name: doc.name,
+      tree: this.treeToSerializationObject(newDoc.tree),
+      lastUpdated: doc.lastUpdated
+    };
   }
 
   getDocumentsString() {
@@ -187,7 +218,7 @@ export function makeDoc(id, name, lastUpdated, entries, root): Document {
 }
 
 function makeInitDocuments(): DocumentsCollection {
-  // 0: { text: 'this is a note taking app', displayState: EntryDisplayState.COLLAPSED },
+  // 0: { text: 'this is a note taking app', displayState: EntryDisplayState.Collapsed },
   let intro = [
       {
         0: { text: 'this is a note taking app' },
@@ -197,7 +228,7 @@ function makeInitDocuments(): DocumentsCollection {
         4: { text: 'actually it\'s a nested list' },
         5: { text: 'you can keep nesting' },
         6: { text: 'items' },
-        7: { text: 'and items', displayState: EntryDisplayState.COLLAPSED },
+        7: { text: 'and items', displayState: EntryDisplayState.Collapsed },
         8: { text: 'a n d i t e m s' },
         9: { text: 'you can collapse parts of the tree. the plus icon (+) indicates a collapsed item' },
         10: { text: '__collapse__: Ctrl + Up' },
@@ -254,4 +285,29 @@ function makeInitDocuments(): DocumentsCollection {
     '1': makeDoc(1, 'hello and what is this', introLastUpdated, intro[0], intro[1]),
     '2': makeDoc(2, 'implementation details', similarLastUpdated, similar[0], similar[1])
   };
+}
+
+
+function deserializeEntries(entriesObj): FlowyTreeEntriesCollection {
+  let entries = { ...entriesObj };
+  Object.entries(entries).map(([id, entry]: [string, { displayState: string }]) => {
+    let newEntry: any = { ...entry };
+    newEntry.displayState = newEntry.displayState === 'COLLAPSED'
+      ? EntryDisplayState.Collapsed
+      : EntryDisplayState.Expanded;
+    entries[id] = newEntry;
+  });
+  return entries;
+}
+
+function serializeEntries(entries: FlowyTreeEntriesCollection): SerializedFlowyTreeEntriesCollection {
+  let entriesObj = {};
+  Object.entries(entries).map(([id, entry]: [string, FlowyTreeEntry]) => {
+    let newEntry: any = { ...entry };
+    newEntry.displayState = newEntry.displayState === EntryDisplayState.Collapsed
+      ? 'COLLAPSED'
+      : 'EXPANDED';
+    entriesObj[id] = newEntry;
+  });
+  return entriesObj;
 }

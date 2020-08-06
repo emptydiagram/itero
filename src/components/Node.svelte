@@ -41,7 +41,7 @@
 
   function nodeIsCollapsed(node: FlowyTreeNode): boolean {
     return node.hasChildren()
-      && tree.getEntryDisplayState(node.getId()) === EntryDisplayState.COLLAPSED;
+      && tree.getEntryDisplayState(node.getId()) === EntryDisplayState.Collapsed;
   }
 
   function handleToggle(entryId: number, isCollapsed: boolean) {
@@ -69,7 +69,7 @@
 
   let isCollapsed: boolean;
   $: isCollapsed = currNodeHasChildren
-    && tree.getEntryDisplayState(currEntryId) == EntryDisplayState.COLLAPSED;
+    && tree.getEntryDisplayState(currEntryId) == EntryDisplayState.Collapsed;
 
   let isCurrentEntry: boolean;
   $: isCurrentEntry = (currEntryId != null) && currEntryId === docCursorEntryId;

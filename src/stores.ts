@@ -1,5 +1,5 @@
 import { EntryDisplayState, createNewDocument, getNowISO8601 } from "./data";
-import FlowyTree from './FlowyTree.js';
+import FlowyTree from './FlowyTree';
 
 import { writable } from 'svelte/store';
 
@@ -215,9 +215,9 @@ function createDocsStore() {
       let currTree = currDoc.tree;
       let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
 
-      if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.EXPANDED) {
+      if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.Expanded) {
         let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-        newTree.setEntryDisplayState(entryId, EntryDisplayState.COLLAPSED)
+        newTree.setEntryDisplayState(entryId, EntryDisplayState.Collapsed)
         currDoc.tree = newTree;
       }
       store.cursorEntryId = null;
@@ -231,9 +231,9 @@ function createDocsStore() {
       let currTree = currDoc.tree;
       let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
 
-      if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED) {
+      if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.Collapsed) {
         let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
-        newTree.setEntryDisplayState(entryId, EntryDisplayState.EXPANDED)
+        newTree.setEntryDisplayState(entryId, EntryDisplayState.Expanded)
         currDoc.tree = newTree;
       }
       store.cursorEntryId = null;
@@ -295,7 +295,7 @@ function createDocsStore() {
       }
 
       // if at the end of a collapsed item, make a next sibling with empty text
-      if (currTree.getEntryDisplayState(entryId) === EntryDisplayState.COLLAPSED
+      if (currTree.getEntryDisplayState(entryId) === EntryDisplayState.Collapsed
           && cursorPos === currEntryText.length) {
 
         let newId = currDoc.tree.insertEntryBelow(entryId, parentId, '');
