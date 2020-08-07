@@ -165,9 +165,10 @@ export default class FlowyTree {
     return this.entries[entryId].text;
   }
 
-  getEntryDisplayState(entryId): EntryDisplayState {
-    let val = (this.entries[entryId] != null) && this.entries[entryId].displayState || EntryDisplayState.Expanded;
-    return val;
+  getEntryDisplayState(entryId: number): EntryDisplayState {
+    return (this.entries[entryId] != null) && ('displayState' in this.entries[entryId])
+      ? this.entries[entryId].displayState
+      : EntryDisplayState.Expanded;
   }
 
   getEntryHeadingSize(entryId) {
