@@ -51,10 +51,6 @@ export default class FlowyTree {
     return this.root;
   }
 
-  getEntryTexts() {
-    return this.root.getChildren().toArray().map(item => this.entries[item.value.getId()].text)
-  }
-
   hasEntryAbove(entryId) {
     return this.entryItems[entryId].prev !== null
       || this.entryItems[entryId].value.getParentId() !== null;
