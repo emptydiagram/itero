@@ -32,7 +32,7 @@ it('it renders plain text', async () => {
 
   const { getByTestId } = render(EntryInput, props);
 
-  const entryInput = getByTestId('entry-input');
+  const entryInput: HTMLInputElement = getByTestId('entry-input') as HTMLInputElement;
 
   expect(entryInput.value).toBe(props.entryValue);
   expect(entryInput.selectionStart).toBe(props.docCursorSelStart);
@@ -75,7 +75,7 @@ it('it moves left', async () => {
 
   const { getByTestId } = render(EntryInput, props);
 
-  const entryInput = getByTestId('entry-input');
+  const entryInput: HTMLInputElement = getByTestId('entry-input') as HTMLInputElement;
 
   expect(entryInput.value).toBe(props.entryValue);
 

@@ -18,6 +18,8 @@
     "@testing-library/jest-dom": "^5.11.2",
     "@testing-library/svelte": "^3.0.0",
     "@tsconfig/svelte": "^1.0.0",
+    "@types/jest": "^26.0.9",
+    "@types/testing-library__jest-dom": "^5.9.2",
     "babel-jest": "^26.2.2",
     "jest": "^26.2.2",
     "rollup": "^2.3.4",
