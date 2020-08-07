@@ -29,11 +29,10 @@
   import Icon from 'svelte-awesome';
   import { faCircle,faPlus } from '@fortawesome/free-solid-svg-icons';
 
-  import type FlowyTree from '../FlowyTree';
-  import type FlowyTreeNode from '../FlowyTreeNode';
+  import type { FlowyTree } from '../FlowyTree';
+  import type { FlowyTreeNode } from '../FlowyTree';
   import EntryInput from "./EntryInput.svelte";
 
-  import type { LinkedListItem } from "../LinkedList";
   import RenderedEntry from "./RenderedEntry.svelte";
   import Node from "./Node.svelte";
   import { EntryDisplayState } from "../data";
@@ -41,7 +40,7 @@
 
   function nodeIsCollapsed(node: FlowyTreeNode): boolean {
     return node.hasChildren()
-      && tree.getEntryDisplayState(node.getId()) === EntryDisplayState.Collapsed;
+      && tree.getEntryDisplayState(node.getValue()) === EntryDisplayState.Collapsed;
   }
 
   function handleToggle(entryId: number, isCollapsed: boolean) {
@@ -59,13 +58,13 @@
   }
 
   let currEntryId: number | null;
-  $: currEntryId = flowyTreeNode.getId();
+  $: currEntryId = flowyTreeNode.getValue();
 
-  let childItemArray: Array<LinkedListItem>;
-  $: childItemArray = flowyTreeNode.getChildNodeArray();
+  let childNodeArray: Array<FlowyTreeNode>;
+  $: childNodeArray = flowyTreeNode.getChildNodeArray();
 
   let currNodeHasChildren: boolean;
-  $: currNodeHasChildren = childItemArray.length > 0;
+  $: currNodeHasChildren = childNodeArray.length > 0;
 
   let isCollapsed: boolean;
   $: isCollapsed = currNodeHasChildren
@@ -219,11 +218,11 @@
 
 {#if currNodeHasChildren && !isCollapsed}
   <ul class="tree-node-list">
-    {#each childItemArray as child}
+    {#each childNodeArray as child}
       <li>
         <Node
           {tree}
-          flowyTreeNode={child.value}
+          flowyTreeNode={child}
           {docCursorEntryId}
           {docCursorSelStart}
           {docCursorSelEnd}

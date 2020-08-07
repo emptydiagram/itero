@@ -1,5 +1,6 @@
-import { EntryDisplayState, createNewDocument, getNowISO8601 } from "./data";
-import FlowyTree from './FlowyTree';
+import { Document, EntryDisplayState, createNewDocument, getNowISO8601 } from "./data";
+import { FlowyTree } from './FlowyTree';
+import type { FlowyTreeNode } from './FlowyTree';
 
 import { writable } from 'svelte/store';
 
@@ -192,7 +193,7 @@ function createDocsStore() {
     entryGoUp: () => update(store => {
       let currDocId = store.currentDocId;
       let cursorEntryId = store.cursorEntryId;
-      let currTree = store.documents[currDocId].tree;
+      let currTree: FlowyTree = store.documents[currDocId].tree;
       let hasEntryAbove = currTree.hasEntryAbove(cursorEntryId);
       let newEntryId = hasEntryAbove ? currTree.getEntryIdAboveWithCollapse(cursorEntryId) : cursorEntryId;
       store.cursorEntryId = newEntryId;
@@ -201,7 +202,7 @@ function createDocsStore() {
     entryGoDown: () => update(store => {
       let currDocId = store.currentDocId;
       let cursorEntryId = store.cursorEntryId;
-      let currTree = store.documents[currDocId].tree;
+      let currTree: FlowyTree = store.documents[currDocId].tree;
       let hasEntryBelow = currTree.hasEntryBelow(cursorEntryId);
       let newEntryId = hasEntryBelow ? currTree.getEntryIdBelowWithCollapse(cursorEntryId) : cursorEntryId;
       store.cursorEntryId = newEntryId;
@@ -212,8 +213,8 @@ function createDocsStore() {
       let docId = store.currentDocId;
 
       let currDoc = store.documents[docId];
-      let currTree = currDoc.tree;
-      let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
+      let currTree: FlowyTree = currDoc.tree;
+      let currHasChildren = currTree.hasChildren(entryId);
 
       if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.Expanded) {
         let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
@@ -228,8 +229,8 @@ function createDocsStore() {
       let docId = store.currentDocId;
 
       let currDoc = store.documents[docId];
-      let currTree = currDoc.tree;
-      let currHasChildren = currTree.getEntryItem(entryId).value.hasChildren();
+      let currTree: FlowyTree = currDoc.tree;
+      let currHasChildren = currTree.hasChildren(entryId);
 
       if (currHasChildren && currTree.getEntryDisplayState(entryId) === EntryDisplayState.Collapsed) {
         let newTree = new FlowyTree(currTree.getEntries(), currTree.getRoot());
@@ -243,37 +244,36 @@ function createDocsStore() {
     indentEntry: () => update(store => {
       let docId = store.currentDocId;
       let entryId = store.cursorEntryId;
-      let currTree = store.documents[docId].tree;
-      let currItem = currTree.getEntryItem(entryId);
+      let currTree: FlowyTree = store.documents[docId].tree;
+      let currNode = currTree.getEntryNode(entryId);
 
       if (currTree.hasPrevSibling(entryId)) {
         let prevNode = currTree.getPrevSiblingNode(entryId);
-        currItem.detach();
-        prevNode.appendChildItem(currItem);
-        let parentId = prevNode.getId();
-        currItem.value.setParentId(parentId);
+        currNode.detach();
+        prevNode.appendChild(currNode);
         store.documents[docId].lastUpdated = getNowISO8601();
       }
 
       return store;
     }),
+
     dedentEntry: () => update(store => {
       let docId = store.currentDocId;
       let entryId = store.cursorEntryId;
-      let currTree = store.documents[docId].tree;
-      let currItem = currTree.getEntryItem(entryId);
+      let currTree: FlowyTree = store.documents[docId].tree;
+      let currNode = currTree.getEntryNode(entryId);
 
-      if (currItem.value.hasParent()) {
-        let parentItem = currTree.getEntryItem(currItem.value.getParentId());
-        currItem.detach();
-        parentItem.append(currItem);
-        let parentParentId = parentItem.value.getParentId();
-        currItem.value.setParentId(parentParentId);
+      if (currTree.hasParent(currNode.getValue())) {
+        // make it the next sibling of parent
+        let parentNode = currNode.getParent();
+        currNode.detach();
+        parentNode.appendSiblingNode(currNode);
         store.documents[docId].lastUpdated = getNowISO8601();
       }
 
       return store;
     }),
+
     splitEntry: () => update(store => {
       let docId = store.currentDocId;
       let entryId = store.cursorEntryId;
@@ -281,9 +281,10 @@ function createDocsStore() {
 
       // TODO: only update documents if there's a docId (is this possible?)
       let currDoc = store.documents[docId];
-      let currTree = currDoc.tree;
+      let currTree: FlowyTree = currDoc.tree;
       let currEntryText = currTree.getEntryText(entryId);
-      let parentId = currTree.getParentId(entryId);
+      // let parentId = currTree.getParentId(entryId);
+      let parentId = currTree.getEntryNode(entryId).getParent().getValue();
 
 
       // presto-removo the selected text
@@ -304,6 +305,9 @@ function createDocsStore() {
         return store;
       }
 
+      console.log(" %% splitEntry, no early return")
+
+
       let newEntryText = currEntryText.substring(0, cursorPos);
       let updatedCurrEntry = currEntryText.substring(cursorPos, currEntryText.length);
       currDoc.tree.setEntryText(entryId, updatedCurrEntry);
@@ -316,15 +320,16 @@ function createDocsStore() {
     }),
 
     backspaceEntry: () => update(store => {
-      let currentDoc = store.documents[store.currentDocId];
+      let currentDoc: Document = store.documents[store.currentDocId];
       let cursorPos = store.cursorSelectionStart;
       let entryId = store.cursorEntryId;
+      let currTree: FlowyTree = currentDoc.tree;
 
       // delete single-entry selection
       if (store.cursorSelectionStart !== store.cursorSelectionEnd) {
-        let currEntryText = currentDoc.tree.getEntryText(entryId);
+        let currEntryText = currTree.getEntryText(entryId);
         let newEntry = currEntryText.substring(0, store.cursorSelectionStart) + currEntryText.substring(store.cursorSelectionEnd);
-        currentDoc.tree.setEntryText(entryId, newEntry);
+        currTree.setEntryText(entryId, newEntry);
         store.cursorSelectionEnd = store.cursorSelectionStart;
         return store;
       }
@@ -332,14 +337,14 @@ function createDocsStore() {
 
 
       if (cursorPos > 0) {
-        let currEntryText = currentDoc.tree.getEntryText(entryId);
+        let currEntryText = currTree.getEntryText(entryId);
         let currTextLength = currEntryText.length;
         // FIXME
         // colId might be larger than the text length, so handle it
         let effectiveCursorPos = Math.min(cursorPos, currTextLength);
         let newEntry =
           currEntryText.substring(0, effectiveCursorPos - 1) + currEntryText.substring(effectiveCursorPos);
-        currentDoc.tree.setEntryText(entryId, newEntry);
+        currTree.setEntryText(entryId, newEntry);
 
         store.cursorSelectionStart = effectiveCursorPos - 1;
         store.cursorSelectionEnd = store.cursorSelectionStart;
@@ -348,7 +353,6 @@ function createDocsStore() {
 
 
       // col is zero, so we merge adjacent entries
-      let currTree = currentDoc.tree;
 
       // cases where backspacing @ col 0 is a no-op
       //  - if curr entry has no entry above (no parent, no previous sibling)
@@ -356,17 +360,17 @@ function createDocsStore() {
       //  - if current has children + no previous sibling
       if (currTree.hasEntryAbove(entryId)) {
 
-        let currItem = currTree.getEntryItem(entryId);
-        let prevItem = currItem.prev;
-        if (currItem.value.hasChildren() && (prevItem == null || prevItem.value.hasChildren())) {
+        let currNode: FlowyTreeNode = currTree.getEntryNode(entryId);
+
+        if (currNode.hasChildren() && (!currNode.hasPrev() || currNode.getPrev().hasChildren())) {
           // exit without change
           return store;
         }
 
-        let currEntryText = currentDoc.tree.getEntryText(entryId);
+        let currEntryText = currTree.getEntryText(entryId);
 
         let newEntryId, newCursorPos;
-        if (!currItem.value.hasChildren()) {
+        if (!currNode.hasChildren()) {
           // if current has no children, we delete current and append current's text
           // to previous entry.
           let prevEntryId = currTree.getEntryIdAboveWithCollapse(entryId);
@@ -462,24 +466,25 @@ function createDocsStore() {
     swapWithAboveEntry: () => update(store => {
       let cursorEntryId = store.cursorEntryId;
       let currDoc = store.documents[store.currentDocId];
-      let currTree = currDoc.tree;
+      let currTree: FlowyTree = currDoc.tree;
 
       if (currTree.hasPrevSibling(cursorEntryId)) {
         let prevSiblingNode =  currTree.getPrevSiblingNode(cursorEntryId);
-        let prevSiblingId = prevSiblingNode.getId();
+        let prevSiblingId = prevSiblingNode.getValue();
         currTree.swapAdjacentSiblings(prevSiblingId, cursorEntryId);
         currDoc.lastUpdated = getNowISO8601();
       }
       return store;
     }),
+
     swapWithBelowEntry: () => update(store => {
       let cursorEntryId = store.cursorEntryId;
       let currDoc = store.documents[store.currentDocId];
-      let currTree = currDoc.tree;
+      let currTree: FlowyTree = currDoc.tree;
 
       if (currTree.hasNextSibling(cursorEntryId)) {
         let nextSiblingNode =  currTree.getNextSiblingNode(cursorEntryId);
-        let nextSiblingId = nextSiblingNode.getId();
+        let nextSiblingId = nextSiblingNode.getValue();
         currTree.swapAdjacentSiblings(cursorEntryId, nextSiblingId);
         currDoc.lastUpdated = getNowISO8601();
       }
@@ -489,7 +494,7 @@ function createDocsStore() {
     // "1, 2, 3, 0"
     cycleEntryHeadingSize: (entryId: number) => update(store => {
       let currDoc = store.documents[store.currentDocId];
-      let currTree = currDoc.tree;
+      let currTree: FlowyTree = currDoc.tree;
       currTree.cycleEntryHeadingSize(entryId);
       return store;
     }),

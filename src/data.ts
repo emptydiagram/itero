@@ -1,9 +1,8 @@
 import type DataStore from "./DataStore.js";
-import type { FlowyTreeEntry, FlowyTreeEntriesCollection } from "./FlowyTree";
-import FlowyTree from "./FlowyTree";
-import FlowyTreeNode from "./FlowyTreeNode.js";
+import { FlowyTreeEntry, FlowyTreeEntriesCollection, FlowyTreeNodeConverter } from "./FlowyTree";
+import { FlowyTree, OrderedTreeNode } from "./FlowyTree";
 import { MarkupParser } from "./markup/MarkupParser.js";
-import LinkGraph from "./LinkGraph.js";
+import LinkGraph from "./LinkGraph";
 
 
 interface SerializedFlowyTreeEntry {
@@ -16,7 +15,7 @@ interface SerializedFlowyTreeEntriesCollection {
   [entryId: number]: SerializedFlowyTreeEntry
 }
 
-type TreeObj = number | { [key: string]: Array<TreeObj> }
+export type TreeObj = number | { [key: string]: Array<TreeObj> }
 
 interface SerializedFlowyTree {
   entries: SerializedFlowyTreeEntriesCollection,
@@ -57,9 +56,13 @@ export function getNowISO8601() {
 export function createNewDocument(newDocName: string, initEntryText: string, docs: DocumentsCollection): Document {
   let existingIds = Object.keys(docs).map(id => parseInt(id));
   let newId = (Math.max(...existingIds) + 1).toString();
+
+  let flowyTreeNode = OrderedTreeNode.create(null);
+  let childNode = OrderedTreeNode.create(0);
+  flowyTreeNode.appendChild(childNode);
   let newTree = new FlowyTree(
     { 0: {text: initEntryText} },
-    FlowyTreeNode.fromTreeObj({ root: [0] }, null));
+    flowyTreeNode);
 
   return {
     id: newId,
@@ -82,7 +85,7 @@ export class DataManager {
   treeToSerializationObject(tree: FlowyTree): SerializedFlowyTree {
     return {
       entries: serializeEntries(tree.getEntries()),
-      node: tree.getRoot().toTreeObj()
+      node: FlowyTreeNodeConverter.toTreeObj(tree.getRoot())
     };
   }
 
@@ -120,7 +123,14 @@ export class DataManager {
         if (!('lastUpdated' in doc)) {
           newDoc.lastUpdated = getNowISO8601();
         }
-        newDoc.tree = new FlowyTree(deserializeEntries(doc.tree.entries), FlowyTreeNode.fromTreeObj(doc.tree.node));
+
+        // TODO: actually verify validity?
+        let parsedDoc: SerializedDocument = doc as SerializedDocument;
+
+        console.log(" @@@ getDocuments, doc.tree.node = ", doc.tree.node);
+
+        let flowyTreeNode = FlowyTreeNodeConverter.createFromTreeObj(doc.tree.node);
+        newDoc.tree = new FlowyTree(deserializeEntries(doc.tree.entries), flowyTreeNode);
         deserDocs[entryId] = newDoc;
       });
       docs = deserDocs;
@@ -203,8 +213,8 @@ export function makeInitContextFromDocuments(docs: DocumentsCollection) {
   };
 }
 
-function makeTree(entries: FlowyTreeEntriesCollection, treeObj) {
-  let theRoot = FlowyTreeNode.fromTreeObj(treeObj, null);
+function makeTree(entries: FlowyTreeEntriesCollection, treeObj: TreeObj): FlowyTree {
+  let theRoot = FlowyTreeNodeConverter.createFromTreeObj(treeObj);
   return new FlowyTree(entries, theRoot);
 }
 
