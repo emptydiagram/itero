@@ -70,11 +70,6 @@ export function createNewDocument(newDocName: string, initEntryText: string, doc
 }
 
 
-function makeTree(entries, treeObj) {
-  let theRoot = FlowyTreeNode.fromTreeObj(treeObj, null);
-  return new FlowyTree(entries, theRoot);
-}
-
 const LS_KEY = "itero-docs";
 
 export class DataManager {
@@ -155,7 +150,7 @@ function makeDocIdLookup(docs: DocumentsCollection): DocIdLookup  {
   return docIdLookup;
 }
 
-function makeLinkGraph(docs, docIdLookup) {
+function makeLinkGraph(docs: DocumentsCollection, docIdLookup: DocIdLookup) {
   let outAdjacency = {};
   let newDocs = { ...docs };
   Object.entries(docs).forEach(([docId, doc]: [string, Document]) => {
@@ -208,7 +203,12 @@ export function makeInitContextFromDocuments(docs: DocumentsCollection) {
   };
 }
 
-export function makeDoc(id, name, lastUpdated, entries, root): Document {
+function makeTree(entries: FlowyTreeEntriesCollection, treeObj) {
+  let theRoot = FlowyTreeNode.fromTreeObj(treeObj, null);
+  return new FlowyTree(entries, theRoot);
+}
+
+export function makeDoc(id: string, name: string, lastUpdated: string, entries: FlowyTreeEntriesCollection, root): Document {
   return {
     id: id,
     name: name,
@@ -282,8 +282,8 @@ function makeInitDocuments(): DocumentsCollection {
   ];
   let similarLastUpdated ="2020-07-05T19:43:44.000Z";
   return {
-    '1': makeDoc(1, 'hello and what is this', introLastUpdated, intro[0], intro[1]),
-    '2': makeDoc(2, 'implementation details', similarLastUpdated, similar[0], similar[1])
+    '1': makeDoc('1', 'hello and what is this', introLastUpdated, intro[0], intro[1]),
+    '2': makeDoc('2', 'implementation details', similarLastUpdated, similar[0], similar[1])
   };
 }
 

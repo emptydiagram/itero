@@ -3,6 +3,8 @@ import FlowyTreeNode from './FlowyTreeNode.js'
 import Queue from "./Queue.js";
 import { EntryDisplayState } from "./data";
 
+export type EntryId = number;
+
 export interface FlowyTreeEntry {
   text: string,
   displayState?: EntryDisplayState,
@@ -51,11 +53,6 @@ export default class FlowyTree {
     return this.root;
   }
 
-  hasEntryAbove(entryId) {
-    return this.entryItems[entryId].prev !== null
-      || this.entryItems[entryId].value.getParentId() !== null;
-  }
-
 
   getLastAncestorNode(node) {
     let curr = node;
@@ -80,8 +77,8 @@ export default class FlowyTree {
     return null;
   }
 
-  getEntryIdAbove(entryId) {
-    if (this.entryItems[entryId].prev !== null) {
+  getEntryIdAbove(entryId: EntryId): EntryId | null {
+    if (this.hasPrevSibling(entryId)) {
       let prevNode = this.entryItems[entryId].prev.value;
       return this.getLastAncestorNode(prevNode).getId();
     }
@@ -90,7 +87,7 @@ export default class FlowyTree {
     return this.entryItems[entryId].value.parentId;
   }
 
-  getEntryIdAboveWithCollapse(entryId) {
+  getEntryIdAboveWithCollapse(entryId: EntryId): EntryId | null {
     // TODO: find if the entry id above is the child of a collapsed node, and if so go to the last one
     let provId = this.getEntryIdAbove(entryId);
 
@@ -109,8 +106,14 @@ export default class FlowyTree {
     return oldestId == null ? provId : oldestId;
   }
 
+
+  hasEntryAbove(entryId: EntryId): boolean {
+    return this.hasPrevSibling(entryId)
+      || this.entryItems[entryId].value.getParentId() !== null;
+  }
+
   // true iff it has a child or next sibling or if an ancestor has a next sibling
-  hasEntryBelow(entryId) {
+  hasEntryBelow(entryId: EntryId): boolean {
     let entryItem = this.entryItems[entryId];
     return entryItem.value.getChildren().size > 0
       || entryItem.next !== null
@@ -128,7 +131,7 @@ export default class FlowyTree {
     }
 
     // get next sibling if it exists
-    if (this.entryItems[entryId].next !== null) {
+    if (this.hasNextSibling(entryId)) {
       return this.entryItems[entryId].next.value.getId();
     }
     // there's no child and no next sibling, find first ancestor with a next sibling
@@ -252,7 +255,7 @@ export default class FlowyTree {
     itemB.append(itemA);
   }
 
-  cycleEntryHeadingSize(entryId) {
+  cycleEntryHeadingSize(entryId: EntryId) {
     if (!(entryId in this.entries)) {
       return;
     }

@@ -1,6 +1,21 @@
+// (docId, entryId) -> Set<docId> lookup
+interface OutAdjacency {
+  [docId: string]: {
+    [entryId: number]: Set<string>
+  }
+}
+
+interface InAdjacency {
+  [docId: string]: Set<string>
+}
+
 export default class LinkGraph {
+  private outAdjacency: OutAdjacency;
+
+  private inAdjacency: InAdjacency;
+
   // outAdjacency: { [doc id]: { [entry id]: Set<doc id> } }
-  constructor(outAdjacency) {
+  constructor(outAdjacency: OutAdjacency) {
     this.outAdjacency = outAdjacency;
     // inAdjacency: { [doc id]: Set<[doc id, entry id]> }
     // actually Set doesnt play well with arrays for our use case
@@ -20,7 +35,7 @@ export default class LinkGraph {
     this.inAdjacency = inAdjacency;
   }
 
-    convertToInAdjElement(docId, entryId) {
+    convertToInAdjElement(docId: string, entryId: string): string {
       return `${docId}-${entryId}`;
     }
 
@@ -38,7 +53,7 @@ export default class LinkGraph {
     }
 
     // return: Set<doc id>
-    getLinks(docId, entryId) {
+    getLinks(docId, entryId): Set<string> {
       if (!(docId in this.outAdjacency) || !(entryId in this.outAdjacency[docId])) {
           return new Set();
       }
