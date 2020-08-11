@@ -100,3 +100,37 @@ test('dedenting works', () => {
   expect(node.getLastChild().getLastChild().getValue()).toBe(500);
 
 });
+
+
+test('changes heading size', () => {
+  let treeObj = { "root": [100, 200] };
+  let node = FlowyTreeNodeConverter.createFromTreeObj(treeObj);
+  let entries: FlowyTreeEntriesCollection = {
+    100: {
+      text: 'abc'
+    },
+    200: {
+      text: 'def'
+    }
+  };
+
+  let tree = new FlowyTree(entries, node);
+
+  expect(node.getFirstChild().getValue()).toBe(100);
+  expect(node.getLastChild().getValue()).toBe(200);
+  let entryId = node.getLastChild().getValue();
+  expect(tree.getEntryHeadingSize(entryId)).toBe(0);
+
+  tree.cycleEntryHeadingSize(entryId);
+  expect(tree.getEntryHeadingSize(entryId)).toBe(1);
+
+  tree.cycleEntryHeadingSize(entryId);
+  expect(tree.getEntryHeadingSize(entryId)).toBe(2);
+
+  tree.cycleEntryHeadingSize(entryId);
+  expect(tree.getEntryHeadingSize(entryId)).toBe(3);
+
+  tree.cycleEntryHeadingSize(entryId);
+  expect(tree.getEntryHeadingSize(entryId)).toBe(0);
+
+});
