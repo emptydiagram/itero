@@ -29,17 +29,17 @@
 }
 
 .heading-1 {
-  font-size: 1.2em;
+  font-size: 1.28em;
   font-weight: bold;
 }
 
 .heading-2 {
-  font-size: 1.13em;
+  font-size: 1.21em;
   font-weight: bold;
 }
 
 .heading-3 {
-  font-size: 1.06em;
+  font-size: 1.13em;
   font-weight: bold;
 }
 

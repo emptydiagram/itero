@@ -219,7 +219,6 @@ export class FlowyTree {
   }
 
   insertEntryBelow(entryId: EntryId, parentId: EntryId, newEntryText: string): EntryId {
-    console.log(" %% iEB, (entryId, parentId) = ", entryId, parentId)
     // TODO: dedupe with insertEntryAbove
     let existingIds = Object.keys(this.entries).map(id => parseInt(id));
     let newId = Math.max(...existingIds) + 1;
@@ -234,7 +233,6 @@ export class FlowyTree {
   }
 
   insertEntryAbove(entryId: EntryId, parentId: EntryId, newEntryText: string): EntryId {
-    console.log(" %% iEA, (entryId, parentId) = ", entryId, parentId)
     let existingIds = Object.keys(this.entries).map(id => parseInt(id));
     let newId = Math.max(...existingIds) + 1;
     this.setEntryText(newId, newEntryText);
@@ -450,21 +448,6 @@ export class FlowyTreeNodeConverter {
     let rootKey = Object.keys(treeObj)[0];
     let childTreeObjs = treeObj[rootKey];
     let currId: number | null = rootKey === "root" ? null : parseInt(rootKey);
-    // TODO
-
-    // we want to support two cases:
-    // 
-    //  - treeObj has the form { "root:" [...] } and there's no parent
-    //  - treeObj has an arbitrary form an
-
-    /*
-    if (!parent) {
-      parent = new OrderedTreeNode(null);
-    } 
-    let node = OrderedTreeNode.create(currId);
-    parent.appendChild(node);
-    return node;
-    */
 
     let node = currId == null
       ? OrderedTreeNode.create(null)
@@ -482,8 +465,3 @@ export class FlowyTreeNodeConverter {
   }
 
 }
-
-
-// type TreeObj = number | { [entryId: string]: Array<TreeObj> };
-// TODO
-// type TreeObj = EntryId | { entryId: EntryId, children: Array<TreeObj> };

@@ -290,7 +290,6 @@ function createDocsStore() {
       // presto-removo the selected text
       if (store.cursorSelectionStart !== store.cursorSelectionEnd) {
         currEntryText = currEntryText.substring(0, store.cursorSelectionStart) + currEntryText.substring(store.cursorSelectionEnd);
-        console.log(" >> split, (entryId, text) = ", entryId, currEntryText);
         currTree.setEntryText(entryId, currEntryText);
         store.cursorSelectionEnd = store.cursorSelectionStart;
       }
@@ -307,6 +306,33 @@ function createDocsStore() {
 
       console.log(" %% splitEntry, no early return")
 
+      // TODO:
+      //  - split text into (prefix, suffix)
+      //  - cases
+      //     1. (current behavior): the suffix stays as new text of current entry. we insert an entry above with prefix
+      //     2. the prefix stays as the new text of the current entry. an entry with suffix is inserted
+      //         a. as a next sibling if the entry has no children
+      //         b. as first child if entry has children
+      // (1)
+      //  - cursor at right end
+      // (2)
+      //  - if cursor is anywhere but the right end of the entry
+
+      // cursor at right end
+      if (cursorPos === currEntryText.length) {
+        // insert an entry below
+        if (!currTree.hasChildren(entryId)) {
+          let newId = currDoc.tree.insertEntryBelow(entryId, parentId, '');
+          store.cursorEntryId = newId;
+          store.cursorSelectionStart = 0;
+          return store;
+        }
+        let currNode: FlowyTreeNode = currDoc.tree.getEntryNode(entryId);
+        let newId = currDoc.tree.insertEntryAbove(currNode.getFirstChild().getValue(), entryId, '');
+        store.cursorEntryId = newId;
+        store.cursorSelectionStart = 0;
+        return store;
+      }
 
       let newEntryText = currEntryText.substring(0, cursorPos);
       let updatedCurrEntry = currEntryText.substring(cursorPos, currEntryText.length);
@@ -410,16 +436,13 @@ function createDocsStore() {
     }),
 
     savePastedEntries: (newDocEntryText: string) => update(store => {
-      console.log(" saved pasted entries act");
       let i = store.currentDocId;
       let entryId = store.cursorEntryId;
       let currentDoc = store.documents[i];
       let parentId = currentDoc.tree.getParentId(entryId);
-      console.log(" SPEA, (doc id, entry id, parent id) = ", i, entryId, parentId);
 
       let currEntryId = entryId;
       newDocEntryText.split('\n').forEach(line => {
-        console.log("inserting below ", currEntryId, " line = ", line);
         currEntryId = currentDoc.tree.insertEntryBelow(currEntryId, parentId, line);
       });
 
