@@ -60,6 +60,8 @@
   let currEntryId: number | null;
   $: currEntryId = flowyTreeNode.getValue();
 
+  $: isRoot = currEntryId == null;
+
   let childNodeArray: Array<FlowyTreeNode>;
   $: childNodeArray = flowyTreeNode.getChildNodeArray();
 
@@ -111,6 +113,10 @@
     list-style-type: none;
     border-left: 1px dotted #999;
     margin-left: 0.2em;
+  }
+
+  .tree-node-list.root-list {
+    border-left: 0;
   }
 
   .tree-node-list li {
@@ -217,7 +223,7 @@
 {/if}
 
 {#if currNodeHasChildren && !isCollapsed}
-  <ul class="tree-node-list">
+  <ul class={`tree-node-list ${isRoot ? 'root-list' : ''}`}>
     {#each childNodeArray as child}
       <li>
         <Node
