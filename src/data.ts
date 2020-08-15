@@ -1,14 +1,14 @@
 import type DataStore from "./DataStore.js";
-import { FlowyTreeEntry, FlowyTreeEntriesCollection, FlowyTreeNodeConverter } from "./FlowyTree";
+import { FlowyTreeMarkupEntry, FlowyTreeEntriesCollection, FlowyTreeNodeConverter } from "./FlowyTree";
 import { FlowyTree, OrderedTreeNode } from "./FlowyTree";
 import { MarkupParser } from "./markup/MarkupParser.js";
 import LinkGraph from "./LinkGraph";
 
 
 interface SerializedFlowyTreeEntry {
-  text: string,
-  displayState?: string,
-  headingSize?: number
+  text: string;
+  displayState?: string;
+  headingSize?: number;
 }
 
 interface SerializedFlowyTreeEntriesCollection {
@@ -18,23 +18,23 @@ interface SerializedFlowyTreeEntriesCollection {
 export type TreeObj = number | { [key: string]: Array<TreeObj> }
 
 interface SerializedFlowyTree {
-  entries: SerializedFlowyTreeEntriesCollection,
-  node: TreeObj,
+  entries: SerializedFlowyTreeEntriesCollection;
+  node: TreeObj;
 }
 
 export interface SerializedDocument {
-  id: string,
-  name: string,
-  tree: SerializedFlowyTree,
-  lastUpdated: string
+  id: string;
+  name: string;
+  tree: SerializedFlowyTree;
+  lastUpdated: string;
 }
 
 
 export interface Document {
-  id: string,
-  name: string,
-  tree: FlowyTree,
-  lastUpdated: string
+  id: string;
+  name: string;
+  tree: FlowyTree;
+  lastUpdated: string;
 }
 
 export interface DocumentsCollection {
@@ -312,7 +312,7 @@ function deserializeEntries(entriesObj): FlowyTreeEntriesCollection {
 
 function serializeEntries(entries: FlowyTreeEntriesCollection): SerializedFlowyTreeEntriesCollection {
   let entriesObj = {};
-  Object.entries(entries).map(([id, entry]: [string, FlowyTreeEntry]) => {
+  Object.entries(entries).map(([id, entry]: [string, FlowyTreeMarkupEntry]) => {
     let newEntry: any = { ...entry };
     newEntry.displayState = newEntry.displayState === EntryDisplayState.Collapsed
       ? 'COLLAPSED'

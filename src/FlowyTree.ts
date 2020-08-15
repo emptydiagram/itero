@@ -6,14 +6,14 @@ type EntryId = number;
 
 export type FlowyTreeNode = OrderedTreeNode<EntryId>;
 
-export interface FlowyTreeEntry {
+export interface FlowyTreeMarkupEntry {
   text: string,
   displayState?: EntryDisplayState,
   headingSize?: number
 }
 
 export interface FlowyTreeEntriesCollection {
-  [entryId: number]: FlowyTreeEntry
+  [entryId: number]: FlowyTreeMarkupEntry
 }
 
 
