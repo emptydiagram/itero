@@ -1,6 +1,6 @@
 {
   "name": "itero",
-  "version": "0.0.16",
+  "version": "0.0.17-dev",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
