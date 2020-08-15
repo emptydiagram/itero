@@ -436,10 +436,9 @@ function createDocsStore() {
     }),
 
     savePastedEntries: (newDocEntryText: string) => update(store => {
-      let i = store.currentDocId;
       let entryId = store.cursorEntryId;
-      let currentDoc = store.documents[i];
-      let parentId = currentDoc.tree.getParentId(entryId);
+      let currentDoc: Document = store.documents[store.currentDocId];
+      let parentId = currentDoc.tree.getEntryNode(entryId).getParent().getValue();
 
       let currEntryId = entryId;
       newDocEntryText.split('\n').forEach(line => {
@@ -525,7 +524,7 @@ function createDocsStore() {
     replaceEntryTextAroundCursor: (newText: string) => update(store => {
       console.log(" >> handleReplaceEntryTextARoundCursor, (new, selStart) = ", newText, store.cursorSelectionStart);
 
-      let currentTree = store.documents[store.currentDocId].tree ;
+      let currentTree: FlowyTree = store.documents[store.currentDocId].tree ;
 
       let docCursorSelStart = store.cursorSelectionStart;
       let docCursorSelEnd = store.cursorSelectionEnd;
