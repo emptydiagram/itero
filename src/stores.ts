@@ -209,7 +209,7 @@ function createDocsStore() {
       return store;
     }),
 
-    collapseEntry: (entryId: number) => update(store => {
+    collapseEntry: (entryId: number, shouldDefocus?: boolean) => update(store => {
       let docId = store.currentDocId;
 
       let currDoc = store.documents[docId];
@@ -221,11 +221,15 @@ function createDocsStore() {
         newTree.setEntryDisplayState(entryId, EntryDisplayState.Collapsed)
         currDoc.tree = newTree;
       }
-      store.cursorEntryId = null;
+
+      if (shouldDefocus) {
+        store.cursorEntryId = null;
+      }
+
       return store;
     }),
 
-    expandEntry: (entryId: number) => update(store => {
+    expandEntry: (entryId: number, shouldDefocus?: boolean) => update(store => {
       let docId = store.currentDocId;
 
       let currDoc = store.documents[docId];
@@ -237,7 +241,11 @@ function createDocsStore() {
         newTree.setEntryDisplayState(entryId, EntryDisplayState.Expanded)
         currDoc.tree = newTree;
       }
-      store.cursorEntryId = null;
+
+      if (shouldDefocus) {
+        store.cursorEntryId = null;
+      }
+
       return store;
     }),
 

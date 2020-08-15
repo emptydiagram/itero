@@ -8,8 +8,8 @@
     handleGoUp: () => void,
     handleGoDown: () => void,
     handleEntryBackspace: () => void,
-    handleCollapseEntry: (entryId: number) => void,
-    handleExpandEntry: (entryId: number) => void,
+    handleCollapseEntry: (entryId: number, shouldDefocus?: boolean) => void,
+    handleExpandEntry: (entryId: number, shouldDefocus?: boolean) => void,
     handleSplitEntry: () => void,
     handleIndent: () => void,
     handleDedent: () => void,
@@ -45,9 +45,9 @@
 
   function handleToggle(entryId: number, isCollapsed: boolean) {
     if (isCollapsed) {
-      handleExpandEntry(entryId);
+      handleExpandEntry(entryId, true);
     } else {
-      handleCollapseEntry(entryId);
+      handleCollapseEntry(entryId, true);
     }
   }
 
