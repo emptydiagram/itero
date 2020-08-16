@@ -13,7 +13,6 @@
   import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
   let promise = Promise.resolve();  // Used to hold chain of typesetting calls
-  let MathJax: any;
 
   function typeset(code: () => void) {
     promise = promise.then(() => {
