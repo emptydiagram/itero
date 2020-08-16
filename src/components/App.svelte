@@ -157,10 +157,8 @@
 
     const file = filesList[0];
     file.arrayBuffer().then(buffer => {
-      console.log(" ## handleDocsImport, the array buffer = ", buffer);
       // TODO: detect the encoding and use Uint8Array / Uint16Array as appropriate
-      let docsStr = String.fromCharCode.apply(null, new Uint8Array(buffer));
-      console.log(" ## handleFIleUpload, docsStr = ", docsStr);
+      let docsStr = new TextDecoder().decode(new Uint8Array(buffer));
       try {
         let newFileUploadObj = JSON.parse(docsStr);
 
