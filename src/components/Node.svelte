@@ -4,6 +4,7 @@
     docCursorEntryId: number | null,
     docCursorSelStart: number | null,
     docCursorSelEnd: number | null,
+    docMouseoverEntryId: number | null,
     findRelevantDocNames: (text: string) => string[],
     handleGoUp: () => void,
     handleGoDown: () => void,
@@ -23,7 +24,8 @@
     handleSwapWithBelowEntry: (entryId: number) => void,
     handleUpdateEntryLinks: (entryId: number, linkedPages: string[]) => void,
     handleCycleEntryHeadingSize: (entryId: number) => void,
-    handleReplaceEntryTextAroundCursor: (newText: string) => void;
+    handleReplaceEntryTextAroundCursor: (newText: string) => void,
+    handleSaveDocMouseoverEntryId: (entryId: number) => void;
 
 
   import Icon from 'svelte-awesome';
@@ -55,6 +57,12 @@
     event.preventDefault();
     let el: HTMLElement = event.target as HTMLElement;
     handleReplaceEntryTextAroundCursor(el.textContent);
+  }
+
+  function handleMouseoverEntry() {
+    if (currEntryId !== docMouseoverEntryId) {
+      handleSaveDocMouseoverEntryId(currEntryId);
+    }
   }
 
   let currEntryId: number | null;
@@ -94,7 +102,7 @@
 
 
   let isDisplayingMenu: boolean;
-  $: isDisplayingMenu = isCurrentEntry;
+  $: isDisplayingMenu = isCurrentEntry || currEntryId === docMouseoverEntryId;
 
 
   // TODO: move to a derived store?
@@ -159,6 +167,7 @@
   }
 
   .menu-container {
+    margin-left: -1.6em;
     margin-right: 1em;
     visibility: hidden;
   }
@@ -264,6 +273,7 @@
           {docCursorEntryId}
           {docCursorSelStart}
           {docCursorSelEnd}
+          {docMouseoverEntryId}
           {findRelevantDocNames}
           {handleSaveDocEntry}
           {handleSaveFullCursor}
@@ -284,6 +294,7 @@
           {handleSwapWithBelowEntry}
           {handleCycleEntryHeadingSize}
           {handleReplaceEntryTextAroundCursor}
+          {handleSaveDocMouseoverEntryId}
           />
       </li>
     {/each}

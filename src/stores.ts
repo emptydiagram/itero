@@ -29,6 +29,7 @@ function createDocsStore() {
     cursorSelectionStart: 0,
     cursorSelectionEnd: 0,
     cursorEntryId: null,
+    docMouseoverEntryId: null,
     docName: '',
     docNameInvIndex: {},
     docIsEditingName: false,
@@ -559,6 +560,11 @@ function createDocsStore() {
           store.documents[store.currentDocId].tree.setEntryText(store.cursorEntryId, newEntryText);
         }
       }
+      return store;
+    }),
+
+    saveDocMouseoverEntryId: (entryId: number) => update(store => {
+      store.docMouseoverEntryId = entryId;
       return store;
     }),
 

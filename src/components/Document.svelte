@@ -189,6 +189,7 @@
       docCursorEntryId={$docsStore.cursorEntryId}
       docCursorSelStart={$docsStore.cursorSelectionStart}
       docCursorSelEnd={$docsStore.cursorSelectionEnd}
+      docMouseoverEntryId={$docsStore.docMouseoverEntryId}
 
       {findRelevantDocNames}
       handleCollapseEntry={docsStore.collapseEntry}
@@ -211,6 +212,7 @@
       handleSwapWithBelowEntry={docsStore.swapWithBelowEntry}
       handleCycleEntryHeadingSize={docsStore.cycleEntryHeadingSize}
       handleReplaceEntryTextAroundCursor={docsStore.replaceEntryTextAroundCursor}
+      handleSaveDocMouseoverEntryId={docsStore.saveDocMouseoverEntryId}
     />
   </div>
 
