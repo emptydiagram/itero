@@ -4,7 +4,6 @@
   import RenderedEntry from "./RenderedEntry.svelte";
   import type { BacklinksInfo } from "../backlinks";
 
-  console.log("backlinks = ", backlinks);
   $: existsBacklinks = Object.keys(backlinks).length;
 </script>
 

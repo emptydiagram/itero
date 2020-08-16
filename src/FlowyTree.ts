@@ -7,9 +7,10 @@ type EntryId = number;
 export type FlowyTreeNode = OrderedTreeNode<EntryId>;
 
 export interface FlowyTreeMarkupEntry {
-  text: string,
-  displayState?: EntryDisplayState,
-  headingSize?: number
+  type: "markup-text";
+  text: string;
+  displayState?: EntryDisplayState;
+  headingSize?: number;
 }
 
 export interface FlowyTreeEntriesCollection {
@@ -48,17 +49,30 @@ export class FlowyTree {
   }
 
   getEntryDisplayState(entryId: number): EntryDisplayState {
-    return (this.entries[entryId] != null) && ('displayState' in this.entries[entryId])
-      ? this.entries[entryId].displayState
+    let entry = this.entries[entryId];
+    if (!entry || entry.type !== "markup-text") {
+      return;
+    }
+
+    return (entry != null) && ('displayState' in entry)
+      ? entry.displayState
       : EntryDisplayState.Expanded;
   }
 
   getEntryHeadingSize(entryId: number) {
-    return this.entries[entryId].headingSize || 0;
+    let entry = this.entries[entryId];
+    if (!entry || entry.type !== "markup-text") {
+      return;
+    }
+    return 'headingSize' in entry ? entry.headingSize : 0;
   }
 
   getEntryText(entryId: number): string {
-    return this.entries[entryId].text;
+    let entry = this.entries[entryId];
+    if (!entry || entry.type !== "markup-text") {
+      return;
+    }
+    return entry.text;
   }
 
   getEntryIdAbove(entryId: EntryId): EntryId | null {
@@ -203,26 +217,38 @@ export class FlowyTree {
     return false;
   }
 
-  setEntryText(entryId: EntryId, textValue: string) {
-    if (this.entries[entryId] == null) {
-      this.entries[entryId] = { text: textValue };
+  createMarkupEntry(entryId: EntryId, textValue: string) {
+    if (entryId in this.entries) {
+      return;
     }
-    this.entries[entryId].text = textValue;
+    this.entries[entryId] = {
+      type: "markup-text",
+      text: textValue
+    };
+  }
+
+  setEntryText(entryId: EntryId, textValue: string) {
+    let entry = this.entries[entryId];
+    if (!entry || entry.type !== "markup-text") {
+      return;
+    }
+
+    entry.text = textValue;
   }
 
   setEntryDisplayState(entryId: EntryId, newState: EntryDisplayState) {
-    if (this.entries[entryId] == null) {
-      console.log(" ##$#$@%@@ setEntryDisplayState was called with the entry not found!!!!!");
+    let entry = this.entries[entryId];
+    if (!entry || entry.type !== "markup-text") {
       return;
     }
-    this.entries[entryId].displayState = newState;
+    entry.displayState = newState;
   }
 
   insertEntryBelow(entryId: EntryId, parentId: EntryId, newEntryText: string): EntryId {
     // TODO: dedupe with insertEntryAbove
     let existingIds = Object.keys(this.entries).map(id => parseInt(id));
     let newId = Math.max(...existingIds) + 1;
-    this.setEntryText(newId, newEntryText);
+    this.createMarkupEntry(newId, newEntryText);
 
     let newNode = OrderedTreeNode.createWithParent(newId, this.nodeLookup[parentId]);
     let baseNode = this.nodeLookup[entryId];
@@ -235,7 +261,7 @@ export class FlowyTree {
   insertEntryAbove(entryId: EntryId, parentId: EntryId, newEntryText: string): EntryId {
     let existingIds = Object.keys(this.entries).map(id => parseInt(id));
     let newId = Math.max(...existingIds) + 1;
-    this.setEntryText(newId, newEntryText);
+    this.createMarkupEntry(newId, newEntryText);
 
     let newNode: FlowyTreeNode = OrderedTreeNode.createWithParent(newId, this.nodeLookup[parentId]);
     let baseNode = this.nodeLookup[entryId];
@@ -264,11 +290,12 @@ export class FlowyTree {
   }
 
   cycleEntryHeadingSize(entryId: EntryId) {
-    if (!(entryId in this.entries)) {
+    let entry = this.entries[entryId];
+    if (!entry || entry.type !== "markup-text") {
       return;
     }
-    let currHeadingSize = this.entries[entryId].headingSize || 0;
-    this.entries[entryId].headingSize = (currHeadingSize + 1) % 4;
+    let currHeadingSize = entry.headingSize || 0;
+    entry.headingSize = (currHeadingSize + 1) % 4;
   }
 }
 

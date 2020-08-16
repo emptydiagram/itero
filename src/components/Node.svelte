@@ -72,6 +72,23 @@
   $: isCollapsed = currNodeHasChildren
     && tree.getEntryDisplayState(currEntryId) == EntryDisplayState.Collapsed;
 
+  let entryHeadingSize: number = 0;
+  $: entryHeadingSize = (function() {
+    if (currEntryId === 0 || currEntryId) {
+      let newHeadingSize = tree.getEntryHeadingSize(currEntryId)
+      return newHeadingSize;
+    }
+  })();
+
+  let entryText: string = '';
+  $: entryText = (function() {
+    if (currEntryId == 0 || currEntryId) {
+      let newText = tree.getEntryText(currEntryId);
+      return newText;
+    }
+  })();
+
+
   let isCurrentEntry: boolean;
   $: isCurrentEntry = (currEntryId != null) && currEntryId === docCursorEntryId;
 
@@ -176,7 +193,7 @@
       <EntryInput
         entryId={currEntryId}
         entryValue={tree.getEntryText(currEntryId)}
-        entryHeadingSize={tree.getEntryHeadingSize(currEntryId)}
+        entryHeadingSize={entryHeadingSize}
         {docCursorEntryId}
         {docCursorSelStart}
         {docCursorSelEnd}
@@ -203,8 +220,8 @@
       {:else}
         <RenderedEntry
           entryId={currEntryId}
-          entryText={tree.getEntryText(currEntryId)}
-          entryHeadingSize={tree.getEntryHeadingSize(currEntryId)}
+          entryText={entryText}
+          entryHeadingSize={entryHeadingSize}
           {handleUpdateEntryLinks}
           />
       {/if}

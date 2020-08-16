@@ -14,6 +14,7 @@
   import DataStore from "../DataStore.js";
   import { DataManager, makeInitContextFromDocuments, makeDoc } from "../data.ts";
   import { findChildNodeSerializedCursorPosFromSelection } from "../markup/util.js";
+  import { addTypeFieldToEntries } from "../data";
 
   function stringIncludesOne(str, values) {
     for (var i = 0; i < values.length; i++) {
@@ -163,7 +164,8 @@
         let newFileUploadObj = JSON.parse(docsStr);
 
         Object.entries(newFileUploadObj).forEach(([id, doc]) => {
-          newFileUploadObj[id] = makeDoc(doc.id, doc.name, doc.lastUpdated, doc.tree.entries, doc.tree.node);
+          let docEntries = addTypeFieldToEntries(doc.tree.entries);
+          newFileUploadObj[id] = makeDoc(doc.id, doc.name, doc.lastUpdated, docEntries, doc.tree.node);
         })
 
         // TODO: verify that it has the required fields in the object

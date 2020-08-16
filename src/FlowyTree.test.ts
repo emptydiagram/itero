@@ -107,9 +107,11 @@ test('changes heading size', () => {
   let node = FlowyTreeNodeConverter.createFromTreeObj(treeObj);
   let entries: FlowyTreeEntriesCollection = {
     100: {
+      type: 'markup-text',
       text: 'abc'
     },
     200: {
+      type: 'markup-text',
       text: 'def'
     }
   };

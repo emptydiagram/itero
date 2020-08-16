@@ -61,7 +61,7 @@ export function createNewDocument(newDocName: string, initEntryText: string, doc
   let childNode = OrderedTreeNode.create(0);
   flowyTreeNode.appendChild(childNode);
   let newTree = new FlowyTree(
-    { 0: {text: initEntryText} },
+    { 0: { type: 'markup-text', text: initEntryText} },
     flowyTreeNode);
 
   return {
@@ -118,21 +118,17 @@ export class DataManager {
     } else {
       let treeObjDocs = JSON.parse(val);
       let deserDocs = {};
-      Object.entries(treeObjDocs).forEach(([entryId, doc]: [string, any]) => {
+      Object.entries(treeObjDocs).forEach(([docId, doc]: [string, any]) => {
         let newDoc = {...doc};
-        if (!('lastUpdated' in doc)) {
-          newDoc.lastUpdated = getNowISO8601();
-        }
 
         // TODO: actually verify validity?
-        let parsedDoc: SerializedDocument = doc as SerializedDocument;
-
-        console.log(" @@@ getDocuments, doc.tree.node = ", doc.tree.node);
 
         let flowyTreeNode = FlowyTreeNodeConverter.createFromTreeObj(doc.tree.node);
         newDoc.tree = new FlowyTree(deserializeEntries(doc.tree.entries), flowyTreeNode);
-        deserDocs[entryId] = newDoc;
+
+        deserDocs[docId] = newDoc;
       });
+
       docs = deserDocs;
     }
     return docs;
@@ -227,6 +223,25 @@ export function makeDoc(id: string, name: string, lastUpdated: string, entries: 
   };
 }
 
+
+interface RawFlowyTreeMarkupEntry {
+  text: string;
+  displayState?: EntryDisplayState;
+  headingSize?: number;
+}
+
+interface RawMarkupEntryCollection {
+  [ entryId: number]: RawFlowyTreeMarkupEntry
+}
+
+export function addTypeFieldToEntries(entries: RawMarkupEntryCollection): FlowyTreeEntriesCollection  {
+  let result: any = { ...entries };
+  Object.keys(entries).forEach(id => {
+    result[id].type = 'markup-text';
+  });
+  return result;
+}
+
 function makeInitDocuments(): DocumentsCollection {
   // 0: { text: 'this is a note taking app', displayState: EntryDisplayState.Collapsed },
   let intro = [
@@ -291,9 +306,16 @@ function makeInitDocuments(): DocumentsCollection {
     { root: [0, 1, 2, 3, 4, 5] }
   ];
   let similarLastUpdated ="2020-07-05T19:43:44.000Z";
+
+
+  let coll1 = addTypeFieldToEntries(intro[0]);
+  let coll2 = addTypeFieldToEntries(similar[0]);
+  let doc1 = makeDoc('1', 'hello and what is this', introLastUpdated, coll1, intro[1]);
+  let doc2 = makeDoc('2', 'implementation details', similarLastUpdated, coll2, similar[1]);
+
   return {
-    '1': makeDoc('1', 'hello and what is this', introLastUpdated, intro[0], intro[1]),
-    '2': makeDoc('2', 'implementation details', similarLastUpdated, similar[0], similar[1])
+    '1': doc1,
+    '2': doc2,
   };
 }
 
@@ -305,6 +327,12 @@ function deserializeEntries(entriesObj): FlowyTreeEntriesCollection {
     newEntry.displayState = newEntry.displayState === 'COLLAPSED'
       ? EntryDisplayState.Collapsed
       : EntryDisplayState.Expanded;
+
+    // upgrade to use type field
+    if (!('type' in newEntry)) {
+      newEntry.type = 'markup-text';
+    }
+
     entries[id] = newEntry;
   });
   return entries;
