@@ -13,8 +13,15 @@ export interface FlowyTreeMarkupEntry {
   headingSize?: number;
 }
 
+// TODO: TableEntry
+export interface FlowyTreeTableEntry {
+  type: "table";
+}
+
+type FlowyTreeEntry = FlowyTreeMarkupEntry | FlowyTreeTableEntry;
+
 export interface FlowyTreeEntriesCollection {
-  [entryId: number]: FlowyTreeMarkupEntry
+  [entryId: number]: FlowyTreeEntry
 }
 
 
