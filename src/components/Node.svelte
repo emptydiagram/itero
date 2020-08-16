@@ -14,7 +14,7 @@
     handleIndent: () => void,
     handleDedent: () => void,
     handleMultilinePaste: (text: string) => void,
-    handleMoveCursorLeft: () => void,
+    handleMoveCursorLeft: (entryTextLength: number) => void,
     handleMoveCursorRight: (entryTextLength: number) => void,
     handleSaveCursorPos: (pos: number) => void,
     handleSaveDocEntry: (entryText: string, selStart: number, selEnd: number) => void,

@@ -1,18 +1,21 @@
-<script>
-  export let params = {};
+<script lang="ts">
+  export let params: any = {};
 
   import BacklinksDisplay from "./BacklinksDisplay.svelte";
   import Header from './Header.svelte';
   import Node from "./Node.svelte";
-  import { docsStore } from "../stores.ts";
+  import { docsStore } from "../stores";
+  import type { BacklinksInfo } from "../backlinks";
+  import type { Document } from "../data";
 
   import { afterUpdate } from 'svelte';
   import Icon from 'svelte-awesome';
   import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
   let promise = Promise.resolve();  // Used to hold chain of typesetting calls
+  let MathJax: any;
 
-  function typeset(code) {
+  function typeset(code: () => void) {
     promise = promise.then(() => {
       code();
       return MathJax.typesetPromise(); // eslint-disable-line no-undef
@@ -32,7 +35,7 @@
     let parseResult = parseInt(params.id);
     if (!isNaN(parseResult)) {
       let docId = parseResult;
-      docsStore.navigateToDoc(docId);
+      docsStore.navigateToDoc(docId.toString());
     } else {
       // TODO: do something?
     }
@@ -66,13 +69,13 @@
     docsStore.startEditingDocName();
   }
 
-  function findRelevantDocNames(text) {
+  function findRelevantDocNames(text: string) {
     let docNames = [];
 
-    text.split(/\s+/).forEach(word => {
-      Object.keys($docsStore.docNameInvIndex).forEach((word2) => {
+    text.split(/\s+/).forEach((word: string) => {
+      Object.keys($docsStore.docNameInvIndex).forEach((word2: string) => {
         if (word2.includes(word)) {
-          $docsStore.docNameInvIndex[word2].forEach(docId => {
+          $docsStore.docNameInvIndex[word2].forEach((docId: string) => {
             if (!docNames.includes($docsStore.documents[docId].name)) {
               docNames.push($docsStore.documents[docId].name);
             }
@@ -88,10 +91,12 @@
 
 
   // TODO: move into getBacklinks?
+  let backlinks: BacklinksInfo;
   $: backlinks = (function() {
     let backlinks = $docsStore.linkGraph.getBacklinks($docsStore.currentDocId);
     let backlinksObj = {};
     for (let [[docId, entryId], _] of backlinks.entries()) {
+      let currDoc: Document = $docsStore.documents[docId];
       if (!(docId in backlinksObj)) {
         backlinksObj[docId] = {
           id: docId,
@@ -101,7 +106,8 @@
       }
       backlinksObj[docId].entries[entryId] = {
         id: entryId,
-        text: $docsStore.documents[docId].tree.getEntryText(entryId)
+        text: currDoc.tree.getEntryText(entryId),
+        headingSize: currDoc.tree.getEntryHeadingSize(entryId),
       };
     }
     return backlinksObj;

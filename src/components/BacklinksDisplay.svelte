@@ -1,6 +1,8 @@
-<script>
-  export let backlinks;
+<script lang="ts">
+  export let backlinks: BacklinksInfo;
+
   import RenderedEntry from "./RenderedEntry.svelte";
+  import type { BacklinksInfo } from "../backlinks";
 
   console.log("backlinks = ", backlinks);
   $: existsBacklinks = Object.keys(backlinks).length;
@@ -37,6 +39,7 @@
         <RenderedEntry
           entryId={entry.id}
           entryText={entry.text}
+          entryHeadingSize={entry.headingSize}
           handleUpdateEntryLinks={() => { return }}
           />
         </li>
