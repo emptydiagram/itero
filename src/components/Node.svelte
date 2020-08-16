@@ -27,7 +27,7 @@
 
 
   import Icon from 'svelte-awesome';
-  import { faCircle,faPlus } from '@fortawesome/free-solid-svg-icons';
+  import { faCircle, faPlus, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 
   import type { FlowyTree } from '../FlowyTree';
   import type { FlowyTreeNode } from '../FlowyTree';
@@ -93,6 +93,9 @@
   $: isCurrentEntry = (currEntryId != null) && currEntryId === docCursorEntryId;
 
 
+  let isDisplayingMenu: boolean;
+  $: isDisplayingMenu = isCurrentEntry;
+
 
   // TODO: move to a derived store?
   let autoCompleteDocNames: string[];
@@ -155,6 +158,15 @@
     margin-right: 0.5em;
   }
 
+  .menu-container {
+    margin-right: 1em;
+    visibility: hidden;
+  }
+
+  .menu-container.display-menu {
+    visibility: visible;
+  }
+
   .icon-container:hover {
     cursor: pointer;
   }
@@ -180,7 +192,10 @@
 </style>
 
 {#if currEntryId !== null}
-  <div class="entry-display" data-entry-id={currEntryId}>
+  <div class="entry-display" data-entry-id={currEntryId} on:mouseover={handleMouseoverEntry}>
+    <div class={`menu-container ${isDisplayingMenu ? 'display-menu' : ''}`}>
+      <Icon data={faEllipsisH} scale="0.81" />
+    </div>
     <div class="icon-container" on:click={() => handleToggle(currEntryId, nodeIsCollapsed(flowyTreeNode))}>
       {#if nodeIsCollapsed(flowyTreeNode)}
         <Icon data={faPlus} scale="0.51" />

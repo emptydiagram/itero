@@ -50,5 +50,9 @@
 }
 </style>
 
-<div class={`rendered-entry heading-${entryHeadingSize}`} bind:this={theDiv} data-entry-id={entryId} data-testid="rendered-entry">
+<div
+  class={`rendered-entry heading-${entryHeadingSize}`}
+  bind:this={theDiv}
+  data-entry-id={entryId}
+  data-testid="rendered-entry">
 </div>

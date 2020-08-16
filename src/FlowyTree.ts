@@ -13,9 +13,14 @@ export interface FlowyTreeMarkupEntry {
   headingSize?: number;
 }
 
-// TODO: TableEntry
+type CellId = number;
+
 export interface FlowyTreeTableEntry {
   type: "table";
+  numRows: number;
+  numCols: number;
+  cells: { [cellId: number]: string };
+  table: (CellId | null)[][];
 }
 
 type FlowyTreeEntry = FlowyTreeMarkupEntry | FlowyTreeTableEntry;
