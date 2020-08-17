@@ -71,6 +71,14 @@ export class FlowyTree {
       : EntryDisplayState.Expanded;
   }
 
+  getEntryType(entryId: number): string {
+    let entry = this.entries[entryId];
+    if (!entry) {
+      return;
+    }
+    return entry.type;
+  }
+
   getEntryHeadingSize(entryId: number) {
     let entry = this.entries[entryId];
     if (!entry || entry.type !== "markup-text") {

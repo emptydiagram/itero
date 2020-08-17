@@ -32,6 +32,7 @@ function createDocsStore() {
     docMouseoverEntryId: null,
     docName: '',
     docNameInvIndex: {},
+    docOpenedMenuEntryId: null,
     docIsEditingName: false,
     docsDisplay: {},
     docIdLookupByDocName: {},
@@ -565,6 +566,16 @@ function createDocsStore() {
 
     saveDocMouseoverEntryId: (entryId: number) => update(store => {
       store.docMouseoverEntryId = entryId;
+      return store;
+    }),
+
+    // FIXME: Rename to use "toggle"?
+    saveDocOpenedMenuEntryId: (entryId: number) => update(store => {
+      if (store.docOpenedMenuEntryId !== entryId) {
+        store.docOpenedMenuEntryId = entryId;
+      } else {
+        store.docOpenedMenuEntryId = null;
+      }
       return store;
     }),
 

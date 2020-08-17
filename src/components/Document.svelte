@@ -190,6 +190,7 @@
       docCursorSelStart={$docsStore.cursorSelectionStart}
       docCursorSelEnd={$docsStore.cursorSelectionEnd}
       docMouseoverEntryId={$docsStore.docMouseoverEntryId}
+      docOpenedMenuEntryId={$docsStore.docOpenedMenuEntryId}
 
       {findRelevantDocNames}
       handleCollapseEntry={docsStore.collapseEntry}
@@ -213,6 +214,7 @@
       handleCycleEntryHeadingSize={docsStore.cycleEntryHeadingSize}
       handleReplaceEntryTextAroundCursor={docsStore.replaceEntryTextAroundCursor}
       handleSaveDocMouseoverEntryId={docsStore.saveDocMouseoverEntryId}
+      handleSaveDocOpenedMenuEntryId={docsStore.saveDocOpenedMenuEntryId}
     />
   </div>
 

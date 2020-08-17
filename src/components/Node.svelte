@@ -5,6 +5,7 @@
     docCursorSelStart: number | null,
     docCursorSelEnd: number | null,
     docMouseoverEntryId: number | null,
+    docOpenedMenuEntryId: number | null,
     findRelevantDocNames: (text: string) => string[],
     handleGoUp: () => void,
     handleGoDown: () => void,
@@ -25,7 +26,8 @@
     handleUpdateEntryLinks: (entryId: number, linkedPages: string[]) => void,
     handleCycleEntryHeadingSize: (entryId: number) => void,
     handleReplaceEntryTextAroundCursor: (newText: string) => void,
-    handleSaveDocMouseoverEntryId: (entryId: number) => void;
+    handleSaveDocMouseoverEntryId: (entryId: number) => void,
+    handleSaveDocOpenedMenuEntryId: (entryId: number) => void;
 
 
   import Icon from 'svelte-awesome';
@@ -34,6 +36,7 @@
   import type { FlowyTree } from '../FlowyTree';
   import type { FlowyTreeNode } from '../FlowyTree';
   import EntryInput from "./EntryInput.svelte";
+  import EntryMenu from './EntryMenu.svelte';
 
   import RenderedEntry from "./RenderedEntry.svelte";
   import Node from "./Node.svelte";
@@ -63,6 +66,10 @@
     if (currEntryId !== docMouseoverEntryId) {
       handleSaveDocMouseoverEntryId(currEntryId);
     }
+  }
+
+  function handleToggleEntryMenuOpen() {
+    handleSaveDocOpenedMenuEntryId(currEntryId);
   }
 
   let currEntryId: number | null;
@@ -132,6 +139,9 @@
 
   let shouldShowDocNameAutocomplete: boolean;
   $: shouldShowDocNameAutocomplete = autoCompleteDocNames !== null;
+
+  let shouldShowMenu: boolean;
+  $: shouldShowMenu = docOpenedMenuEntryId === currEntryId;
 </script>
 
 <style>
@@ -198,11 +208,14 @@
   #doc-name-autocomplete-default {
     color: #7f7f7f;
   }
+
 </style>
 
 {#if currEntryId !== null}
   <div class="entry-display" data-entry-id={currEntryId} on:mouseover={handleMouseoverEntry}>
-    <div class={`menu-container ${isDisplayingMenu ? 'display-menu' : ''}`}>
+    <div
+      class={`menu-container ${isDisplayingMenu ? 'display-menu' : ''}`}
+      on:click={handleToggleEntryMenuOpen}>
       <Icon data={faEllipsisH} scale="0.81" />
     </div>
     <div class="icon-container" on:click={() => handleToggle(currEntryId, nodeIsCollapsed(flowyTreeNode))}>
@@ -261,6 +274,11 @@
       {/if}
     </div>
   {/if}
+  {#if shouldShowMenu}
+    <EntryMenu
+      currEntryType={tree.getEntryType(currEntryId)}
+    />
+  {/if}
 {/if}
 
 {#if currNodeHasChildren && !isCollapsed}
@@ -274,6 +292,7 @@
           {docCursorSelStart}
           {docCursorSelEnd}
           {docMouseoverEntryId}
+          {docOpenedMenuEntryId}
           {findRelevantDocNames}
           {handleSaveDocEntry}
           {handleSaveFullCursor}
@@ -295,6 +314,7 @@
           {handleCycleEntryHeadingSize}
           {handleReplaceEntryTextAroundCursor}
           {handleSaveDocMouseoverEntryId}
+          {handleSaveDocOpenedMenuEntryId}
           />
       </li>
     {/each}
