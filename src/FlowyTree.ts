@@ -247,6 +247,10 @@ export class FlowyTree {
     };
   }
 
+  saveEntry(entryId: EntryId, entry: FlowyTreeEntry) {
+    this.entries[entryId] = entry;
+  }
+
   setEntryText(entryId: EntryId, textValue: string) {
     let entry = this.entries[entryId];
     if (!entry || entry.type !== "markup-text") {

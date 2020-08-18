@@ -1,8 +1,15 @@
 <script lang="ts">
-  export let currEntryType: string;
+  export let
+    currEntryType: string,
+    entryId: number,
+    handleChangeEntryType: (entryId: number, entryType: string) => void;
 
   function handleEntryMenuTypeClick(type: string) {
     console.log(" ### handleEntryMenuTypeClick: ", type)
+
+    if (type !== currEntryType) {
+      handleChangeEntryType(entryId, type);
+    }
 
     // TODO: call handler to change entry type
 

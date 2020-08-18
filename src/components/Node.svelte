@@ -27,7 +27,8 @@
     handleCycleEntryHeadingSize: (entryId: number) => void,
     handleReplaceEntryTextAroundCursor: (newText: string) => void,
     handleSaveDocMouseoverEntryId: (entryId: number) => void,
-    handleSaveDocOpenedMenuEntryId: (entryId: number) => void;
+    handleSaveDocOpenedMenuEntryId: (entryId: number) => void,
+    handleChangeEntryType: (entryId: number, entryType: string) => void;
 
 
   import Icon from 'svelte-awesome';
@@ -277,6 +278,8 @@
   {#if shouldShowMenu}
     <EntryMenu
       currEntryType={tree.getEntryType(currEntryId)}
+      entryId={currEntryId}
+      {handleChangeEntryType}
     />
   {/if}
 {/if}
@@ -315,6 +318,7 @@
           {handleReplaceEntryTextAroundCursor}
           {handleSaveDocMouseoverEntryId}
           {handleSaveDocOpenedMenuEntryId}
+          {handleChangeEntryType}
           />
       </li>
     {/each}

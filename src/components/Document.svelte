@@ -215,6 +215,7 @@
       handleReplaceEntryTextAroundCursor={docsStore.replaceEntryTextAroundCursor}
       handleSaveDocMouseoverEntryId={docsStore.saveDocMouseoverEntryId}
       handleSaveDocOpenedMenuEntryId={docsStore.saveDocOpenedMenuEntryId}
+      handleChangeEntryType={docsStore.changeEntryType}
     />
   </div>
 

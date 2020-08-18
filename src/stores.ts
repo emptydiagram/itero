@@ -1,5 +1,5 @@
 import { Document, EntryDisplayState, createNewDocument, getNowISO8601 } from "./data";
-import { FlowyTree } from './FlowyTree';
+import { FlowyTree, FlowyTreeTableEntry } from './FlowyTree';
 import type { FlowyTreeNode } from './FlowyTree';
 
 import { writable } from 'svelte/store';
@@ -576,6 +576,33 @@ function createDocsStore() {
       } else {
         store.docOpenedMenuEntryId = null;
       }
+      return store;
+    }),
+
+    changeEntryType: (entryId: number, entryType: string) => update(store => {
+      console.log(" -- changeEntryType, entryId, entryType = ", entryId, entryType);
+
+      // only support converting (markup-text -> table) or (table -> markup-text)
+      let allowed = ["table", "markup-text"];
+      if (!allowed.includes(entryType)) {
+        return store;
+      }
+
+      let currDoc = store.documents[store.currentDocId];
+      let currTree: FlowyTree = currDoc.tree;
+      let currType = currTree.getEntryType(entryId);
+
+      let tableEntry: FlowyTreeTableEntry = {
+        type: "table",
+        numCols: 3,
+        numRows: 1,
+        cells: { 1: currTree.getEntryText(entryId)},
+        table: [[1, null, null]],
+      }
+
+      currTree.saveEntry(entryId, tableEntry);
+
+      // convert the entry to a table
       return store;
     }),
 
