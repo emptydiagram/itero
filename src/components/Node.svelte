@@ -88,6 +88,13 @@
   $: isCollapsed = currNodeHasChildren
     && tree.getEntryDisplayState(currEntryId) == EntryDisplayState.Collapsed;
 
+  let entryType: string = '';
+  $: entryType = (function() {
+    if (currEntryId === 0 || currEntryId) {
+      return tree.getEntryType(currEntryId);
+    }
+  })();
+
   let entryHeadingSize: number = 0;
   $: entryHeadingSize = (function() {
     if (currEntryId === 0 || currEntryId) {
@@ -116,7 +123,7 @@
   // TODO: move to a derived store?
   let autoCompleteDocNames: string[];
   $: autoCompleteDocNames = (function() {
-    if (isCurrentEntry && docCursorSelStart === docCursorSelEnd) {
+    if (isCurrentEntry && docCursorSelStart === docCursorSelEnd && tree.getEntryType(currEntryId) === 'markup-text') {
       let entryValue = tree.getEntryText(currEntryId);
       let [entryBefore, entryAfter] = [entryValue.substring(0, docCursorSelStart), entryValue.substring(docCursorSelStart)];
       let entryBeforeRev = [...entryBefore].reverse().join("");
@@ -227,7 +234,7 @@
       {/if}
     </div>
     <span>&#x200b;</span>
-    {#if isCurrentEntry}
+    {#if isCurrentEntry && entryType === 'markup-text'}
       <EntryInput
         entryId={currEntryId}
         entryValue={tree.getEntryText(currEntryId)}
@@ -258,8 +265,7 @@
       {:else}
         <RenderedEntry
           entryId={currEntryId}
-          entryText={entryText}
-          entryHeadingSize={entryHeadingSize}
+          entry={tree.getEntry(currEntryId)}
           {handleUpdateEntryLinks}
           />
       {/if}

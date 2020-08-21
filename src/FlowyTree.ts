@@ -23,7 +23,7 @@ export interface FlowyTreeTableEntry {
   table: (CellId | null)[][];
 }
 
-type FlowyTreeEntry = FlowyTreeMarkupEntry | FlowyTreeTableEntry;
+export type FlowyTreeEntry = FlowyTreeMarkupEntry | FlowyTreeTableEntry;
 
 export interface FlowyTreeEntriesCollection {
   [entryId: number]: FlowyTreeEntry
@@ -58,6 +58,10 @@ export class FlowyTree {
 
   getEntryNode(entryId: number): FlowyTreeNode {
     return this.nodeLookup[entryId];
+  }
+
+  getEntry(entryId: number): FlowyTreeEntry {
+    return this.entries[entryId];
   }
 
   getEntryDisplayState(entryId: number): EntryDisplayState {

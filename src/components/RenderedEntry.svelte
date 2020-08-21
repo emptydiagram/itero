@@ -1,15 +1,32 @@
 <script lang="ts">
   export let entryId: number,
-    entryText: string,
-    entryHeadingSize: number,
+    entry: FlowyTreeEntry,
     handleUpdateEntryLinks: (entryId: number, linkedPages: string[]) => void;
 
   import { MarkupParser } from "../markup/MarkupParser.js";
+  import type { FlowyTreeEntry, FlowyTreeMarkupEntry } from "../FlowyTree";
 
   let theDiv: HTMLElement;
 
+  let entryType: string;
+  $: entryType = entry ? entry.type : null;
+
+  let entryText: string
+  $: entryText = (function() {
+    if (entry && entry.type === 'markup-text') {
+      return (entry as FlowyTreeMarkupEntry).text;
+    }
+  })();
+
+  let entryHeadingSize: number
+  $: entryHeadingSize = (function() {
+    if (entry && entry.type === 'markup-text') {
+      return (entry as FlowyTreeMarkupEntry).headingSize;
+    }
+  })();
+
   $: {
-    if (theDiv) {
+    if (theDiv && entryText) {
       try {
         let parseResult = MarkupParser.Text.tryParse(entryText);
         theDiv.innerHTML = parseResult.html;
@@ -21,6 +38,7 @@
       }
     }
   }
+
 </script>
 
 <style>
@@ -48,11 +66,40 @@
 .heading-0 {
   font-size: 1em;
 }
+
+.rendered-entry table {
+  border-collapse: collapse;
+  border: 1px solid #000;
+}
+
+.rendered-entry td {
+  border: 1px solid #000;
+}
 </style>
 
+{#if entryType === 'markup-text'}
 <div
   class={`rendered-entry heading-${entryHeadingSize}`}
   bind:this={theDiv}
   data-entry-id={entryId}
   data-testid="rendered-entry">
 </div>
+{:else}
+<div
+  class={`rendered-entry heading-${entryHeadingSize}`}
+  bind:this={theDiv}
+  data-entry-id={entryId}
+  data-testid="rendered-entry">
+
+  <table>
+  <tr>
+    <td>TODO</td>
+    <td>TODO</td>
+  </tr>
+  <tr>
+    <td>TODO</td>
+    <td>TODO</td>
+  </tr>
+  </table>
+</div>
+{/if}

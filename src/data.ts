@@ -1,5 +1,5 @@
 import type DataStore from "./DataStore.js";
-import { FlowyTreeMarkupEntry, FlowyTreeEntriesCollection, FlowyTreeNodeConverter } from "./FlowyTree";
+import { FlowyTreeMarkupEntry, FlowyTreeEntriesCollection, FlowyTreeNodeConverter, FlowyTreeEntry } from "./FlowyTree";
 import { FlowyTree, OrderedTreeNode } from "./FlowyTree";
 import { MarkupParser } from "./markup/MarkupParser.js";
 import LinkGraph from "./LinkGraph";
@@ -162,19 +162,24 @@ function makeLinkGraph(docs: DocumentsCollection, docIdLookup: DocIdLookup) {
   Object.entries(docs).forEach(([docId, doc]: [string, Document]) => {
     outAdjacency[docId] = {};
     let currDocEntries = outAdjacency[docId];
-    Object.entries(doc.tree.getEntries()).forEach(([entryId, entry]: [string, { text: string }]) => {
-      let parseResult = MarkupParser.Text.tryParse(entry.text);
-      parseResult.linkedPages.forEach(page => {
-        if (!(entryId in currDocEntries)) {
-           currDocEntries[entryId] = new Set();
-        }
-        if (!(page in docIdLookup)) {
-          let newDoc = createNewDocument(page, 'TODO', newDocs);
-          newDocs[newDoc.id] = newDoc;
-        } else {
-          outAdjacency[docId][entryId].add(docIdLookup[page]);
-        }
-      });
+    Object.entries(doc.tree.getEntries()).forEach(([entryId, entry]: [string, FlowyTreeEntry]) => {
+      if (entry.type === 'markup-text') {
+
+        let parseResult = MarkupParser.Text.tryParse(entry.text);
+        parseResult.linkedPages.forEach(page => {
+          if (!(entryId in currDocEntries)) {
+            currDocEntries[entryId] = new Set();
+          }
+          if (!(page in docIdLookup)) {
+            let newDoc = createNewDocument(page, 'TODO', newDocs);
+            newDocs[newDoc.id] = newDoc;
+          } else {
+            outAdjacency[docId][entryId].add(docIdLookup[page]);
+          }
+        });
+      } else {
+        console.log(" >.> skipping table entry during makeLinkGraph")
+      }
     });
   });
   return { linkGraph: new LinkGraph(outAdjacency), documents: newDocs };
