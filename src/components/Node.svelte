@@ -164,13 +164,13 @@
 
 {#if currEntryId !== null}
   <div class="entry-display" data-entry-id={currEntryId}>
-    <span class="icon-container" on:click={() => handleToggle(currEntryId, nodeIsCollapsed(flowyTreeNode))}>
+    <div class="icon-container" on:click={() => handleToggle(currEntryId, nodeIsCollapsed(flowyTreeNode))}>
       {#if nodeIsCollapsed(flowyTreeNode)}
         <Icon data={faPlus} scale="0.51" />
       {:else}
         <Icon data={faCircle} scale="0.51" />
       {/if}
-    </span>
+    </div>
     <span>&#x200b;</span>
     {#if isCurrentEntry}
       <EntryInput

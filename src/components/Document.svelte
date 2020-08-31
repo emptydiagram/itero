@@ -128,7 +128,7 @@
   }
 
   #doc-name-display {
-    font-size: 1.4em;
+    font-size: 1.75em;
     font-weight: bold;
   }
   #doc-name-edit {

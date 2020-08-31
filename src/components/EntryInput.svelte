@@ -166,21 +166,21 @@
   }
 
   .heading-1 {
-    font-size: 1.28em;
+    font-size: 1.45em;
     font-weight: bold;
-    margin: 0.04em 0;
+    margin: 0.00em 0;
   }
 
   .heading-2 {
-    font-size: 1.21em;
+    font-size: 1.30em;
     font-weight: bold;
-    margin: 0.02em 0;
+    padding: 0.0425em 0;
   }
 
   .heading-3 {
-    font-size: 1.13em;
+    font-size: 1.15em;
     font-weight: bold;
-    margin: 0.01em 0;
+    padding: 0.1225em 0;
   }
 
   .heading-0 {

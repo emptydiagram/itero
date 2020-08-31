@@ -26,20 +26,22 @@
 <style>
 .rendered-entry {
   white-space: pre-wrap;
+  /* FIXME: to match EntryInput */
+  border: 1px solid rgba(1.0, 1.0, 1.0, 0.0);
 }
 
 .heading-1 {
-  font-size: 1.28em;
+  font-size: 1.45em;
   font-weight: bold;
 }
 
 .heading-2 {
-  font-size: 1.21em;
+  font-size: 1.30em;
   font-weight: bold;
 }
 
 .heading-3 {
-  font-size: 1.13em;
+  font-size: 1.15em;
   font-weight: bold;
 }
 
