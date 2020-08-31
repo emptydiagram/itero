@@ -185,6 +185,9 @@
   }
 
   .menu-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     margin-left: -1.6em;
     margin-right: 1em;
     visibility: hidden;
