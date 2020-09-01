@@ -4,7 +4,7 @@
     handleUpdateEntryLinks: (entryId: number, linkedPages: string[]) => void;
 
   import { MarkupParser } from "../markup/MarkupParser.js";
-  import type { FlowyTreeEntry, FlowyTreeMarkupEntry } from "../FlowyTree";
+  import type { FlowyTreeMarkupEntry } from "../FlowyTree";
 
   let theDiv: HTMLElement;
 
