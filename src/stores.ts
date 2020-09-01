@@ -595,9 +595,9 @@ function createDocsStore() {
       let tableEntry: FlowyTreeTableEntry = {
         type: "table",
         numCols: 3,
-        numRows: 1,
-        cells: { 1: currTree.getEntryText(entryId)},
-        table: [[1, null, null]],
+        numRows: 2,
+        cells: { 1: currTree.getEntryText(entryId), 2: 'TODO'},
+        table: [[1, null, null], [2, null, null]],
       }
 
       currTree.saveEntry(entryId, tableEntry);

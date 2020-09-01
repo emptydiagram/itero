@@ -5,6 +5,15 @@
   import { MarkupParser } from "../markup/MarkupParser.js";
   import type { FlowyTreeTableEntry } from "../FlowyTree";
 
+  let tableDisplayStrings: string[][];
+  $: tableDisplayStrings = (function() {
+    let display = entry.table.map(rowCellIds => {
+      return rowCellIds.map(cellId => cellId != null ? entry.cells[cellId] : '');
+    });
+    // return [['TODO1', 'todo 2'], ['TODO 3', 'TODO 4']];
+    return display;
+  })();
+
 </script>
 
 <style>
@@ -21,6 +30,7 @@
 
 .rendered-entry td {
   border: 1px solid #000;
+  min-width: 2em;
 }
 </style>
 
@@ -30,13 +40,12 @@
   data-testid="rendered-entry">
 
   <table>
-  <tr>
-    <td>TODO</td>
-    <td>TODO</td>
-  </tr>
-  <tr>
-    <td>TODO</td>
-    <td>TODO</td>
-  </tr>
+  {#each tableDisplayStrings as rowStrings}
+    <tr>
+      {#each rowStrings as s}
+        <td>{s}</td>
+      {/each}
+    </tr>
+  {/each}
   </table>
 </div>
