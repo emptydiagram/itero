@@ -31,6 +31,5 @@
   <RenderedTableEntry
     {entryId}
     entry={entryTable}
-    {handleUpdateEntryLinks}
   />
 {/if}

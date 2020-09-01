@@ -1,7 +1,6 @@
 <script lang="ts">
   export let entryId: number,
-    entry: FlowyTreeTableEntry,
-    handleUpdateEntryLinks: (entryId: number, linkedPages: string[]) => void;
+    entry: FlowyTreeTableEntry;
 
   import { MarkupParser } from "../markup/MarkupParser.js";
   import type { FlowyTreeTableEntry } from "../FlowyTree";
