@@ -1,15 +1,20 @@
 import RenderedEntry from './RenderedEntry.svelte'
 import { render, fireEvent } from '@testing-library/svelte'
+import type { FlowyTreeMarkupEntry } from '../FlowyTree';
 
 it('it renders plain text', async () => {
   let updateEntryLinksData = {
     entryId: null,
     linkedPages: null,
   };
+  let markupEntry: FlowyTreeMarkupEntry = {
+    type: 'markup-text',
+    text: 'hello!!',
+    headingSize: 0
+  };
   let props = {
     entryId: 123,
-    entryText: 'hello!!',
-    entryHeadingSize: 0,
+    entry: markupEntry,
     handleUpdateEntryLinks: (entryId, linkedPages) => {
       updateEntryLinksData.entryId = entryId;
       updateEntryLinksData.linkedPages = linkedPages;
@@ -19,7 +24,7 @@ it('it renders plain text', async () => {
 
   const renderedEntry = getByTestId('rendered-entry');
 
-  expect(renderedEntry.textContent).toBe(props.entryText);
+  expect(renderedEntry.textContent).toBe(props.entry.text);
 
   expect(updateEntryLinksData.entryId).toBe(props.entryId);
   expect(updateEntryLinksData.linkedPages).toHaveLength(0);
@@ -30,10 +35,14 @@ it('it renders bold and italics', async () => {
     entryId: null,
     linkedPages: null,
   };
+  let markupEntry: FlowyTreeMarkupEntry = {
+    type: 'markup-text',
+    text: 'three **blind __mice__**',
+    headingSize: 0
+  };
   let props = {
     entryId: 7,
-    entryText: 'three **blind __mice__**',
-    entryHeadingSize: 0,
+    entry: markupEntry,
     handleUpdateEntryLinks: (entryId, linkedPages) => {
       updateEntryLinksData.entryId = entryId;
       updateEntryLinksData.linkedPages = linkedPages;
@@ -54,10 +63,14 @@ it('it renders entries with internal links', async () => {
     entryId: null,
     linkedPages: null,
   };
+  let markupEntry: FlowyTreeMarkupEntry = {
+    type: 'markup-text',
+    text: 'humans were capable of reproduction until [[The Orb]] arrived, so',
+    headingSize: 0
+  };
   let props = {
     entryId: 0,
-    entryText: 'humans were capable of reproduction until [[The Orb]] arrived, so',
-    entryHeadingSize: 0,
+    entry: markupEntry,
     handleUpdateEntryLinks: (entryId, linkedPages) => {
       updateEntryLinksData.entryId = entryId;
       updateEntryLinksData.linkedPages = linkedPages;
