@@ -103,6 +103,7 @@
     }
   })();
 
+  /*
   let entryText: string = '';
   $: entryText = (function() {
     if (currEntryId == 0 || currEntryId) {
@@ -110,6 +111,7 @@
       return newText;
     }
   })();
+  */
 
 
   let isCurrentEntry: boolean;
