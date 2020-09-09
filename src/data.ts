@@ -188,6 +188,7 @@ function makeLinkGraph(docs: DocumentsCollection, docIdLookup: DocIdLookup) {
 
 // Document: = {id: EntryId, name: String, tree: FlowyTree }
 export function makeInitContextFromDocuments(docs: DocumentsCollection) {
+  console.log(" -- beginning of makeInitContextFromDocuments");
   let docIdLookup = makeDocIdLookup(docs);
   let { linkGraph, documents } = makeLinkGraph(docs, docIdLookup);
 

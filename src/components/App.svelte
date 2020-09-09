@@ -119,7 +119,9 @@
   }
 
   let dataMgr = new DataManager(new DataStore);
+  console.log(" before getDocuments")
   let initContext = makeInitContextFromDocuments(dataMgr.getDocuments());
+  console.log(" after getDocuments")
   initDocStoreFromInitContext(initContext);
 
 
